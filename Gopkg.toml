@@ -1,4 +1,9 @@
-required = ["github.com/urfave/cli", "github.com/gin-gonic/gin","github.com/json-iterator/go"]
+required = [
+    "github.com/hashicorp/go-cleanhttp",
+    "github.com/urfave/cli",
+    "github.com/gin-gonic/gin",
+    "github.com/json-iterator/go"
+]
 
 [prune]
   go-tests = true

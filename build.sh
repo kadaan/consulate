@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
 
-
 run() {
   if [ ! -f $GOPATH/bin/dep ]; then
       unameOut="$(uname -s)"
