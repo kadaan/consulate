@@ -21,13 +21,16 @@ import (
 	"github.com/hashicorp/go-cleanhttp"
 	"github.com/json-iterator/go"
 	"github.com/kadaan/consulate/checks"
+	logrus "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
+	"github.com/zsais/go-gin-prometheus"
 	"log"
 	"net/http"
 	"os"
 	"os/signal"
 	"time"
+	"strings"
 )
 
 const (
@@ -114,9 +117,26 @@ func createRouter() *gin.Engine {
 	router := gin.New()
 	router.Use(gin.Logger())
 	router.Use(gin.Recovery())
+	attachPrometheusMiddleware(router)
 	router.GET("/verify/checks", verifyAllChecks)
 	router.GET("/verify/service/:service", verifyService)
 	return router
+}
+
+func attachPrometheusMiddleware(engine *gin.Engine) {
+	logrus.SetLevel(logrus.WarnLevel)
+	prometheusMiddleware := ginprometheus.NewPrometheus("gin")
+	prometheusMiddleware.ReqCntURLLabelMappingFn = func(c *gin.Context) string {
+		url := c.Request.URL.String()
+		for _, param := range c.Params {
+			if param.Key == "service" {
+				url = strings.Replace(url, param.Value, ":service", 1)
+				break
+			}
+		}
+		return url
+	}
+	prometheusMiddleware.Use(engine)
 }
 
 func createClient() *http.Client {
@@ -168,7 +188,9 @@ func verifyService(context *gin.Context) {
 func verifyChecks(context *gin.Context, match checkMatcher) {
 	target := fmt.Sprintf(ConsulChecksUrl, consulAddress)
 	resp, err := httpClient.Get(target)
-	defer resp.Body.Close()
+	if resp != nil && resp.Body != nil {
+		defer resp.Body.Close()
+	}
 	if err != nil {
 		context.AbortWithStatusJSON(http.StatusServiceUnavailable, checks.Result{Status: checks.Failed, Detail: err.Error()})
 	} else {
