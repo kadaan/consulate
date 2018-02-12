@@ -22,10 +22,9 @@ import (
 	"github.com/json-iterator/go"
 	"github.com/kadaan/consulate/checks"
 	"github.com/kadaan/consulate/version"
-	"github.com/sirupsen/logrus"
+	"github.com/kadaan/go-gin-prometheus"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
-	"github.com/zsais/go-gin-prometheus"
 	"log"
 	"net/http"
 	"os"
@@ -45,6 +44,12 @@ const (
 	QueryIdleConnectionTimeoutKey  = "query-idle-connection-timeout"
 	ShutdownTimeoutKey             = "shutdown-timeout"
 	ConsulChecksUrl                = "http://%s/v1/agent/checks"
+	VerifyCheckParamKey            = "check"
+	VerifyCheckParamTag            = ":" + VerifyCheckParamKey
+	VerifyServiceParamKey          = "service"
+	VerifyServiceParamTag          = ":" + VerifyServiceParamKey
+	PrettyQueryStringKey           = "pretty"
+	VerboseQueryStringKey          = "verbose"
 )
 
 var (
@@ -57,6 +62,11 @@ var (
 	queryMaxIdleConnectionCount int
 	queryIdleConnectionTimeout  time.Duration
 	shutdownTimeout             time.Duration
+
+
+	requestDurationBuckets = []float64{0.5, 1, 2, 3, 5, 10}
+	requestSizeBuckets     = []float64{128, 256, 512, 1024}
+	responseSizeBuckets    = []float64{512, 2048, 8196, 32784}
 
 
 	httpClient = createClient()
@@ -120,19 +130,23 @@ func createRouter() *gin.Engine {
 	router.Use(gin.Recovery())
 	attachPrometheusMiddleware(router)
 	router.GET("/about", about)
+	router.GET("/health", health)
 	router.GET("/verify/checks", verifyAllChecks)
-	router.GET("/verify/service/:service", verifyService)
+	router.GET("/verify/checks" + VerifyCheckParamTag, verifyCheck)
+	router.GET("/verify/service/" + VerifyServiceParamTag, verifyService)
 	return router
 }
 
 func attachPrometheusMiddleware(engine *gin.Engine) {
-	logrus.SetLevel(logrus.WarnLevel)
-	prometheusMiddleware := ginprometheus.NewPrometheus("gin")
+	prometheusMiddleware := ginprometheus.NewPrometheus("consulate", requestDurationBuckets, requestSizeBuckets, responseSizeBuckets)
 	prometheusMiddleware.ReqCntURLLabelMappingFn = func(c *gin.Context) string {
-		url := c.Request.URL.String()
+		url := c.Request.URL.Path
 		for _, param := range c.Params {
-			if param.Key == "service" {
-				url = strings.Replace(url, param.Value, ":service", 1)
+			if param.Key == VerifyCheckParamKey {
+				url = strings.Replace(url, param.Value, VerifyCheckParamTag, 1)
+				break
+			} else if param.Key == VerifyServiceParamKey {
+				url = strings.Replace(url, param.Value, VerifyServiceParamTag, 1)
 				break
 			}
 		}
@@ -174,9 +188,31 @@ func startServer(router *gin.Engine) *http.Server {
 	return srv
 }
 
-func about(context *gin.Context) {
-	context.IndentedJSON(http.StatusOK, version.NewInfo())
+func json(context *gin.Context, code int, obj interface{}) {
+	_, ok := context.GetQuery(PrettyQueryStringKey)
+	if ok {
+		context.IndentedJSON(code, obj)
+	} else {
+		context.JSON(code, obj)
+	}
 }
+
+func abortWithStatusJSON(context *gin.Context, code int, obj interface{}) {
+	context.Abort()
+	json(context, code, obj)
+}
+
+func about(context *gin.Context) {
+	json(context, http.StatusOK, version.NewInfo())
+}
+
+func health(context *gin.Context) {
+	processChecks(context, func(allChecks *map[string]*checks.Check) {
+		json(context, http.StatusOK, checks.Result{Status: checks.OK})
+	})
+}
+
+type checkHandler func(allChecks *map[string]*checks.Check)
 
 type checkMatcher func(check *checks.Check) bool
 
@@ -185,45 +221,61 @@ func verifyAllChecks(context *gin.Context) {
 	verifyChecks(context, matcher)
 }
 
+func verifyCheck(context *gin.Context) {
+	checkName := context.Param(VerifyCheckParamKey)
+	matcher := func(check *checks.Check) bool {return check.IsCheck(checkName)}
+	verifyChecks(context, matcher)
+}
+
 func verifyService(context *gin.Context) {
-	service := context.Param("service")
+	service := context.Param(VerifyServiceParamKey)
 	matcher := func(check *checks.Check) bool {return check.IsService(service)}
 	verifyChecks(context, matcher)
 }
 
 func verifyChecks(context *gin.Context, match checkMatcher) {
+	processChecks(context, func(allChecks *map[string]*checks.Check) {
+		var checkCount = 0
+		var failedChecks map[string]*checks.Check
+		failedChecks = make(map[string]*checks.Check)
+		for k, v := range *allChecks {
+			if match(v) {
+				checkCount++
+				if !v.IsHealthy() {
+					failedChecks[k] = v
+				}
+			}
+		}
+		if len(failedChecks) > 0 {
+			abortWithStatusJSON(context, http.StatusInternalServerError, checks.Result{Status: checks.Failed, Checks: failedChecks})
+		} else if checkCount == 0 {
+			abortWithStatusJSON(context, http.StatusNotFound, checks.Result{Status: checks.NoChecks})
+		} else {
+			_, ok := context.GetQuery(VerboseQueryStringKey)
+			if ok {
+				json(context, http.StatusOK, allChecks)
+			} else {
+				json(context, http.StatusOK, checks.Result{Status: checks.OK})
+			}
+		}
+	})
+}
+
+func processChecks(context *gin.Context, handler checkHandler) {
 	target := fmt.Sprintf(ConsulChecksUrl, consulAddress)
 	resp, err := httpClient.Get(target)
 	if resp != nil && resp.Body != nil {
 		defer resp.Body.Close()
 	}
 	if err != nil {
-		context.AbortWithStatusJSON(http.StatusServiceUnavailable, checks.Result{Status: checks.Failed, Detail: err.Error()})
+		abortWithStatusJSON(context, http.StatusServiceUnavailable, checks.Result{Status: checks.Failed, Detail: err.Error()})
 	} else {
 		var allChecks map[string]*checks.Check
 		err = jsonApi.NewDecoder(resp.Body).Decode(&allChecks)
 		if err != nil {
-			context.AbortWithStatusJSON(http.StatusUnprocessableEntity, checks.Result{Status: checks.Failed, Detail: err.Error()})
+			abortWithStatusJSON(context, http.StatusUnprocessableEntity, checks.Result{Status: checks.Failed, Detail: err.Error()})
 		} else {
-			var checkCount = 0
-			var failedChecks map[string]*checks.Check
-			failedChecks = make(map[string]*checks.Check)
-			for k, v := range allChecks {
-				if match(v) {
-					checkCount++
-					if !v.IsHealthy() {
-						failedChecks[k] = v
-					}
-				}
-			}
-			if len(failedChecks) > 0 {
-				context.AbortWithStatusJSON(http.StatusInternalServerError, checks.Result{Status: checks.Failed, Checks: failedChecks})
-			} else if checkCount == 0 {
-				context.AbortWithStatusJSON(http.StatusNotFound, checks.Result{Status: checks.NoChecks})
-			} else {
-				context.JSON(http.StatusOK, checks.Result{Status: checks.OK})
-			}
+			handler(&allChecks)
 		}
-		resp.Body.Close()
 	}
 }

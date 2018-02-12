@@ -70,6 +70,12 @@
   version = "1.0.5"
 
 [[projects]]
+  branch = "master"
+  name = "github.com/kadaan/go-gin-prometheus"
+  packages = ["."]
+  revision = "5d2cfda7af87a97514942fbbf3542097fae1db14"
+
+[[projects]]
   name = "github.com/magiconair/properties"
   packages = ["."]
   revision = "d419a98cdbed11a922bf76f257b7c4be79b50e73"
@@ -142,12 +148,6 @@
   revision = "cb4147076ac75738c9a7d279075a253c0cc5acbd"
 
 [[projects]]
-  name = "github.com/sirupsen/logrus"
-  packages = ["."]
-  revision = "d682213848ed68c0a260ca37d6dd5ace8423f5ba"
-  version = "v1.0.4"
-
-[[projects]]
   name = "github.com/spf13/afero"
   packages = [
     ".",
@@ -200,23 +200,8 @@
 
 [[projects]]
   branch = "master"
-  name = "github.com/zsais/go-gin-prometheus"
-  packages = ["."]
-  revision = "e26effb6cde37935f313bb3d5e5a1207f44cff69"
-
-[[projects]]
-  branch = "master"
-  name = "golang.org/x/crypto"
-  packages = ["ssh/terminal"]
-  revision = "5119cf507ed5294cc409c092980c7497ee5d6fd2"
-
-[[projects]]
-  branch = "master"
   name = "golang.org/x/sys"
-  packages = [
-    "unix",
-    "windows"
-  ]
+  packages = ["unix"]
   revision = "37707fdb30a5b38865cfb95e5aab41707daec7fd"
 
 [[projects]]
@@ -247,6 +232,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "95bf4a5d20eb4827791ece94c195ddcade1ec4032504f3a65a345d0638e0fcd6"
+  inputs-digest = "2feca58944b52f83d8a3342cdbef95be2def91e19f1abbad798fe8fc427071c8"
   solver-name = "gps-cdcl"
   solver-version = 1

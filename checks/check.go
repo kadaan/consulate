@@ -54,8 +54,13 @@ type Check struct {
 func (c *Check) IsHealthy() bool {
 	return c.Status == HealthPassing
 }
+
 func (c *Check) IsService(service string) bool {
 	return service == c.ServiceName || service == c.ServiceID
+}
+
+func (c *Check) IsCheck(check string) bool {
+	return check == c.Name || check == c.CheckID
 }
 
 type CheckDefinition struct {
