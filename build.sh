@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+VERSION=0.0.1
+
 run() {
   if [ ! -f $GOPATH/bin/dep ]; then
       unameOut="$(uname -s)"
@@ -26,7 +28,11 @@ run() {
     go get github.com/mitchellh/gox
   fi
   echo "Building binaries..."
-  gox -os="linux darwin" -arch="amd64" -output="dist/{{.Dir}}_{{.OS}}_{{.Arch}}"
+  local revision=`git rev-parse HEAD`
+  local branch=`git rev-parse --abbrev-ref HEAD`
+  local host=`hostname`
+  local buildDate=`date -u +"%Y-%m-%dT%H:%M:%SZ"`
+  gox -ldflags "-X github.com/kadaan/consulate/version.Version=$VERSION -X github.com/kadaan/consulate/version.Revision=$revision -X github.com/kadaan/consulate/version.Branch=$branch -X github.com/kadaan/consulate/version.BuildUser=$USER@$host -X github.com/kadaan/consulate/version.BuildDate=$buildDate" -os="linux darwin" -arch="amd64" -output="dist/{{.Dir}}_{{.OS}}_{{.Arch}}"
   echo ""
   echo "done"
 }

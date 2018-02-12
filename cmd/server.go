@@ -21,7 +21,8 @@ import (
 	"github.com/hashicorp/go-cleanhttp"
 	"github.com/json-iterator/go"
 	"github.com/kadaan/consulate/checks"
-	logrus "github.com/sirupsen/logrus"
+	"github.com/kadaan/consulate/version"
+	"github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	"github.com/zsais/go-gin-prometheus"
@@ -118,6 +119,7 @@ func createRouter() *gin.Engine {
 	router.Use(gin.Logger())
 	router.Use(gin.Recovery())
 	attachPrometheusMiddleware(router)
+	router.GET("/about", about)
 	router.GET("/verify/checks", verifyAllChecks)
 	router.GET("/verify/service/:service", verifyService)
 	return router
@@ -170,6 +172,10 @@ func startServer(router *gin.Engine) *http.Server {
 		}
 	}()
 	return srv
+}
+
+func about(context *gin.Context) {
+	context.IndentedJSON(http.StatusOK, version.NewInfo())
 }
 
 type checkMatcher func(check *checks.Check) bool

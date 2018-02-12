@@ -1,9 +1,9 @@
 required = [
-    "github.com/hashicorp/go-cleanhttp",
-    "github.com/urfave/cli",
     "github.com/gin-gonic/gin",
+    "github.com/hashicorp/go-cleanhttp",
     "github.com/json-iterator/go",
-    "github.com/zsais/go-gin-prometheus"
+    "github.com/urfave/cli",
+    "github.com/zsais/go-gin-prometheus",
 ]
 
 [prune]

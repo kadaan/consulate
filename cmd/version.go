@@ -16,12 +16,8 @@ package cmd
 
 import (
 	"fmt"
+	"github.com/kadaan/consulate/version"
 	"github.com/spf13/cobra"
-	"runtime"
-)
-
-const (
-	Version = "0.0.1"
 )
 
 // versionCmd represents the version command
@@ -29,8 +25,7 @@ var versionCmd = &cobra.Command{
 	Use:   "version",
 	Short: "Prints the Consulate version",
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Printf("Consul v%s\n", Version)
-		fmt.Println(runtime.Version())
+		fmt.Println(version.Print())
 	},
 }
 
