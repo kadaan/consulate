@@ -126,6 +126,7 @@ func serve() {
 func createRouter() *gin.Engine {
 	gin.SetMode(gin.ReleaseMode)
 	router := gin.New()
+	router.UseRawPath = true
 	router.Use(gin.Logger())
 	router.Use(gin.Recovery())
 	attachPrometheusMiddleware(router)
@@ -235,28 +236,28 @@ func verifyService(context *gin.Context) {
 
 func verifyChecks(context *gin.Context, match checkMatcher) {
 	processChecks(context, func(allChecks *map[string]*checks.Check) {
+		_, isVerbose := context.GetQuery(VerboseQueryStringKey)
 		var checkCount = 0
-		var failedChecks map[string]*checks.Check
-		failedChecks = make(map[string]*checks.Check)
+		var failedCount = false
+		var matchedChecks map[string]*checks.Check
+		matchedChecks = make(map[string]*checks.Check)
 		for k, v := range *allChecks {
 			if match(v) {
 				checkCount++
 				if !v.IsHealthy() {
-					failedChecks[k] = v
+					matchedChecks[k] = v
+					failedCount = true
+				} else if isVerbose {
+					matchedChecks[k] = v
 				}
 			}
 		}
-		if len(failedChecks) > 0 {
-			abortWithStatusJSON(context, http.StatusInternalServerError, checks.Result{Status: checks.Failed, Checks: failedChecks})
+		if failedCount {
+			abortWithStatusJSON(context, http.StatusInternalServerError, checks.Result{Status: checks.Failed, Checks: matchedChecks})
 		} else if checkCount == 0 {
 			abortWithStatusJSON(context, http.StatusNotFound, checks.Result{Status: checks.NoChecks})
 		} else {
-			_, ok := context.GetQuery(VerboseQueryStringKey)
-			if ok {
-				json(context, http.StatusOK, allChecks)
-			} else {
-				json(context, http.StatusOK, checks.Result{Status: checks.OK})
-			}
+			json(context, http.StatusOK, checks.Result{Status: checks.OK, Checks: matchedChecks})
 		}
 	})
 }
