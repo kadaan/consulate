@@ -50,6 +50,11 @@ const (
 	VerifyServiceParamTag          = ":" + VerifyServiceParamKey
 	PrettyQueryStringKey           = "pretty"
 	VerboseQueryStringKey          = "verbose"
+	AboutRoute                     = "/about"
+	HealthRoute                    = "/health"
+	VerifyAllChecksRoute           = "/verify/checks"
+	VerifySpecificCheckRoute       = VerifyAllChecksRoute + "/" + VerifyCheckParamTag
+	VerifySpecificServiceRoute     = "/verify/service/" + VerifyServiceParamTag
 )
 
 var (
@@ -130,11 +135,11 @@ func createRouter() *gin.Engine {
 	router.Use(gin.Logger())
 	router.Use(gin.Recovery())
 	attachPrometheusMiddleware(router)
-	router.GET("/about", about)
-	router.GET("/health", health)
-	router.GET("/verify/checks", verifyAllChecks)
-	router.GET("/verify/checks/" + VerifyCheckParamTag, verifyCheck)
-	router.GET("/verify/service/" + VerifyServiceParamTag, verifyService)
+	router.GET(AboutRoute, about)
+	router.GET(HealthRoute, health)
+	router.GET(VerifyAllChecksRoute, verifyAllChecks)
+	router.GET(VerifySpecificCheckRoute, verifyCheck)
+	router.GET(VerifySpecificServiceRoute, verifyService)
 	return router
 }
 
