@@ -132,7 +132,7 @@ func createRouter() *gin.Engine {
 	router.GET("/about", about)
 	router.GET("/health", health)
 	router.GET("/verify/checks", verifyAllChecks)
-	router.GET("/verify/checks" + VerifyCheckParamTag, verifyCheck)
+	router.GET("/verify/checks/" + VerifyCheckParamTag, verifyCheck)
 	router.GET("/verify/service/" + VerifyServiceParamTag, verifyService)
 	return router
 }
