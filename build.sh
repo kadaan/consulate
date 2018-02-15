@@ -39,7 +39,7 @@ run() {
   local branch=`git rev-parse --abbrev-ref HEAD`
   local host=`hostname`
   local buildDate=`date -u +"%Y-%m-%dT%H:%M:%SZ"`
-  gox -ldflags "-X github.com/kadaan/consulate/version.Version=$VERSION -X github.com/kadaan/consulate/version.Revision=$revision -X github.com/kadaan/consulate/version.Branch=$branch -X github.com/kadaan/consulate/version.BuildUser=$USER@$host -X github.com/kadaan/consulate/version.BuildDate=$buildDate" -os="linux darwin" -arch="amd64" -output="dist/{{.Dir}}_{{.OS}}_{{.Arch}}"
+  gox -ldflags "-X github.com/kadaan/consulate/version.Version=$VERSION -X github.com/kadaan/consulate/version.Revision=$revision -X github.com/kadaan/consulate/version.Branch=$branch -X github.com/kadaan/consulate/version.BuildUser=$USER@$host -X github.com/kadaan/consulate/version.BuildDate=$buildDate" -output="dist/{{.Dir}}_{{.OS}}_{{.Arch}}"
   echo ""
   echo "done"
 }
