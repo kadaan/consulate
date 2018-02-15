@@ -31,24 +31,24 @@ All routes accept the following query string parameters:
 >##### Request
 >
 >```bash
-curl -X GET http:/localhost:8080/about\?pretty
+>curl -X GET http:/localhost:8080/about\?pretty
 >```
 >
 >##### Response
 >```
-HTTP/1.1 200 OK
-Content-Type: application/json; charset=utf-8
-...
+>HTTP/1.1 200 OK
+>Content-Type: application/json; charset=utf-8
+>...
 >```
 >```json
-{
-    "Version": "0.0.1",
-    "Revision": "c216c1294676cdaac0b018244be31ebb6e404b92",
-    "Branch": "master",
-    "BuildUser": "jbaranick@ensadmins-MacBook-Pro.local",
-    "BuildDate": "2018-02-15T07:10:39Z",
-    "GoVersion": "go1.9"
-}
+>{
+>    "Version": "0.0.1",
+>    "Revision": "c216c1294676cdaac0b018244be31ebb6e404b92",
+>    "Branch": "master",
+>    "BuildUser": "jbaranick@ensadmins-MacBook-Pro.local",
+>    "BuildDate": "2018-02-15T07:10:39Z",
+>    "GoVersion": "go1.9"
+>}
 >```
 
 ---
@@ -60,35 +60,35 @@ Content-Type: application/json; charset=utf-8
 >##### Request
 >
 >```bash
-curl -X GET http:/localhost:8080/health\?pretty
+>curl -X GET http:/localhost:8080/health\?pretty
 >```
 >
 >##### Responses
 >>###### Healthy
 >>```
-HTTP/1.1 200 OK
-Content-Type: application/json; charset=utf-8
-...
+>>HTTP/1.1 200 OK
+>>Content-Type: application/json; charset=utf-8
+>>...
 >>```
 >>```json
-{
-    "Status": "Ok"
-}
+>>{
+>>    "Status": "Ok"
+>>}
 >>```
 
 > &nbsp;
 
 >>###### Unhealthy
 >>```
-HTTP/1.1 503 Service Unavailable
-Content-Type: application/json; charset=utf-8
-...
+>>HTTP/1.1 503 Service Unavailable
+>>Content-Type: application/json; charset=utf-8
+>>...
 >>```
 >>```json
-{
-    "Status": "Failed",
-    "Detail": "Get http://localhost:8500/v1/agent/checks: dial tcp [::1]:8500: getsockopt: connection refused"
-}
+>>{
+>>    "Status": "Failed",
+>>    "Detail": "Get http://localhost:8500/v1/agent/checks: dial tcp [::1]:8500: getsockopt: connection refused"
+>>}
 >>```
 
 ---
@@ -100,19 +100,19 @@ Content-Type: application/json; charset=utf-8
 >##### Request
 >
 >```bash
-curl -X GET http:/localhost:8080/metrics
+>curl -X GET http:/localhost:8080/metrics
 >```
 >
 >##### Response
 >
 >```
-# HELP consulate_request_duration_seconds The HTTP request latencies in seconds.
-# TYPE consulate_request_duration_seconds histogram
-consulate_request_duration_seconds_bucket{code="200",method="GET",url="/about",le="0.5"} 1
-consulate_request_duration_seconds_bucket{code="200",method="GET",url="/about",le="1"} 1
-consulate_request_duration_seconds_bucket{code="200",method="GET",url="/about",le="2"} 1
-consulate_request_duration_seconds_bucket{code="200",method="GET",url="/about",le="3"} 1
-...
+># HELP consulate_request_duration_seconds The HTTP request latencies in seconds.
+># TYPE consulate_request_duration_seconds histogram
+>consulate_request_duration_seconds_bucket{code="200",method="GET",url="/about",le="0.5"} 1
+>consulate_request_duration_seconds_bucket{code="200",method="GET",url="/about",le="1"} 1
+>consulate_request_duration_seconds_bucket{code="200",method="GET",url="/about",le="2"} 1
+>consulate_request_duration_seconds_bucket{code="200",method="GET",url="/about",le="3"} 1
+>...
 >```
 
 ---
@@ -124,56 +124,58 @@ consulate_request_duration_seconds_bucket{code="200",method="GET",url="/about",l
 >##### Request
 >
 >```bash
-curl -X GET http:/localhost:8080/verify/checks\?pretty
+>curl -X GET http:/localhost:8080/verify/checks\?pretty
 >```
 >
 >##### Responses
 >> ###### Healthy
 >>```
-HTTP/1.1 500 Internal Server Error
-Content-Type: application/json; charset=utf-8
-...
+>>HTTP/1.1 200 OK
+>>Content-Type: application/json; charset=utf-8
+>>...
 >>```
 >>```json
-{
-  "Status": "Ok"
-}
+>>{
+>>  "Status": "Ok"
+>>}
 >>```
 
 > &nbsp;
 
 >>##### Unhealthy
 >>```
+>>HTTP/1.1 500 Internal Server Error
+>>Content-Type: application/json; charset=utf-8
 >>```
 >>```json
-{
-    "Status": "Failed",
-    "Checks": {
-        "check1b": {
-            "Node": "ensadmins-MacBook-Pro.local",
-            "CheckID": "check1b",
-            "Name": "check 1",
-            "Status": "critical",
-            "Notes": "Check 1",
-            "Output": "Timed out (1s) running check",
-            "ServiceID": "service2",
-            "ServiceName": "service2",
-            "ServiceTags": [],
-            "Definition": {
-                "HTTP": "",
-                "Header": null,
-                "Method": "",
-                "TLSSkipVerify": false,
-                "TCP": "",
-                "Interval": 0,
-                "Timeout": 0,
-                "DeregisterCriticalServiceAfter": 0
-            },
-            "CreateIndex": 0,
-            "ModifyIndex": 0
-        }
-    }
-}
+>>{
+>>    "Status": "Failed",
+>>    "Checks": {
+>>        "check1b": {
+>>            "Node": "ensadmins-MacBook-Pro.local",
+>>            "CheckID": "check1b",
+>>            "Name": "check 1",
+>>            "Status": "critical",
+>>            "Notes": "Check 1",
+>>            "Output": "Timed out (1s) running check",
+>>            "ServiceID": "service2",
+>>            "ServiceName": "service2",
+>>            "ServiceTags": [],
+>>            "Definition": {
+>>                "HTTP": "",
+>>                "Header": null,
+>>                "Method": "",
+>>                "TLSSkipVerify": false,
+>>                "TCP": "",
+>>                "Interval": 0,
+>>                "Timeout": 0,
+>>                "DeregisterCriticalServiceAfter": 0
+>>            },
+>>            "CreateIndex": 0,
+>>            "ModifyIndex": 0
+>>        }
+>>    }
+>>}
 >>```
 
 ---
@@ -185,59 +187,59 @@ Content-Type: application/json; charset=utf-8
 >##### Request
 >
 >```bash
-curl -X GET http:/localhost:8080/verify/checks/check%201\?pretty
+>curl -X GET http:/localhost:8080/verify/checks/check%201\?pretty
 >```
 >
 >##### Responses
 >> ###### Healthy
 >>```
-HTTP/1.1 200 OK
-Content-Type: application/json; charset=utf-8
-...
+>>HTTP/1.1 200 OK
+>>Content-Type: application/json; charset=utf-8
+>>...
 >>```
 >>```json
-{
-    "Status": "Ok"
-}
+>>{
+>>    "Status": "Ok"
+>>}
 >>```
 
 > &nbsp;
 
 >> ###### Unhealthy
 >>```
-HTTP/1.1 500 Internal Server Error
-Content-Type: application/json; charset=utf-8
-...
+>>HTTP/1.1 500 Internal Server Error
+>>Content-Type: application/json; charset=utf-8
+>>...
 >>```
 >>```json
-{
-    "Status": "Failed",
-    "Checks": {
-        "check1b": {
-            "Node": "ensadmins-MacBook-Pro.local",
-            "CheckID": "check1b",
-            "Name": "check 1",
-            "Status": "critical",
-            "Notes": "Check 1",
-            "Output": "Timed out (1s) running check",
-            "ServiceID": "service2",
-            "ServiceName": "service2",
-            "ServiceTags": [],
-            "Definition": {
-                "HTTP": "",
-                "Header": null,
-                "Method": "",
-                "TLSSkipVerify": false,
-                "TCP": "",
-                "Interval": 0,
-                "Timeout": 0,
-                "DeregisterCriticalServiceAfter": 0
-            },
-            "CreateIndex": 0,
-            "ModifyIndex": 0
-        }
-    }
-}
+>>{
+>>    "Status": "Failed",
+>>    "Checks": {
+>>        "check1b": {
+>>            "Node": "ensadmins-MacBook-Pro.local",
+>>            "CheckID": "check1b",
+>>            "Name": "check 1",
+>>            "Status": "critical",
+>>            "Notes": "Check 1",
+>>            "Output": "Timed out (1s) running check",
+>>            "ServiceID": "service2",
+>>            "ServiceName": "service2",
+>>            "ServiceTags": [],
+>>            "Definition": {
+>>                "HTTP": "",
+>>                "Header": null,
+>>                "Method": "",
+>>                "TLSSkipVerify": false,
+>>                "TCP": "",
+>>                "Interval": 0,
+>>                "Timeout": 0,
+>>                "DeregisterCriticalServiceAfter": 0
+>>            },
+>>            "CreateIndex": 0,
+>>            "ModifyIndex": 0
+>>        }
+>>    }
+>>}
 >>```
 
 ---
@@ -249,15 +251,15 @@ Content-Type: application/json; charset=utf-8
 >##### Request
 >
 >```bash
-curl -X GET http:/localhost:8080/verify/service/test
+>curl -X GET http:/localhost:8080/verify/service/test
 >```
 >
 >##### Responses
 >> ###### Healthy
 >>```
-HTTP/1.1 200 OK
-Content-Type: application/json; charset=utf-8
-...
+>>HTTP/1.1 200 OK
+>>Content-Type: application/json; charset=utf-8
+>>...
 >>```
 >>```json
 {
