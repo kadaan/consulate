@@ -84,6 +84,7 @@ function download_binaries() {
       download_binary url=$url || fatal "failed to download binary '$binary' from $url: $?"
     fi
   done
+  export PATH=$PATH:$BINARY_DIR
 }
 
 function run() {
