@@ -49,6 +49,13 @@ function run() {
     done <<< "$gofiles"
   fi
 
+  echo "Vetting source..."
+  if [[ ${#gofiles[@]} -gt 0 ]]; then
+    while read -r gofile; do
+        go vet $PWD/$gofile
+    done <<< "$gofiles"
+  fi
+
   echo "Linting source..."
    if [ ! -x "$(command -v gox)" ]; then
     echo "Getting golint..."
