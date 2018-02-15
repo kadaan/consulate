@@ -32,7 +32,7 @@ const (
 
 type Result struct {
 	Status ResultStatus
-	Detail string `json:",omitempty"`
+	Detail string            `json:",omitempty"`
 	Checks map[string]*Check `json:",omitempty"`
 }
 

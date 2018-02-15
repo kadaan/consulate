@@ -27,6 +27,13 @@ run() {
     echo "Getting gox..."
     go get github.com/mitchellh/gox
   fi
+  echo "Formatting source..."
+  local gofiles=$(find . -path ./vendor -prune -o -print | grep '\.go$')
+  if [[ ${#gofiles[@]} -gt 0 ]]; then
+    while read -r gofile; do
+        gofmt -w $PWD/$gofile
+    done <<< "$gofiles"
+  fi
   echo "Building binaries..."
   local revision=`git rev-parse HEAD`
   local branch=`git rev-parse --abbrev-ref HEAD`

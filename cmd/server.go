@@ -29,8 +29,8 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
-	"time"
 	"strings"
+	"time"
 )
 
 const (
@@ -68,18 +68,16 @@ var (
 	queryIdleConnectionTimeout  time.Duration
 	shutdownTimeout             time.Duration
 
-
 	requestDurationBuckets = []float64{0.5, 1, 2, 3, 5, 10}
 	requestSizeBuckets     = []float64{128, 256, 512, 1024}
 	responseSizeBuckets    = []float64{512, 2048, 8196, 32784}
 
-
 	httpClient = createClient()
 	jsonApi    = createJsonAPI()
-    serverCmd  = &cobra.Command{
+	serverCmd  = &cobra.Command{
 		Use:   "server",
 		Short: "Runs the Consulate server",
-		Long: `Starts the Consulate server and runs until an interrupt is received.`,
+		Long:  `Starts the Consulate server and runs until an interrupt is received.`,
 		Run: func(cmd *cobra.Command, args []string) {
 			serve()
 		},
@@ -95,17 +93,17 @@ func init() {
 	viper.BindPFlag(ListenAddressKey, serverCmd.Flags().Lookup(ListenAddressKey))
 	serverCmd.Flags().StringVarP(&consulAddress, ConsulAddressKey, "c", "localhost:8500", "the Consul HTTP API address to query against")
 	viper.BindPFlag(ConsulAddressKey, serverCmd.Flags().Lookup(ConsulAddressKey))
-	serverCmd.Flags().DurationVar(&readTimeout, ReadTimeoutKey, 10 * time.Second, "the maximum duration for reading the entire request")
+	serverCmd.Flags().DurationVar(&readTimeout, ReadTimeoutKey, 10*time.Second, "the maximum duration for reading the entire request")
 	viper.BindPFlag(ReadTimeoutKey, serverCmd.Flags().Lookup(ReadTimeoutKey))
-	serverCmd.Flags().DurationVar(&writeTimeout, WriteTimeoutKey, 10 * time.Second, "the maximum duration before timing out writes of the response")
+	serverCmd.Flags().DurationVar(&writeTimeout, WriteTimeoutKey, 10*time.Second, "the maximum duration before timing out writes of the response")
 	viper.BindPFlag(WriteTimeoutKey, serverCmd.Flags().Lookup(WriteTimeoutKey))
-	serverCmd.Flags().DurationVar(&queryTimeout, QueryTimeoutKey, 5 * time.Second, "the maximum duration before timing out the Consul HTTP API query")
+	serverCmd.Flags().DurationVar(&queryTimeout, QueryTimeoutKey, 5*time.Second, "the maximum duration before timing out the Consul HTTP API query")
 	viper.BindPFlag(QueryTimeoutKey, serverCmd.Flags().Lookup(QueryTimeoutKey))
 	serverCmd.Flags().IntVar(&queryMaxIdleConnectionCount, QueryMaxIdleConnectionCountKey, 100, "the maximum number of idle (keep-alive) Consul HTTP API query connections")
 	viper.BindPFlag(QueryMaxIdleConnectionCountKey, serverCmd.Flags().Lookup(QueryMaxIdleConnectionCountKey))
-	serverCmd.Flags().DurationVar(&queryIdleConnectionTimeout, QueryIdleConnectionTimeoutKey, 90 * time.Second, "is the maximum amount of time an idle (keep-alive) Consul HTTP API query connection will remain idle before closing itself")
+	serverCmd.Flags().DurationVar(&queryIdleConnectionTimeout, QueryIdleConnectionTimeoutKey, 90*time.Second, "is the maximum amount of time an idle (keep-alive) Consul HTTP API query connection will remain idle before closing itself")
 	viper.BindPFlag(QueryIdleConnectionTimeoutKey, serverCmd.Flags().Lookup(QueryIdleConnectionTimeoutKey))
-	serverCmd.Flags().DurationVar(&shutdownTimeout, ShutdownTimeoutKey, 15 * time.Second, "the maximum duration before timing out the shutdown of the server")
+	serverCmd.Flags().DurationVar(&shutdownTimeout, ShutdownTimeoutKey, 15*time.Second, "the maximum duration before timing out the shutdown of the server")
 	viper.BindPFlag(ShutdownTimeoutKey, serverCmd.Flags().Lookup(ShutdownTimeoutKey))
 }
 
@@ -168,7 +166,7 @@ func createClient() *http.Client {
 
 	client := &http.Client{
 		Transport: transport,
-		Timeout: queryTimeout,
+		Timeout:   queryTimeout,
 	}
 	return client
 }
@@ -178,10 +176,10 @@ func createJsonAPI() jsoniter.API {
 }
 
 func startServer(router *gin.Engine) *http.Server {
-	srv := &http.Server {
-		Addr: listenAddress,
-		Handler: router,
-		ReadTimeout: readTimeout,
+	srv := &http.Server{
+		Addr:         listenAddress,
+		Handler:      router,
+		ReadTimeout:  readTimeout,
 		WriteTimeout: writeTimeout,
 	}
 	go func() {
@@ -223,19 +221,19 @@ type checkHandler func(allChecks *map[string]*checks.Check)
 type checkMatcher func(check *checks.Check) bool
 
 func verifyAllChecks(context *gin.Context) {
-	matcher := func(check *checks.Check) bool {return true}
+	matcher := func(check *checks.Check) bool { return true }
 	verifyChecks(context, matcher)
 }
 
 func verifyCheck(context *gin.Context) {
 	checkName := context.Param(VerifyCheckParamKey)
-	matcher := func(check *checks.Check) bool {return check.IsCheck(checkName)}
+	matcher := func(check *checks.Check) bool { return check.IsCheck(checkName) }
 	verifyChecks(context, matcher)
 }
 
 func verifyService(context *gin.Context) {
 	service := context.Param(VerifyServiceParamKey)
-	matcher := func(check *checks.Check) bool {return check.IsService(service)}
+	matcher := func(check *checks.Check) bool { return check.IsService(service) }
 	verifyChecks(context, matcher)
 }
 

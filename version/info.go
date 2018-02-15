@@ -46,7 +46,6 @@ Consulate, version {{.version}} (branch: {{.branch}}, revision: {{.revision}})
   go version:       {{.goVersion}}
 `
 
-
 func Print() string {
 	m := map[string]string{
 		"version":   Version,
@@ -67,7 +66,7 @@ func Print() string {
 
 func NewInfo() info {
 	return info{
-		Version: Version,
+		Version:   Version,
 		Revision:  Revision,
 		Branch:    Branch,
 		BuildUser: BuildUser,
