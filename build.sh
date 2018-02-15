@@ -14,77 +14,107 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-VERSION=0.0.1
 
+BUILD_DIR="$(cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd)"
+BINARY_DIR="$BUILD_DIR/.bin"
+VERSION=$(cat $BUILD_DIR/.version)
+
+function verbose() { echo -e "$*"; }
+function error() { echo -e "ERROR: $*" 1>&2; }
 function fatal() { echo -e "ERROR: $*" 1>&2; exit 1; }
+function pushd () { command pushd "$@" > /dev/null; }
+function popd () { command popd > /dev/null; }
+
+function trap_add() {
+  localtrap_add_cmd=$1; shift || fatal "${FUNCNAME} usage error"
+  for trap_add_name in "$@"; do
+    trap -- "$(
+      extract_trap_cmd() { printf '%s\n' "$3"; }
+      eval "extract_trap_cmd $(trap -p "${trap_add_name}")"
+      printf '%s\n' "${trap_add_cmd}"
+    )" "${trap_add_name}" || fatal "unable to add to trap ${trap_add_name}"
+  done
+}
+declare -f -t trap_add
+
+function get_platform() {
+  unameOut="$(uname -s)"
+  case "${unameOut}" in
+    Linux*)
+      echo "linux"
+    ;;
+    Darwin*)
+      echo "darwin"
+    ;;
+    *)
+      echo "Unsupported machine type :${unameOut}"
+      exit 1
+    ;;
+  esac
+}
+
+PLATFORM=$(get_platform)
+DEP=$BINARY_DIR/dep-$PLATFORM-amd64
+GOMETALINTER=$BINARY_DIR/gometalinter
+BINARY_DEPENDENCIES="$DEP,https://github.com/golang/dep/releases/download/v0.4.1/dep-$PLATFORM-amd64;$GOMETALINTER,https://github.com/alecthomas/gometalinter/releases/download/v2.0.4/gometalinter-2.0.4-$PLATFORM-amd64.tar.gz"
+
+function download_binary() {
+  local url
+  local "$@"
+  local tmpdir=`mktemp -d`
+  trap_add "rm -rf $tmpdir" EXIT
+  pushd $tmpdir
+  curl -L -s -O $url
+  for i in *.tar.gz; do
+    [ "$i" = "*.tar.gz" ] && continue
+    tar xzvf "$i" -C $tmpdir --strip-components 1 && rm -r "$i"
+  done
+  chmod +x $tmpdir/*
+  popd
+  mkdir -p $BINARY_DIR
+  cp $tmpdir/* $BINARY_DIR/
+}
+
+function download_binaries() {
+  for i in ${BINARY_DEPENDENCIES//;/ }; do
+    binary=$(echo "$i" | awk -F',' '{print $1}')
+    url=$(echo "$i" | awk -F',' '{print $2}')
+    if [ ! -f "$binary" ]; then
+      verbose "   --> $binary"
+      download_binary url=$url || fatal "failed to download binary '$binary' from $url: $?"
+    fi
+  done
+}
 
 function run() {
-  if [ ! -f $GOPATH/bin/dep ]; then
-      unameOut="$(uname -s)"
-      case "${unameOut}" in
-        Linux*)
-          echo "Getting dep..."
-          curl -L -s https://github.com/golang/dep/releases/download/v0.4.1/dep-linux-amd64 -o $GOPATH/bin/dep
-        ;;
-        Darwin*)
-          echo "Getting dep..."
-          curl -L -s https://github.com/golang/dep/releases/download/v0.4.1/dep-darwin-amd64 -o $GOPATH/bin/dep
-        ;;
-        *)
-          echo "Unsupported machine type :${unameOut}"
-          exit 1
-        ;;
-      esac
-      chmod +x $GOPATH/bin/dep
-  fi
-  echo "Retrieving dependencies..."
-  dep ensure || fatal "dep ensure failed : $?"
+  verbose "Fetching binaries..."
+  download_binaries
+
+  verbose "Updating dependencies..."
+  $DEP ensure || fatal "dep ensure failed : $?"
 
   local gofiles=$(find . -path ./vendor -prune -o -print | grep '\.go$')
 
-  echo "Formatting source..."
+  verbose "Formatting source..."
   if [[ ${#gofiles[@]} -gt 0 ]]; then
     while read -r gofile; do
         gofmt -w $PWD/$gofile
     done <<< "$gofiles"
   fi
 
-  echo "Vetting source..."
-  if [[ ${#gofiles[@]} -gt 0 ]]; then
-    while read -r gofile; do
-        go vet $PWD/$gofile
-    done <<< "$gofiles"
-  fi
+  verbose "Linting source..."
+  $GOMETALINTER --min-confidence=.85 --disable=gotype --fast --exclude=vendor --vendor || fatal "gometalinter failed: $?"
 
-  echo "Linting source..."
-   if [ ! -x "$(command -v gox)" ]; then
-    echo "Getting golint..."
-    go get github.com/golang/lint/golint || fatal "go get 'github.com/golang/lint/golint' failed : $?"
-  fi
-  local lint_failure=false
-  if [[ ${#gofiles[@]} -gt 0 ]]; then
-    while read -r gofile; do
-        golint -min_confidence=0.85 -set_exit_status $PWD/$gofile
-         if [[ $? -gt 0 ]]; then
-            lint_failure=true
-        fi
-    done <<< "$gofiles"
-  fi
-  if [[ "$lint_failure" == true ]]; then
-    fatal "golint failed"
-  fi
-
-  echo "Checking licenses..."
+  verbose "Checking licenses..."
   licRes=$(
   for file in $(find . -type f -iname '*.go' ! -path './vendor/*'); do
-    head -n3 "${file}" | grep -Eq "(Copyright|generated|GENERATED)" || echo -e "  ${file}"
+    head -n3 "${file}" | grep -Eq "(Copyright|generated|GENERATED)" || error "  Missing license in: ${file}"
   done;)
   if [ -n "${licRes}" ]; then
-  	echo -e "license header checking failed:\n${licRes}"
-  	exit 1
+  	fatal "license header checking failed:\n${licRes}"
   fi
 
-  echo "Building binaries..."
+  verbose "Building binaries..."
   local revision=`git rev-parse HEAD`
   local branch=`git rev-parse --abbrev-ref HEAD`
   local host=`hostname`
@@ -94,8 +124,6 @@ function run() {
     go get github.com/mitchellh/gox || fatal "go get 'github.com/mitchellh/gox' failed: $?"
   fi
   gox -ldflags "-X github.com/kadaan/consulate/version.Version=$VERSION -X github.com/kadaan/consulate/version.Revision=$revision -X github.com/kadaan/consulate/version.Branch=$branch -X github.com/kadaan/consulate/version.BuildUser=$USER@$host -X github.com/kadaan/consulate/version.BuildDate=$buildDate" -output="dist/{{.Dir}}_{{.OS}}_{{.Arch}}"  || fatal "gox failed: $?"
-  echo ""
-  echo "done"
 }
 
 run "$@"

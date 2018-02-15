@@ -59,17 +59,17 @@ type Check struct {
 	ModifyIndex uint64
 }
 
-// IsHealthy returns True if the specified Check has a Status of Passing.
+// IsHealthy returns True if the Check has a Status of Passing.
 func (c *Check) IsHealthy() bool {
 	return c.Status == healthPassing
 }
 
-// IsService returns True if the specified Check ServiceId/Name matches the specified service.
+// IsService returns True if the Check ServiceId/Name matches the specified service.
 func (c *Check) IsService(service string) bool {
 	return service == c.ServiceName || service == c.ServiceID
 }
 
-// IsCheck returns True if the specified Check CheckID/Name matches the specified check.
+// IsCheck returns True if the Check CheckID/Name matches the specified check.
 func (c *Check) IsCheck(check string) bool {
 	return check == c.Name || check == c.CheckID
 }
