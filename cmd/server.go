@@ -34,27 +34,27 @@ import (
 )
 
 const (
-	VerboseKey                     = "verbose"
-	ListenAddressKey               = "listen-address"
-	ConsulAddressKey               = "consul-address"
-	ReadTimeoutKey                 = "read-timeout"
-	WriteTimeoutKey                = "write-timeout"
-	QueryTimeoutKey                = "query-timeout"
-	QueryMaxIdleConnectionCountKey = "query-max-idle-connection-count"
-	QueryIdleConnectionTimeoutKey  = "query-idle-connection-timeout"
-	ShutdownTimeoutKey             = "shutdown-timeout"
-	ConsulChecksUrl                = "http://%s/v1/agent/checks"
-	VerifyCheckParamKey            = "check"
-	VerifyCheckParamTag            = ":" + VerifyCheckParamKey
-	VerifyServiceParamKey          = "service"
-	VerifyServiceParamTag          = ":" + VerifyServiceParamKey
-	PrettyQueryStringKey           = "pretty"
-	VerboseQueryStringKey          = "verbose"
-	AboutRoute                     = "/about"
-	HealthRoute                    = "/health"
-	VerifyAllChecksRoute           = "/verify/checks"
-	VerifySpecificCheckRoute       = VerifyAllChecksRoute + "/" + VerifyCheckParamTag
-	VerifySpecificServiceRoute     = "/verify/service/" + VerifyServiceParamTag
+	verboseKey                     = "verbose"
+	listenAddressKey               = "listen-address"
+	consulAddressKey               = "consul-address"
+	readTimeoutKey                 = "read-timeout"
+	writeTimeoutKey                = "write-timeout"
+	queryTimeoutKey                = "query-timeout"
+	queryMaxIdleConnectionCountKey = "query-max-idle-connection-count"
+	queryIdleConnectionTimeoutKey  = "query-idle-connection-timeout"
+	shutdownTimeoutKey             = "shutdown-timeout"
+	consulChecksUrl                = "http://%s/v1/agent/checks"
+	verifyCheckParamKey            = "check"
+	verifyCheckParamTag            = ":" + verifyCheckParamKey
+	verifyServiceParamKey          = "service"
+	verifyServiceParamTag          = ":" + verifyServiceParamKey
+	prettyQueryStringKey           = "pretty"
+	verboseQueryStringKey          = "verbose"
+	aboutRoute                     = "/about"
+	healthRoute                    = "/health"
+	verifyAllChecksRoute           = "/verify/checks"
+	verifySpecificCheckRoute       = verifyAllChecksRoute + "/" + verifyCheckParamTag
+	verifySpecificServiceRoute     = "/verify/service/" + verifyServiceParamTag
 )
 
 var (
@@ -87,24 +87,24 @@ var (
 func init() {
 	rootCmd.AddCommand(serverCmd)
 
-	serverCmd.Flags().BoolVarP(&verbose, VerboseKey, "v", false, "enable verbose logging")
-	viper.BindPFlag(VerboseKey, serverCmd.Flags().Lookup(VerboseKey))
-	serverCmd.Flags().StringVarP(&listenAddress, ListenAddressKey, "l", ":8080", "the listen address")
-	viper.BindPFlag(ListenAddressKey, serverCmd.Flags().Lookup(ListenAddressKey))
-	serverCmd.Flags().StringVarP(&consulAddress, ConsulAddressKey, "c", "localhost:8500", "the Consul HTTP API address to query against")
-	viper.BindPFlag(ConsulAddressKey, serverCmd.Flags().Lookup(ConsulAddressKey))
-	serverCmd.Flags().DurationVar(&readTimeout, ReadTimeoutKey, 10*time.Second, "the maximum duration for reading the entire request")
-	viper.BindPFlag(ReadTimeoutKey, serverCmd.Flags().Lookup(ReadTimeoutKey))
-	serverCmd.Flags().DurationVar(&writeTimeout, WriteTimeoutKey, 10*time.Second, "the maximum duration before timing out writes of the response")
-	viper.BindPFlag(WriteTimeoutKey, serverCmd.Flags().Lookup(WriteTimeoutKey))
-	serverCmd.Flags().DurationVar(&queryTimeout, QueryTimeoutKey, 5*time.Second, "the maximum duration before timing out the Consul HTTP API query")
-	viper.BindPFlag(QueryTimeoutKey, serverCmd.Flags().Lookup(QueryTimeoutKey))
-	serverCmd.Flags().IntVar(&queryMaxIdleConnectionCount, QueryMaxIdleConnectionCountKey, 100, "the maximum number of idle (keep-alive) Consul HTTP API query connections")
-	viper.BindPFlag(QueryMaxIdleConnectionCountKey, serverCmd.Flags().Lookup(QueryMaxIdleConnectionCountKey))
-	serverCmd.Flags().DurationVar(&queryIdleConnectionTimeout, QueryIdleConnectionTimeoutKey, 90*time.Second, "is the maximum amount of time an idle (keep-alive) Consul HTTP API query connection will remain idle before closing itself")
-	viper.BindPFlag(QueryIdleConnectionTimeoutKey, serverCmd.Flags().Lookup(QueryIdleConnectionTimeoutKey))
-	serverCmd.Flags().DurationVar(&shutdownTimeout, ShutdownTimeoutKey, 15*time.Second, "the maximum duration before timing out the shutdown of the server")
-	viper.BindPFlag(ShutdownTimeoutKey, serverCmd.Flags().Lookup(ShutdownTimeoutKey))
+	serverCmd.Flags().BoolVarP(&verbose, verboseKey, "v", false, "enable verbose logging")
+	viper.BindPFlag(verboseKey, serverCmd.Flags().Lookup(verboseKey))
+	serverCmd.Flags().StringVarP(&listenAddress, listenAddressKey, "l", ":8080", "the listen address")
+	viper.BindPFlag(listenAddressKey, serverCmd.Flags().Lookup(listenAddressKey))
+	serverCmd.Flags().StringVarP(&consulAddress, consulAddressKey, "c", "localhost:8500", "the Consul HTTP API address to query against")
+	viper.BindPFlag(consulAddressKey, serverCmd.Flags().Lookup(consulAddressKey))
+	serverCmd.Flags().DurationVar(&readTimeout, readTimeoutKey, 10*time.Second, "the maximum duration for reading the entire request")
+	viper.BindPFlag(readTimeoutKey, serverCmd.Flags().Lookup(readTimeoutKey))
+	serverCmd.Flags().DurationVar(&writeTimeout, writeTimeoutKey, 10*time.Second, "the maximum duration before timing out writes of the response")
+	viper.BindPFlag(writeTimeoutKey, serverCmd.Flags().Lookup(writeTimeoutKey))
+	serverCmd.Flags().DurationVar(&queryTimeout, queryTimeoutKey, 5*time.Second, "the maximum duration before timing out the Consul HTTP API query")
+	viper.BindPFlag(queryTimeoutKey, serverCmd.Flags().Lookup(queryTimeoutKey))
+	serverCmd.Flags().IntVar(&queryMaxIdleConnectionCount, queryMaxIdleConnectionCountKey, 100, "the maximum number of idle (keep-alive) Consul HTTP API query connections")
+	viper.BindPFlag(queryMaxIdleConnectionCountKey, serverCmd.Flags().Lookup(queryMaxIdleConnectionCountKey))
+	serverCmd.Flags().DurationVar(&queryIdleConnectionTimeout, queryIdleConnectionTimeoutKey, 90*time.Second, "is the maximum amount of time an idle (keep-alive) Consul HTTP API query connection will remain idle before closing itself")
+	viper.BindPFlag(queryIdleConnectionTimeoutKey, serverCmd.Flags().Lookup(queryIdleConnectionTimeoutKey))
+	serverCmd.Flags().DurationVar(&shutdownTimeout, shutdownTimeoutKey, 15*time.Second, "the maximum duration before timing out the shutdown of the server")
+	viper.BindPFlag(shutdownTimeoutKey, serverCmd.Flags().Lookup(shutdownTimeoutKey))
 }
 
 func serve() {
@@ -133,11 +133,11 @@ func createRouter() *gin.Engine {
 	router.Use(gin.Logger())
 	router.Use(gin.Recovery())
 	attachPrometheusMiddleware(router)
-	router.GET(AboutRoute, about)
-	router.GET(HealthRoute, health)
-	router.GET(VerifyAllChecksRoute, verifyAllChecks)
-	router.GET(VerifySpecificCheckRoute, verifyCheck)
-	router.GET(VerifySpecificServiceRoute, verifyService)
+	router.GET(aboutRoute, about)
+	router.GET(healthRoute, health)
+	router.GET(verifyAllChecksRoute, verifyAllChecks)
+	router.GET(verifySpecificCheckRoute, verifyCheck)
+	router.GET(verifySpecificServiceRoute, verifyService)
 	return router
 }
 
@@ -146,11 +146,11 @@ func attachPrometheusMiddleware(engine *gin.Engine) {
 	prometheusMiddleware.ReqCntURLLabelMappingFn = func(c *gin.Context) string {
 		url := c.Request.URL.Path
 		for _, param := range c.Params {
-			if param.Key == VerifyCheckParamKey {
-				url = strings.Replace(url, param.Value, VerifyCheckParamTag, 1)
+			if param.Key == verifyCheckParamKey {
+				url = strings.Replace(url, param.Value, verifyCheckParamTag, 1)
 				break
-			} else if param.Key == VerifyServiceParamKey {
-				url = strings.Replace(url, param.Value, VerifyServiceParamTag, 1)
+			} else if param.Key == verifyServiceParamKey {
+				url = strings.Replace(url, param.Value, verifyServiceParamTag, 1)
 				break
 			}
 		}
@@ -193,7 +193,7 @@ func startServer(router *gin.Engine) *http.Server {
 }
 
 func json(context *gin.Context, code int, obj interface{}) {
-	_, ok := context.GetQuery(PrettyQueryStringKey)
+	_, ok := context.GetQuery(prettyQueryStringKey)
 	if ok {
 		context.IndentedJSON(code, obj)
 	} else {
@@ -212,7 +212,7 @@ func about(context *gin.Context) {
 
 func health(context *gin.Context) {
 	processChecks(context, func(allChecks *map[string]*checks.Check) {
-		json(context, http.StatusOK, checks.Result{Status: checks.OK})
+		json(context, http.StatusOK, checks.Result{Status: checks.Ok})
 	})
 }
 
@@ -226,20 +226,20 @@ func verifyAllChecks(context *gin.Context) {
 }
 
 func verifyCheck(context *gin.Context) {
-	checkName := context.Param(VerifyCheckParamKey)
+	checkName := context.Param(verifyCheckParamKey)
 	matcher := func(check *checks.Check) bool { return check.IsCheck(checkName) }
 	verifyChecks(context, matcher)
 }
 
 func verifyService(context *gin.Context) {
-	service := context.Param(VerifyServiceParamKey)
+	service := context.Param(verifyServiceParamKey)
 	matcher := func(check *checks.Check) bool { return check.IsService(service) }
 	verifyChecks(context, matcher)
 }
 
 func verifyChecks(context *gin.Context, match checkMatcher) {
 	processChecks(context, func(allChecks *map[string]*checks.Check) {
-		_, isVerbose := context.GetQuery(VerboseQueryStringKey)
+		_, isVerbose := context.GetQuery(verboseQueryStringKey)
 		var checkCount = 0
 		var failedCount = false
 		var matchedChecks map[string]*checks.Check
@@ -260,13 +260,13 @@ func verifyChecks(context *gin.Context, match checkMatcher) {
 		} else if checkCount == 0 {
 			abortWithStatusJSON(context, http.StatusNotFound, checks.Result{Status: checks.NoChecks})
 		} else {
-			json(context, http.StatusOK, checks.Result{Status: checks.OK, Checks: matchedChecks})
+			json(context, http.StatusOK, checks.Result{Status: checks.Ok, Checks: matchedChecks})
 		}
 	})
 }
 
 func processChecks(context *gin.Context, handler checkHandler) {
-	target := fmt.Sprintf(ConsulChecksUrl, consulAddress)
+	target := fmt.Sprintf(consulChecksUrl, consulAddress)
 	resp, err := httpClient.Get(target)
 	if resp != nil && resp.Body != nil {
 		defer resp.Body.Close()

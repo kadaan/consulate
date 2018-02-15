@@ -22,12 +22,21 @@ import (
 )
 
 var (
-	Version   string
-	Revision  string
-	Branch    string
+	// Version is the version number of Consulate.
+	Version string
+
+	// Revision is the git revision that Consulate was built from.
+	Revision string
+
+	// Branch is the git branch that Consulate was built from.
+	Branch string
+
+	// BuildUser is the user that built Consulate.
 	BuildUser string
+
+	// BuildDate is the date that Consulate was built.
 	BuildDate string
-	GoVersion = runtime.Version()
+	goVersion = runtime.Version()
 )
 
 type info struct {
@@ -46,6 +55,7 @@ Consulate, version {{.version}} (branch: {{.branch}}, revision: {{.revision}})
   go version:       {{.goVersion}}
 `
 
+// Print formats the version info as a string.
 func Print() string {
 	m := map[string]string{
 		"version":   Version,
@@ -53,7 +63,7 @@ func Print() string {
 		"branch":    Branch,
 		"buildUser": BuildUser,
 		"buildDate": BuildDate,
-		"goVersion": GoVersion,
+		"goVersion": goVersion,
 	}
 	t := template.Must(template.New("version").Parse(versionInfoTmpl))
 
@@ -64,6 +74,7 @@ func Print() string {
 	return strings.TrimSpace(buf.String())
 }
 
+// NewInfo creates a new version info object.
 func NewInfo() info {
 	return info{
 		Version:   Version,
@@ -71,6 +82,6 @@ func NewInfo() info {
 		Branch:    Branch,
 		BuildUser: BuildUser,
 		BuildDate: BuildDate,
-		GoVersion: GoVersion,
+		GoVersion: goVersion,
 	}
 }

@@ -19,23 +19,31 @@ import (
 )
 
 const (
-	HealthPassing = "passing"
+	healthPassing = "passing"
 )
 
+// ResultStatus represents the status of a Consulate call.
 type ResultStatus string
 
 const (
-	OK       ResultStatus = "Ok"
-	Failed   ResultStatus = "Failed"
+	// Ok represents a successful call to Consulate.
+	Ok ResultStatus = "Ok"
+
+	// Failed represents a failed call to Consulate.
+	Failed ResultStatus = "Failed"
+
+	// NoChecks represents verify check call to Consulate which had no checks to verify.
 	NoChecks ResultStatus = "No Checks"
 )
 
+// Result represents the result of a Consulate call.
 type Result struct {
 	Status ResultStatus
 	Detail string            `json:",omitempty"`
 	Checks map[string]*Check `json:",omitempty"`
 }
 
+// Check the result of a Consul check.
 type Check struct {
 	Node        string
 	CheckID     string
@@ -51,18 +59,22 @@ type Check struct {
 	ModifyIndex uint64
 }
 
+// IsHealthy returns True if the specified Check has a Status of Passing.
 func (c *Check) IsHealthy() bool {
-	return c.Status == HealthPassing
+	return c.Status == healthPassing
 }
 
+// IsService returns True if the specified Check ServiceId/Name matches the specified service.
 func (c *Check) IsService(service string) bool {
 	return service == c.ServiceName || service == c.ServiceID
 }
 
+// IsCheck returns True if the specified Check CheckID/Name matches the specified check.
 func (c *Check) IsCheck(check string) bool {
 	return check == c.Name || check == c.CheckID
 }
 
+// CheckDefinition represents the configuration of a Consul check.
 type CheckDefinition struct {
 	HTTP                           string
 	Header                         map[string][]string
