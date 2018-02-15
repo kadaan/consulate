@@ -76,8 +76,6 @@ All routes accept the following query string parameters:
 >>}
 >>```
 
-> &nbsp;
-
 >>###### Unhealthy
 >>```
 >>HTTP/1.1 503 Service Unavailable
@@ -140,8 +138,6 @@ All routes accept the following query string parameters:
 >>}
 >>```
 
-> &nbsp;
-
 >>##### Unhealthy
 >>```
 >>HTTP/1.1 500 Internal Server Error
@@ -203,8 +199,6 @@ All routes accept the following query string parameters:
 >>}
 >>```
 
-> &nbsp;
-
 >> ###### Unhealthy
 >>```
 >>HTTP/1.1 500 Internal Server Error
@@ -262,49 +256,47 @@ All routes accept the following query string parameters:
 >>...
 >>```
 >>```json
-{
-    "Status": "Ok"
-}
+>>{
+>>    "Status": "Ok"
+>>}
 >>```
-
-> &nbsp;
 
 >> ###### Unhealthy
 >>```
-HTTP/1.1 500 Internal Server Error
-Content-Type: application/json; charset=utf-8
-...
+>>HTTP/1.1 500 Internal Server Error
+>>Content-Type: application/json; charset=utf-8
+>>...
 >>```
 >>```json
-{
-    "Status": "Failed",
-    "Checks": {
-        "check1b": {
-            "Node": "ensadmins-MacBook-Pro.local",
-            "CheckID": "check1b",
-            "Name": "check 1",
-            "Status": "critical",
-            "Notes": "Check 1",
-            "Output": "Timed out (1s) running check",
-            "ServiceID": "service2",
-            "ServiceName": "service2",
-            "ServiceTags": [],
-            "Definition": {
-                "HTTP": "",
-                "Header": null,
-                "Method": "",
-                "TLSSkipVerify": false,
-                "TCP": "",
-                "Interval": 0,
-                "Timeout": 0,
-                "DeregisterCriticalServiceAfter": 0
-            },
-            "CreateIndex": 0,
-            "ModifyIndex": 0
-        }
-    }
-}
->```
+>>{
+>>    "Status": "Failed",
+>>    "Checks": {
+>>        "check1b": {
+>>            "Node": "ensadmins-MacBook-Pro.local",
+>>            "CheckID": "check1b",
+>>            "Name": "check 1",
+>>            "Status": "critical",
+>>            "Notes": "Check 1",
+>>            "Output": "Timed out (1s) running check",
+>>            "ServiceID": "service2",
+>>            "ServiceName": "service2",
+>>            "ServiceTags": [],
+>>            "Definition": {
+>>                "HTTP": "",
+>>                "Header": null,
+>>                "Method": "",
+>>                "TLSSkipVerify": false,
+>>                "TCP": "",
+>>                "Interval": 0,
+>>                "Timeout": 0,
+>>                "DeregisterCriticalServiceAfter": 0
+>>            },
+>>            "CreateIndex": 0,
+>>            "ModifyIndex": 0
+>>        }
+>>    }
+>>}
+>>```
 
 ## License
 
