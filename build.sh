@@ -98,7 +98,7 @@ function run() {
   verbose "Formatting source..."
   if [[ ${#gofiles[@]} -gt 0 ]]; then
     while read -r gofile; do
-        gofmt -w $PWD/$gofile
+        gofmt -s -w $PWD/$gofile
     done <<< "$gofiles"
   fi
 
