@@ -55,44 +55,75 @@ function get_platform() {
 
 PLATFORM=$(get_platform)
 DEP=$BINARY_DIR/dep-$PLATFORM-amd64
+DEP_URL="https://github.com/golang/dep/releases/download/v0.4.1/dep-$PLATFORM-amd64"
 GOMETALINTER=$BINARY_DIR/gometalinter
-BINARY_DEPENDENCIES="$DEP,https://github.com/golang/dep/releases/download/v0.4.1/dep-$PLATFORM-amd64;$GOMETALINTER,https://github.com/alecthomas/gometalinter/releases/download/v2.0.4/gometalinter-2.0.4-$PLATFORM-amd64.tar.gz"
+GOMETALINTER_URL="https://github.com/alecthomas/gometalinter/releases/download/v2.0.4/gometalinter-2.0.4-$PLATFORM-amd64.tar.gz"
+CONSUL=$BINARY_DIR/consul
+CONSUL_URL="https://releases.hashicorp.com/consul/1.0.6/consul_1.0.6_${PLATFORM}_amd64.zip"
 
-function download_binary() {
-  local url
-  local "$@"
-  local tmpdir=`mktemp -d`
-  trap_add "rm -rf $tmpdir" EXIT
-  pushd $tmpdir
-  curl -L -s -O $url
-  for i in *.tar.gz; do
-    [ "$i" = "*.tar.gz" ] && continue
-    tar xzvf "$i" -C $tmpdir --strip-components 1 && rm -r "$i"
-  done
-  chmod +x $tmpdir/*
-  popd
-  mkdir -p $BINARY_DIR
-  cp $tmpdir/* $BINARY_DIR/
+function download_dep() {
+  if [ ! -f "$DEP" ]; then
+    verbose "   --> $DEP"
+    local tmpdir=`mktemp -d`
+    trap_add "rm -rf $tmpdir" EXIT
+    pushd $tmpdir
+    curl -L -s -O $DEP_URL || fatal "failed to download '$DEP_URL': $?"
+    popd
+    chmod +x $tmpdir/*
+    mkdir -p $BINARY_DIR
+    cp $tmpdir/* $BINARY_DIR/
+  fi
+}
+
+function download_consul() {
+  if [ ! -f "$CONSUL" ]; then
+    verbose "   --> $CONSUL"
+    local tmpdir=`mktemp -d`
+    trap_add "rm -rf $tmpdir" EXIT
+    pushd $tmpdir
+    curl -L -s -O $CONSUL_URL || fatal "failed to download '$CONSUL_URL': $?"
+    for i in *.zip; do
+      [ "$i" = "*.zip" ] && continue
+      unzip "$i" && rm -r "$i"
+    done
+    popd
+    mkdir -p $BINARY_DIR
+    cp $tmpdir/* $BINARY_DIR/
+  fi
+}
+
+function download_gometalinter() {
+  if [ ! -f "$GOMETALINTER" ]; then
+    verbose "   --> $GOMETALINTER"
+    local tmpdir=`mktemp -d`
+    trap_add "rm -rf $tmpdir" EXIT
+    pushd $tmpdir
+    curl -L -s -O $GOMETALINTER_URL || fatal "failed to download '$GOMETALINTER_URL': $?"
+    for i in *.tar.gz; do
+      [ "$i" = "*.tar.gz" ] && continue
+      tar xzvf "$i" -C $tmpdir --strip-components 1 && rm -r "$i"
+    done
+    popd
+    mkdir -p $BINARY_DIR
+    cp $tmpdir/* $BINARY_DIR/
+  fi
 }
 
 function download_binaries() {
-  for i in ${BINARY_DEPENDENCIES//;/ }; do
-    binary=$(echo "$i" | awk -F',' '{print $1}')
-    url=$(echo "$i" | awk -F',' '{print $2}')
-    if [ ! -f "$binary" ]; then
-      verbose "   --> $binary"
-      download_binary url=$url || fatal "failed to download binary '$binary' from $url: $?"
-    fi
-  done
+  download_dep || fatal "failed to download 'dep': $?"
+  download_gometalinter || fatal "failed to download 'gometalinter': $?"
+  download_consul || fatal "failed to download 'consul': $?"
   export PATH=$PATH:$BINARY_DIR
 }
 
 function run() {
+  go version | grep -q 'go version go1.9.3 ' || fatal "go version is not 1.9.3"
+
   verbose "Fetching binaries..."
   download_binaries
 
   verbose "Updating dependencies..."
-  $DEP ensure || fatal "dep ensure failed : $?"
+  $DEP ensure || fatal "dep ensure failed: $?"
 
   local gofiles=$(find . -path ./vendor -prune -o -print | grep '\.go$')
 
@@ -114,6 +145,13 @@ function run() {
   if [ -n "${licRes}" ]; then
   	fatal "license header checking failed:\n${licRes}"
   fi
+
+  verbose "Running tests..."
+  local gopackages=$(go list ./... | grep -v /vendor/)
+  while read -r gopackage; do
+    verbose " --> $gopackage"
+    go test -v $gopackage || fatal "$gopackage tests failed: $?"
+  done <<< "$gopackages"
 
   verbose "Building binaries..."
   local revision=`git rev-parse HEAD`

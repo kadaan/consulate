@@ -36,10 +36,26 @@
   version = "v1.0.0"
 
 [[projects]]
+  name = "github.com/hashicorp/consul"
+  packages = [
+    "lib/freeport",
+    "testutil",
+    "testutil/retry"
+  ]
+  revision = "9a494b5fb9c86180a5702e29c485df1507a47198"
+  version = "v1.0.6"
+
+[[projects]]
   branch = "master"
   name = "github.com/hashicorp/go-cleanhttp"
   packages = ["."]
   revision = "d5fe4b57a186c716b0e00b8c301cbd9b4182694d"
+
+[[projects]]
+  branch = "master"
+  name = "github.com/hashicorp/go-uuid"
+  packages = ["."]
+  revision = "64130c7a86d732268a38cb04cfbaf0cc987fda98"
 
 [[projects]]
   branch = "master"
@@ -101,6 +117,12 @@
 
 [[projects]]
   branch = "master"
+  name = "github.com/mitchellh/go-testing-interface"
+  packages = ["."]
+  revision = "a61a99592b77c9ba629d254a693acffaeb4b7e28"
+
+[[projects]]
+  branch = "master"
   name = "github.com/mitchellh/mapstructure"
   packages = ["."]
   revision = "a4e142e9c047c904fa2f1e144d9a84e6133024bc"
@@ -110,6 +132,12 @@
   packages = ["."]
   revision = "acdc4509485b587f5e675510c4f2c63e90ff68a8"
   version = "v1.1.0"
+
+[[projects]]
+  name = "github.com/pkg/errors"
+  packages = ["."]
+  revision = "645ef00459ed84a119197bfb8d8205042c6df63d"
+  version = "v0.8.0"
 
 [[projects]]
   name = "github.com/prometheus/client_golang"
@@ -232,6 +260,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "2feca58944b52f83d8a3342cdbef95be2def91e19f1abbad798fe8fc427071c8"
+  inputs-digest = "0167a596801323b4873534b66c3a465160364b1d7baeb15b2f97e1493ed841c6"
   solver-name = "gps-cdcl"
   solver-version = 1

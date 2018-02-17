@@ -15,12 +15,41 @@
 package checks
 
 import (
+	"github.com/pkg/errors"
 	"time"
 )
 
+// HealthStatus represents the status of a Consul health check.
+type HealthStatus int
+
 const (
-	healthPassing = "passing"
+	// HealthPassing represents Consul health check in the Passing state.
+	HealthPassing HealthStatus = iota
+
+	// HealthMaintenance represents Consul health check in the Maintenance state.
+	HealthMaintenance
+
+	// HealthWarning represents Consul health check in the Warning state
+	HealthWarning
+
+	// HealthCritical represents Consul health check in the Critical state
+	HealthCritical
 )
+
+var healthNames = []string{"passing", "maintenance", "warning", "critical"}
+
+func (s HealthStatus) String() string {
+	return healthNames[s]
+}
+
+func ParseHealthStatus(s string) (HealthStatus, bool) {
+	for i, n := range healthNames {
+		if n == s {
+			return HealthStatus(i), true
+		}
+	}
+	return 0, false
+}
 
 // ResultStatus represents the status of a Consulate call.
 type ResultStatus string
@@ -59,9 +88,13 @@ type Check struct {
 	ModifyIndex uint64
 }
 
-// IsHealthy returns True if the Check has a Status of Passing.
-func (c *Check) IsHealthy() bool {
-	return c.Status == healthPassing
+// MatchesStatus returns True if the Check has a Status the same or worse than the specified status.
+func (c *Check) MatchesStatus(s HealthStatus) (bool, error) {
+	parsedStatus, parsed := ParseHealthStatus(c.Status)
+	if !parsed {
+		return false, errors.Errorf("Unsupported status: %s", c.Status)
+	}
+	return parsedStatus > s, nil
 }
 
 // IsService returns True if the Check ServiceId/Name matches the specified service.
