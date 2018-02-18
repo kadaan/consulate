@@ -116,7 +116,7 @@ All routes accept the following query string parameters:
 ---
 
 ### Verify
-By default verification will fail check whose status is worse than `passing`.  This can be changed by specifying the `status` query string parameter to one of: 
+By default, verification will fail checks whose status is worse than `passing`.  This can be changed by specifying the `status` query string parameter to one of: 
 * `passing`
 * `maintenance`
 * `warning`
