@@ -147,7 +147,11 @@ function run() {
   fi
 
   verbose "Running tests..."
-  go test -v ./...
+  local gopackages=$(go list ./... | grep -v /vendor/)
+  while read -r gopackage; do
+    verbose " --> $gopackage"
+    go test -v $gopackage || fatal "$gopackage tests failed: $?"
+  done <<< "$gopackages"
 
   verbose "Building binaries..."
   local revision=`git rev-parse HEAD`
