@@ -15,13 +15,13 @@
 package server_test
 
 import (
+	"bytes"
 	"github.com/kadaan/consulate/checks"
 	"github.com/kadaan/consulate/spi"
 	"github.com/kadaan/consulate/testutil"
 	"io/ioutil"
 	"testing"
 	"text/template"
-	"bytes"
 )
 
 var apiTests = []apiTestData{

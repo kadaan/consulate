@@ -147,7 +147,7 @@ function run() {
   fi
 
   verbose "Running tests..."
-  go test ./...
+  go test -v ./...
 
   verbose "Building binaries..."
   local revision=`git rev-parse HEAD`
