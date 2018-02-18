@@ -130,8 +130,12 @@ function run() {
   verbose "Formatting source..."
   if [[ ${#gofiles[@]} -gt 0 ]]; then
     while read -r gofile; do
-        gofmt -s -w $PWD/$gofile
+      gofmt -s -w $PWD/$gofile
     done <<< "$gofiles"
+  fi
+
+  if [ -n "$TRAVIS" ] && [ -n "$(git status --porcelain)" ]; then
+    fatal "Source not formatted"
   fi
 
   verbose "Linting source..."
