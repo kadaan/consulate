@@ -219,6 +219,10 @@ func (s *TestServer) encodePayload(t *testing.T, payload interface{}) io.Reader 
 	return &encoded
 }
 
+func (s *TestServer) GetConsulNodeName() string {
+	return s.consulSvr.Config.NodeName
+}
+
 func (s *TestServer) Wrap(t *testing.T) *WrappedTestServer {
 	return &WrappedTestServer{s, t}
 }
@@ -245,4 +249,8 @@ func (w *WrappedTestServer) AddService(name string, tags []string) {
 
 func (w *WrappedTestServer) AddCheck(id string, name string, serviceID string, status checks.HealthStatus) {
 	w.s.AddCheck(w.t, id, name, serviceID, status)
+}
+
+func (w *WrappedTestServer) GetConsulNodeName() string {
+	return w.s.GetConsulNodeName()
 }

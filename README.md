@@ -115,9 +115,16 @@ All routes accept the following query string parameters:
 
 ---
 
+### Verify
+By default verification will fail check whose status is worse than `passing`.  This can be changed by specifying the `status` query string parameter to one of: 
+* `passing`
+* `maintenance`
+* `warning`
+* `critical`  
+
 #### /verify/checks
 
->The `/verify/checks` route returns 200 if all Consul checks are in the PASSING state.  >Otherwise, a non-200 status code is returned and the failing checks will be in the >response.
+>The `/verify/checks` route returns 200 if all Consul checks are in the `passing` state.  Otherwise, a non-200 status code is returned and the failing checks will be in the response.
 >
 >##### Request
 >
@@ -178,7 +185,7 @@ All routes accept the following query string parameters:
 
 #### /verify/checks/:check
 
->The `/verify/checks/:check` route returns 200 if the specified Consul check is in the >PASSING state.  Otherwise, a non-200 status code is returned and the failing check will >be in the response.
+>The `/verify/checks/:check` route returns 200 if the specified Consul check is in the `passing` state.  Otherwise, a non-200 status code is returned and the failing check will be in the response.
 >
 >##### Request
 >
@@ -240,7 +247,7 @@ All routes accept the following query string parameters:
 
 #### /verify/service/:service
 
->The `/verify/service/:service` route returns 200 if all Consul checks for the specified >service are in the PASSING state.  Otherwise, a non-200 status code is returned and the >failing checks will be in the response.
+>The `/verify/service/:service` route returns 200 if all Consul checks for the specified service are in the `passing` state.  Otherwise, a non-200 status code is returned and the failing checks will be in the response.
 >
 >##### Request
 >

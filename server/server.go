@@ -201,7 +201,7 @@ func (r *server) verifyChecks(context *gin.Context, match checkMatcher) {
 				checkCount++
 				b, e := v.MatchesStatus(s)
 				if e != nil {
-					r.abortWithStatusJSON(context, spi.StatusConsulError, checks.Result{Status: checks.Failed, Detail: e.Error()})
+					r.abortWithStatusJSON(context, spi.StatusCheckError, checks.Result{Status: checks.Failed, Detail: e.Error()})
 				}
 				if b {
 					matchedChecks[k] = v
@@ -212,7 +212,7 @@ func (r *server) verifyChecks(context *gin.Context, match checkMatcher) {
 			}
 		}
 		if failedCount {
-			r.abortWithStatusJSON(context, spi.StatusConsulError, checks.Result{Status: checks.Failed, Checks: matchedChecks})
+			r.abortWithStatusJSON(context, spi.StatusCheckError, checks.Result{Status: checks.Failed, Checks: matchedChecks})
 		} else if checkCount == 0 {
 			r.abortWithStatusJSON(context, spi.StatusNoChecksError, checks.Result{Status: checks.NoChecks})
 		} else {
@@ -243,7 +243,7 @@ func (r *server) processChecks(context *gin.Context, handler checkHandler) {
 func (r *server) getStatus(context *gin.Context) checks.HealthStatus {
 	status, statusSpecified := context.GetQuery(statusQueryStringKey)
 	if !statusSpecified {
-		return checks.HealthCritical
+		return checks.HealthPassing
 	}
 	parsedStatus, parsed := checks.ParseHealthStatus(status)
 	if !parsed {

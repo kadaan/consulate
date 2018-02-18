@@ -20,18 +20,27 @@ import (
 	"github.com/kadaan/consulate/testutil"
 	"io/ioutil"
 	"testing"
+	"text/template"
+	"bytes"
 )
 
 var apiTests = []apiTestData{
 	{"/about", spi.StatusOK, `{"Version":"","Revision":"","Branch":"","BuildUser":"","BuildDate":"","GoVersion":"go1.9.3"}`},
 	{"/health", spi.StatusOK, `{"Status":"Ok"}`},
-	{"/verify/checks?status=passing", spi.StatusOK, `{"Status":"Ok"}`},
+	{"/verify/checks", spi.StatusCheckError, `{"Status":"Failed","Checks":{"check1b":{"Node":"{{.ConsulNodeName}}","CheckID":"check1b","Name":"check 1","Status":"warning","Notes":"","Output":"","ServiceID":"service1","ServiceName":"service1","ServiceTags":[],"Definition":{"HTTP":"","Header":null,"Method":"","TLSSkipVerify":false,"TCP":"","Interval":0,"Timeout":0,"DeregisterCriticalServiceAfter":0},"CreateIndex":0,"ModifyIndex":0},"check1c":{"Node":"{{.ConsulNodeName}}","CheckID":"check1c","Name":"check 1","Status":"critical","Notes":"","Output":"","ServiceID":"service1","ServiceName":"service1","ServiceTags":[],"Definition":{"HTTP":"","Header":null,"Method":"","TLSSkipVerify":false,"TCP":"","Interval":0,"Timeout":0,"DeregisterCriticalServiceAfter":0},"CreateIndex":0,"ModifyIndex":0}}}`},
+	{"/verify/checks?status=passing", spi.StatusCheckError, `{"Status":"Failed","Checks":{"check1b":{"Node":"{{.ConsulNodeName}}","CheckID":"check1b","Name":"check 1","Status":"warning","Notes":"","Output":"","ServiceID":"service1","ServiceName":"service1","ServiceTags":[],"Definition":{"HTTP":"","Header":null,"Method":"","TLSSkipVerify":false,"TCP":"","Interval":0,"Timeout":0,"DeregisterCriticalServiceAfter":0},"CreateIndex":0,"ModifyIndex":0},"check1c":{"Node":"{{.ConsulNodeName}}","CheckID":"check1c","Name":"check 1","Status":"critical","Notes":"","Output":"","ServiceID":"service1","ServiceName":"service1","ServiceTags":[],"Definition":{"HTTP":"","Header":null,"Method":"","TLSSkipVerify":false,"TCP":"","Interval":0,"Timeout":0,"DeregisterCriticalServiceAfter":0},"CreateIndex":0,"ModifyIndex":0}}}`},
+	{"/verify/checks?status=warning", spi.StatusCheckError, `{"Status":"Failed","Checks":{"check1c":{"Node":"{{.ConsulNodeName}}","CheckID":"check1c","Name":"check 1","Status":"critical","Notes":"","Output":"","ServiceID":"service1","ServiceName":"service1","ServiceTags":[],"Definition":{"HTTP":"","Header":null,"Method":"","TLSSkipVerify":false,"TCP":"","Interval":0,"Timeout":0,"DeregisterCriticalServiceAfter":0},"CreateIndex":0,"ModifyIndex":0}}}`},
+	{"/verify/checks?status=critical", spi.StatusOK, `{"Status":"Ok"}`},
 }
 
 type apiTestData struct {
 	path       string
 	statusCode int
 	body       string
+}
+
+type bodyTemplateData struct {
+	ConsulNodeName string
 }
 
 func TestApi(t *testing.T) {
@@ -42,6 +51,8 @@ func TestApi(t *testing.T) {
 
 	server.AddService("service1", []string{})
 	server.AddCheck("check1a", "check 1", "service1", checks.HealthPassing)
+	server.AddCheck("check1b", "check 1", "service1", checks.HealthWarning)
+	server.AddCheck("check1c", "check 1", "service1", checks.HealthCritical)
 
 	for _, d := range apiTests {
 		t.Logf("  --> %s", d.path)
@@ -66,8 +77,19 @@ func verifyApiCall(t *testing.T, s *testutil.WrappedTestServer, d apiTestData) {
 		t.Error(err)
 	}
 	body := string(bb)
-	if body != d.body {
-		t.Errorf("%q => Body: %q, want %q", d.path, body, d.body)
+
+	data := bodyTemplateData{
+		ConsulNodeName: s.GetConsulNodeName(),
+	}
+	tmpl, err := template.New(d.path).Parse(d.body)
+	var tpl bytes.Buffer
+	if err := tmpl.Execute(&tpl, data); err != nil {
+		t.Errorf("Failed to execute body template: %s", err)
+	}
+	expectedBody := tpl.String()
+
+	if body != expectedBody {
+		t.Errorf("%q => Body: %q, want %q", d.path, body, expectedBody)
 	}
 }
 

@@ -26,8 +26,8 @@ const (
 	// StatusNoChecksError represents an error when no Consul checks exist.
 	StatusNoChecksError = http.StatusNotFound
 
-	// StatusConsulError represents an error indicating one or more Consul checks have failed.
-	StatusConsulError = http.StatusInternalServerError
+	// StatusCheckError represents an error indicating one or more Consul checks have failed.
+	StatusCheckError = http.StatusInternalServerError
 
 	// StatusConsulUnavailableError represents an error indicating the Consul did not respond promptly.
 	StatusConsulUnavailableError = http.StatusServiceUnavailable
