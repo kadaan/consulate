@@ -74,7 +74,7 @@ func (r *server) Start() (spi.RunningServer, error) {
 	go func() {
 		log.Printf("Started Consulate server on %s\n", r.config.ListenAddress)
 		if err = r.httpServer.ListenAndServe(); err != nil && err != http.ErrServerClosed {
-			log.Printf("Failed to start Consulate server\n    %s", err)
+			log.Printf("Failed to start Consulate server: %s\n", err)
 		}
 	}()
 	return r, err
@@ -85,7 +85,7 @@ func (r *server) Stop() {
 	ctx, cancel := context.WithTimeout(context.Background(), r.config.ShutdownTimeout)
 	defer cancel()
 	if err := r.httpServer.Shutdown(ctx); err != nil {
-		log.Fatalf("Consulate server shutdown failed\n    %s", err)
+		log.Panicf("Consulate server shutdown failed:%s", err)
 	}
 	log.Println("Consulate server shutdown")
 }

@@ -35,9 +35,8 @@ type apiTestData struct {
 }
 
 func TestApi(t *testing.T) {
-	//if testing.Verbose() {
 	t.Log("Starting API tests...")
-	//}
+
 	server := newServer(t)
 	defer server.Stop()
 
@@ -48,9 +47,7 @@ func TestApi(t *testing.T) {
 		t.Logf("  --> %s", d.path)
 		verifyApiCall(t, server, d)
 	}
-	//if testing.Verbose() {
 	t.Log("Finished API tests")
-	//}
 }
 
 func verifyApiCall(t *testing.T, s *testutil.WrappedTestServer, d apiTestData) {

@@ -114,15 +114,15 @@ func (s *TestServer) waitForAPI(t *testing.T) error {
 	retry.Run(f, func(r *retry.R) {
 		resp, err := s.httpClient.Get(s.Url(t, "/about"))
 		if err != nil {
-			r.Fatal(err)
+			r.Error(err)
 		}
 		defer resp.Body.Close()
 		if err := s.RequireOK(t, resp); err != nil {
-			r.Fatal("failed OK response", err)
+			r.Error("Response returned from API was not 'OK'", err)
 		}
 	})
 	if f.failed {
-		t.Fatalf("failed waiting for Consulate")
+		t.Fatalf("Failed waiting for Consulate API to start")
 	}
 	return nil
 }
@@ -224,9 +224,7 @@ func (s *TestServer) Wrap(t *testing.T) *WrappedTestServer {
 }
 
 func (w *WrappedTestServer) Stop() {
-	if w.s.svr != nil {
-		defer w.s.svr.Stop()
-	}
+	defer w.s.Stop()
 }
 
 func (w *WrappedTestServer) Client() *http.Client {
