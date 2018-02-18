@@ -116,10 +116,17 @@ func (s *TestServer) waitForAPI(t *testing.T) error {
 		if err != nil {
 			r.Error(err)
 		}
-		defer resp.Body.Close()
-		if err := s.RequireOK(t, resp); err != nil {
-			r.Error("Response returned from API was not 'OK'", err)
+		if resp != nil {
+			if resp.Body != nil {
+				defer resp.Body.Close()
+			}
+			if err := s.RequireOK(t, resp); err != nil {
+				r.Error("Response returned from API was not 'OK'", err)
+			}
+		} else {
+			r.Error("Response returned from API was NIL")
 		}
+
 	})
 	if f.failed {
 		t.Fatalf("Failed waiting for Consulate API to start")
