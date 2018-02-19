@@ -31,6 +31,14 @@ var apiTests = []apiTestData{
 	{"/verify/checks?status=passing", spi.StatusCheckError, `{"Status":"Failed","Checks":{"check1b":{"Node":"{{.ConsulNodeName}}","CheckID":"check1b","Name":"check 1","Status":"warning","Notes":"","Output":"","ServiceID":"service1","ServiceName":"service1","ServiceTags":[],"Definition":{"HTTP":"","Header":null,"Method":"","TLSSkipVerify":false,"TCP":"","Interval":0,"Timeout":0,"DeregisterCriticalServiceAfter":0},"CreateIndex":0,"ModifyIndex":0},"check1c":{"Node":"{{.ConsulNodeName}}","CheckID":"check1c","Name":"check 1","Status":"critical","Notes":"","Output":"","ServiceID":"service1","ServiceName":"service1","ServiceTags":[],"Definition":{"HTTP":"","Header":null,"Method":"","TLSSkipVerify":false,"TCP":"","Interval":0,"Timeout":0,"DeregisterCriticalServiceAfter":0},"CreateIndex":0,"ModifyIndex":0}}}`},
 	{"/verify/checks?status=warning", spi.StatusCheckError, `{"Status":"Failed","Checks":{"check1c":{"Node":"{{.ConsulNodeName}}","CheckID":"check1c","Name":"check 1","Status":"critical","Notes":"","Output":"","ServiceID":"service1","ServiceName":"service1","ServiceTags":[],"Definition":{"HTTP":"","Header":null,"Method":"","TLSSkipVerify":false,"TCP":"","Interval":0,"Timeout":0,"DeregisterCriticalServiceAfter":0},"CreateIndex":0,"ModifyIndex":0}}}`},
 	{"/verify/checks?status=critical", spi.StatusOK, `{"Status":"Ok"}`},
+	{"/verify/checks/check1b?status=warning", spi.StatusOK, `{"Status":"Ok"}`},
+	{"/verify/checks/check%202?verbose", spi.StatusOK, `{"Status":"Ok","Checks":{"check2a":{"Node":"{{.ConsulNodeName}}","CheckID":"check2a","Name":"check 2","Status":"passing","Notes":"","Output":"","ServiceID":"service2","ServiceName":"service2","ServiceTags":[],"Definition":{"HTTP":"","Header":null,"Method":"","TLSSkipVerify":false,"TCP":"","Interval":0,"Timeout":0,"DeregisterCriticalServiceAfter":0},"CreateIndex":0,"ModifyIndex":0}}}`},
+	{"/verify/service/service1?status=critical", spi.StatusOK, `{"Status":"Ok"}`},
+	{"/verify/service/service2?verbose", spi.StatusOK, `{"Status":"Ok","Checks":{"check2a":{"Node":"{{.ConsulNodeName}}","CheckID":"check2a","Name":"check 2","Status":"passing","Notes":"","Output":"","ServiceID":"service2","ServiceName":"service2","ServiceTags":[],"Definition":{"HTTP":"","Header":null,"Method":"","TLSSkipVerify":false,"TCP":"","Interval":0,"Timeout":0,"DeregisterCriticalServiceAfter":0},"CreateIndex":0,"ModifyIndex":0}}}`},
+	{"/verify/service/service2?pretty", spi.StatusOK, `{
+    "Status": "Ok"
+}`},
+
 }
 
 type apiTestData struct {
@@ -53,6 +61,9 @@ func TestApi(t *testing.T) {
 	server.AddCheck("check1a", "check 1", "service1", checks.HealthPassing)
 	server.AddCheck("check1b", "check 1", "service1", checks.HealthWarning)
 	server.AddCheck("check1c", "check 1", "service1", checks.HealthCritical)
+
+	server.AddService("service2", []string{})
+	server.AddCheck("check2a", "check 2", "service2", checks.HealthPassing)
 
 	for _, d := range apiTests {
 		t.Logf("  --> %s", d.path)
