@@ -44,8 +44,10 @@ const (
 	aboutRoute                 = "/about"
 	healthRoute                = "/health"
 	verifyAllChecksRoute       = "/verify/checks"
-	verifySpecificCheckRoute   = verifyAllChecksRoute + "/" + verifyCheckParamTag
-	verifySpecificServiceRoute = "/verify/service/" + verifyServiceParamTag
+	verifyCheckIdRoute   = verifyAllChecksRoute + "/id/" + verifyCheckParamTag
+	verifyCheckNameRoute   = verifyAllChecksRoute + "/name/" + verifyCheckParamTag
+	verifyServiceIdRoute = "/verify/service/id/" + verifyServiceParamTag
+	verifyServiceNameRoute = "/verify/service/name/" + verifyServiceParamTag
 )
 
 var (
@@ -100,8 +102,10 @@ func (r *server) createRouter() *gin.Engine {
 	router.GET(aboutRoute, r.about)
 	router.GET(healthRoute, r.health)
 	router.GET(verifyAllChecksRoute, r.verifyAllChecks)
-	router.GET(verifySpecificCheckRoute, r.verifyCheck)
-	router.GET(verifySpecificServiceRoute, r.verifyService)
+	router.GET(verifyCheckIdRoute, r.verifyCheckId)
+	router.GET(verifyCheckNameRoute, r.verifyCheckName)
+	router.GET(verifyServiceIdRoute, r.verifyServiceId)
+	router.GET(verifyServiceNameRoute, r.verifyServiceName)
 	return router
 }
 
@@ -185,20 +189,38 @@ func (r *server) verifyAllChecks(context *gin.Context) {
 	r.verifyChecks(context, matcher)
 }
 
-func (r *server) verifyCheck(context *gin.Context) {
+func (r *server) verifyCheckId(context *gin.Context) {
 	check := context.Param(verifyCheckParamKey)
 	matcher := checkMatcher{
-		noChecksErrorMessage: fmt.Sprintf("No checks with CheckID or CheckName: %s", check),
-		matcher:              func(c *checks.Check) bool { return c.IsCheck(check) },
+		noChecksErrorMessage: fmt.Sprintf("No checks with CheckID: %s", check),
+		matcher:              func(c *checks.Check) bool { return c.IsCheckId(check) },
 	}
 	r.verifyChecks(context, matcher)
 }
 
-func (r *server) verifyService(context *gin.Context) {
+func (r *server) verifyCheckName(context *gin.Context) {
+	check := context.Param(verifyCheckParamKey)
+	matcher := checkMatcher{
+		noChecksErrorMessage: fmt.Sprintf("No checks with CheckName: %s", check),
+		matcher:              func(c *checks.Check) bool { return c.IsCheckName(check) },
+	}
+	r.verifyChecks(context, matcher)
+}
+
+func (r *server) verifyServiceId(context *gin.Context) {
 	service := context.Param(verifyServiceParamKey)
 	matcher := checkMatcher{
-		noChecksErrorMessage: fmt.Sprintf("No check for services with ServiceId or ServiceName: %s", service),
-		matcher:              func(c *checks.Check) bool { return c.IsService(service) },
+		noChecksErrorMessage: fmt.Sprintf("No checks for services with ServiceId: %s", service),
+		matcher:              func(c *checks.Check) bool { return c.IsServiceId(service) },
+	}
+	r.verifyChecks(context, matcher)
+}
+
+func (r *server) verifyServiceName(context *gin.Context) {
+	service := context.Param(verifyServiceParamKey)
+	matcher := checkMatcher{
+		noChecksErrorMessage: fmt.Sprintf("No checks for services with ServiceName: %s", service),
+		matcher:              func(c *checks.Check) bool { return c.IsServiceName(service) },
 	}
 	r.verifyChecks(context, matcher)
 }

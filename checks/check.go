@@ -97,14 +97,24 @@ func (c *Check) MatchesStatus(s HealthStatus) (bool, error) {
 	return parsedStatus > s, nil
 }
 
-// IsService returns True if the Check ServiceId/Name matches the specified service.
-func (c *Check) IsService(service string) bool {
-	return service == c.ServiceName || service == c.ServiceID
+// IsServiceId returns True if the Check ServiceId matches the specified serviceId.
+func (c *Check) IsServiceId(serviceId string) bool {
+	return serviceId == c.ServiceID
 }
 
-// IsCheck returns True if the Check CheckID/Name matches the specified check.
-func (c *Check) IsCheck(check string) bool {
-	return check == c.Name || check == c.CheckID
+// IsService returns True if the Check ServiceName matches the specified serviceName.
+func (c *Check) IsServiceName(serviceName string) bool {
+	return serviceName == c.ServiceName
+}
+
+// IsCheckId returns True if the Check CheckID/Name matches the specified check.
+func (c *Check) IsCheckId(checkId string) bool {
+	return checkId == c.CheckID
+}
+
+// IsCheckName returns True if the Check CheckName matches the specified checkName.
+func (c *Check) IsCheckName(checkName string) bool {
+	return checkName == c.Name
 }
 
 // CheckDefinition represents the configuration of a Consul check.

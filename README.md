@@ -219,16 +219,15 @@ The following table shows all possible status query string parameter values and,
 
 ---
 
-#### /verify/checks/:check
+#### /verify/checks/id/:checkId
 
->The `/verify/checks/:check` route returns 200 if the specified Consul check is ok.  Otherwise, a non-200 status code is returned and the failing check will be in the response.
->The `:check` value can be either the _Check Id_ or _Check Name_.  If _Check Name_, more than one check may be verified.
+>The `/verify/checks/id/:checkId` route returns 200 if the specified Consul check is ok.  Otherwise, a non-200 status code is returned and the failing check will be in the response.
 >
 >
 >##### Request
 >
 >```bash
->curl -X GET http:/localhost:8080/verify/checks/check%201\?pretty
+>curl -X GET http:/localhost:8080/verify/checks/id/check1b\?pretty
 >```
 >
 >##### Responses
@@ -285,7 +284,7 @@ The following table shows all possible status query string parameter values and,
 >* `200`: Successful call
 >* `404`: 
 >   * No checks
->   * No checks matching specified _CheckID_/_CheckName_
+>   * No checks matching specified _CheckID_
 >* `422`: Could not parse the response from Consul
 >* `429`: One or more Consul checks have failed
 >* `500`: Unexpected failure
@@ -293,15 +292,16 @@ The following table shows all possible status query string parameter values and,
 
 ---
 
-#### /verify/service/:service
+#### /verify/checks/id/:checkName
 
->The `/verify/service/:service` route returns 200 if all Consul checks for the specified service are ok.  Otherwise, a non-200 status code is returned and the failing checks will be in the response.
->The `:service` value can be either the _Service Id_ or _Service Name_.  If _Service Name_, more than one service may be verified.
+>The `/verify/checks/id/:checkName` route returns 200 if the specified Consul check is ok.  Otherwise, a non-200 status code is returned and the failing check will be in the response.
+>More then one check will be verified if multiple checks share the same name.
+>
 >
 >##### Request
 >
 >```bash
->curl -X GET http:/localhost:8080/verify/service/test
+>curl -X GET http:/localhost:8080/verify/checks/id/check%201\?pretty
 >```
 >
 >##### Responses
@@ -358,7 +358,152 @@ The following table shows all possible status query string parameter values and,
 >* `200`: Successful call
 >* `404`: 
 >   * No checks
->   * No checks for services matching specified _ServiceID_/_ServiceName_
+>   * No checks matching specified _CheckName_
+>* `422`: Could not parse the response from Consul
+>* `429`: One or more Consul checks have failed
+>* `500`: Unexpected failure
+>* `503`: Consul unavailable
+
+---
+
+#### /verify/service/id/:serviceId
+
+>The `/verify/service/id/:serviceId` route returns 200 if all Consul checks for the specified service are ok.  Otherwise, a non-200 status code is returned and the failing checks will be in the response.
+>
+>##### Request
+>
+>```bash
+>curl -X GET http:/localhost:8080/verify/service/id/service2\?pretty
+>```
+>
+>##### Responses
+>> ###### Healthy
+>>```
+>>HTTP/1.1 200 OK
+>>Content-Type: application/json; charset=utf-8
+>>...
+>>```
+>>```json
+>>{
+>>    "Status": "Ok"
+>>}
+>>```
+
+>> ###### Unhealthy
+>>```
+>>HTTP/1.1 429 Too Many Requests
+>>Content-Type: application/json; charset=utf-8
+>>...
+>>```
+>>```json
+>>{
+>>    "Status": "Failed",
+>>    "Checks": {
+>>        "check1b": {
+>>            "Node": "computer.local",
+>>            "CheckID": "check1b",
+>>            "Name": "check 1",
+>>            "Status": "critical",
+>>            "Notes": "Check 1",
+>>            "Output": "Timed out (1s) running check",
+>>            "ServiceID": "service2",
+>>            "ServiceName": "service 2",
+>>            "ServiceTags": [],
+>>            "Definition": {
+>>                "HTTP": "",
+>>                "Header": null,
+>>                "Method": "",
+>>                "TLSSkipVerify": false,
+>>                "TCP": "",
+>>                "Interval": 0,
+>>                "Timeout": 0,
+>>                "DeregisterCriticalServiceAfter": 0
+>>            },
+>>            "CreateIndex": 0,
+>>            "ModifyIndex": 0
+>>        }
+>>    }
+>>}
+>>```
+>
+>##### Status Codes
+>* `200`: Successful call
+>* `404`: 
+>   * No checks
+>   * No checks for services matching specified _ServiceID_
+>* `422`: Could not parse the response from Consul
+>* `429`: One or more Consul checks have failed
+>* `500`: Unexpected failure
+>* `503`: Consul unavailable
+
+---
+
+#### /verify/service/name/:serviceName
+
+>The `/verify/service/name/:serviceName` route returns 200 if all Consul checks for the specified service are ok.  Otherwise, a non-200 status code is returned and the failing checks will be in the response.
+>More than one service will be verified if multiple services share the same name.
+>
+>##### Request
+>
+>```bash
+>curl -X GET http:/localhost:8080/verify/service/name/service%202\?pretty
+>```
+>
+>##### Responses
+>> ###### Healthy
+>>```
+>>HTTP/1.1 200 OK
+>>Content-Type: application/json; charset=utf-8
+>>...
+>>```
+>>```json
+>>{
+>>    "Status": "Ok"
+>>}
+>>```
+
+>> ###### Unhealthy
+>>```
+>>HTTP/1.1 429 Too Many Requests
+>>Content-Type: application/json; charset=utf-8
+>>...
+>>```
+>>```json
+>>{
+>>    "Status": "Failed",
+>>    "Checks": {
+>>        "check1b": {
+>>            "Node": "computer.local",
+>>            "CheckID": "check1b",
+>>            "Name": "check 1",
+>>            "Status": "critical",
+>>            "Notes": "Check 1",
+>>            "Output": "Timed out (1s) running check",
+>>            "ServiceID": "service2",
+>>            "ServiceName": "service 2",
+>>            "ServiceTags": [],
+>>            "Definition": {
+>>                "HTTP": "",
+>>                "Header": null,
+>>                "Method": "",
+>>                "TLSSkipVerify": false,
+>>                "TCP": "",
+>>                "Interval": 0,
+>>                "Timeout": 0,
+>>                "DeregisterCriticalServiceAfter": 0
+>>            },
+>>            "CreateIndex": 0,
+>>            "ModifyIndex": 0
+>>        }
+>>    }
+>>}
+>>```
+>
+>##### Status Codes
+>* `200`: Successful call
+>* `404`: 
+>   * No checks
+>   * No checks for services matching specified _ServiceName_
 >* `422`: Could not parse the response from Consul
 >* `429`: One or more Consul checks have failed
 >* `500`: Unexpected failure
