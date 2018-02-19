@@ -151,7 +151,6 @@ function run() {
   fi
 
   verbose "Running tests..."
-  local gopackages=$(go list ./... | grep -v /vendor/)
   if [ -n "$TRAVIS" ]; then
     if [ ! -x "$(command -v goveralls)" ]; then
       echo "Getting goveralls..."
@@ -159,10 +158,7 @@ function run() {
     fi
     goveralls -v -service=travis-ci || fatal "goveralls: $?"
   else
-    while read -r gopackage; do
-      verbose " --> $gopackage"
-      go test -v $gopackage || fatal "$gopackage tests failed: $?"
-    done <<< "$gopackages"
+    go test -v ./... || fatal "$gopackage tests failed: $?"
   fi
 
 
