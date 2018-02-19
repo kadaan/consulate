@@ -168,7 +168,7 @@ The following table shows all possible status query string parameter values and,
 >>    "Status": "Failed",
 >>    "Checks": {
 >>        "check1b": {
->>            "Node": "ensadmins-MacBook-Pro.local",
+>>            "Node": "computer.local",
 >>            "CheckID": "check1b",
 >>            "Name": "check 1",
 >>            "Status": "critical",
@@ -230,7 +230,7 @@ The following table shows all possible status query string parameter values and,
 >>    "Status": "Failed",
 >>    "Checks": {
 >>        "check1b": {
->>            "Node": "ensadmins-MacBook-Pro.local",
+>>            "Node": "computer.local",
 >>            "CheckID": "check1b",
 >>            "Name": "check 1",
 >>            "Status": "critical",
@@ -292,7 +292,7 @@ The following table shows all possible status query string parameter values and,
 >>    "Status": "Failed",
 >>    "Checks": {
 >>        "check1b": {
->>            "Node": "ensadmins-MacBook-Pro.local",
+>>            "Node": "computer.local",
 >>            "CheckID": "check1b",
 >>            "Name": "check 1",
 >>            "Status": "critical",
