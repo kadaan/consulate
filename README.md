@@ -45,7 +45,7 @@ All routes accept the following query string parameters:
 >    "Version": "0.0.1",
 >    "Revision": "c216c1294676cdaac0b018244be31ebb6e404b92",
 >    "Branch": "master",
->    "BuildUser": "jbaranick@ensadmins-MacBook-Pro.local",
+>    "BuildUser": "user@computer.local",
 >    "BuildDate": "2018-02-15T07:10:39Z",
 >    "GoVersion": "go1.9"
 >}
@@ -137,7 +137,7 @@ The following table shows all possible status query string parameter values and,
 
 #### /verify/checks
 
->The `/verify/checks` route returns 200 if all Consul checks are in the `passing` state.  Otherwise, a non-200 status code is returned and the failing checks will be in the response.
+>The `/verify/checks` route returns 200 if all Consul checks ok.  Otherwise, a non-200 status code is returned and the failing checks will be in the response.
 >
 >##### Request
 >
@@ -198,7 +198,9 @@ The following table shows all possible status query string parameter values and,
 
 #### /verify/checks/:check
 
->The `/verify/checks/:check` route returns 200 if the specified Consul check is in the `passing` state.  Otherwise, a non-200 status code is returned and the failing check will be in the response.
+>The `/verify/checks/:check` route returns 200 if the specified Consul check is ok.  Otherwise, a non-200 status code is returned and the failing check will be in the response.
+>The `:check` value can be either the _Check Id_ or _Check Name_.  If _Check Name_, more than one check may be verified.
+>
 >
 >##### Request
 >
@@ -260,7 +262,8 @@ The following table shows all possible status query string parameter values and,
 
 #### /verify/service/:service
 
->The `/verify/service/:service` route returns 200 if all Consul checks for the specified service are in the `passing` state.  Otherwise, a non-200 status code is returned and the failing checks will be in the response.
+>The `/verify/service/:service` route returns 200 if all Consul checks for the specified service are ok.  Otherwise, a non-200 status code is returned and the failing checks will be in the response.
+>The `:service` value can be either the _Service Id_ or _Service Name_.  If _Service Name_, more than one service may be verified.
 >
 >##### Request
 >
