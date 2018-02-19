@@ -1,4 +1,4 @@
-# Consulate [![Build Status](https://travis-ci.org/kadaan/consulate.svg?branch=master)](https://travis-ci.org/kadaan/consulate) [![Go Report Card](https://goreportcard.com/badge/github.com/kadaan/consulate)](https://goreportcard.com/report/github.com/kadaan/consulate) [![Coverage Status](https://coveralls.io/repos/github/kadaan/consulate/badge.svg?branch=master)](https://coveralls.io/github/kadaan/consulate?branch=master)
+# Consulate [![Build Status](https://travis-ci.org/kadaan/consulate.svg?branch=master)](https://travis-ci.org/kadaan/consulate) [![Coverage Status](https://coveralls.io/repos/github/kadaan/consulate/badge.svg?branch=master)](https://coveralls.io/github/kadaan/consulate?branch=master) [![Go Report Card](https://goreportcard.com/badge/github.com/kadaan/consulate)](https://goreportcard.com/report/github.com/kadaan/consulate)
 
 Consulate provides a normalized HTTP endpoint that responds with
 200 / non-200 according to Consul checks specified in the requested URL.

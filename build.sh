@@ -152,10 +152,19 @@ function run() {
 
   verbose "Running tests..."
   local gopackages=$(go list ./... | grep -v /vendor/)
-  while read -r gopackage; do
-    verbose " --> $gopackage"
-    go test -v $gopackage || fatal "$gopackage tests failed: $?"
-  done <<< "$gopackages"
+  if [ -n "$TRAVIS" ]; then
+    if [ ! -x "$(command -v goveralls)" ]; then
+    echo "Getting gox..."
+    go get github.com/mattn/goveralls || fatal "go get 'github.com/mattn/goveralls' failed: $?"
+    goveralls -v -service=travis-ci
+  fi
+  else
+    while read -r gopackage; do
+      verbose " --> $gopackage"
+      go test -v $gopackage || fatal "$gopackage tests failed: $?"
+    done <<< "$gopackages"
+  fi
+
 
   verbose "Building binaries..."
   local revision=`git rev-parse HEAD`
