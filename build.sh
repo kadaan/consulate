@@ -154,10 +154,10 @@ function run() {
   local gopackages=$(go list ./... | grep -v /vendor/)
   if [ -n "$TRAVIS" ]; then
     if [ ! -x "$(command -v goveralls)" ]; then
-    echo "Getting gox..."
-    go get github.com/mattn/goveralls || fatal "go get 'github.com/mattn/goveralls' failed: $?"
-    goveralls -v -service=travis-ci
-  fi
+      echo "Getting goveralls..."
+      go get github.com/mattn/goveralls || fatal "go get 'github.com/mattn/goveralls' failed: $?"
+    fi
+    goveralls -v -service=travis-ci || fatal "goveralls: $?"
   else
     while read -r gopackage; do
       verbose " --> $gopackage"
