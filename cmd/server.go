@@ -65,7 +65,7 @@ func init() {
 
 	serverCmd.Flags().StringVarP(&serverConfig.ListenAddress, listenAddressKey, "l", config.DefaultListenAddress, "the listen address")
 	viper.BindPFlag(listenAddressKey, serverCmd.Flags().Lookup(listenAddressKey))
-	serverCmd.Flags().StringVarP(&serverConfig.ConsulAddress, consulAddressKey, "c", server.DefaultConsulAddress, "the Consul HTTP API address to query against")
+	serverCmd.Flags().StringVarP(&serverConfig.ConsulAddress, consulAddressKey, "c", config.DefaultConsulAddress, "the Consul HTTP API address to query against")
 	viper.BindPFlag(consulAddressKey, serverCmd.Flags().Lookup(consulAddressKey))
 	serverCmd.Flags().DurationVar(&serverConfig.ReadTimeout, readTimeoutKey, config.DefaultReadTimeout, "the maximum duration for reading the entire request")
 	viper.BindPFlag(readTimeoutKey, serverCmd.Flags().Lookup(readTimeoutKey))

@@ -26,14 +26,14 @@ const (
 	// StatusNoChecksError (404) represents an error when no Consul checks exist.
 	StatusNoChecksError = http.StatusNotFound
 
-	// StatusCheckError (429) represents an error indicating one or more Consul checks have failed.
-	StatusCheckError = http.StatusTooManyRequests
+	// StatusUnprocessableResponseError (502) represents an error indicating that Consulate could not parse the response from Consul.
+	StatusUnprocessableResponseError = http.StatusBadGateway
 
-	// StatusConsulUnavailableError (503) represents an error indicating the Consul did not respond promptly.
-	StatusConsulUnavailableError = http.StatusServiceUnavailable
+	// StatusCheckError (503) represents an error indicating one or more Consul checks have failed.
+	StatusCheckError = http.StatusServiceUnavailable
 
-	// StatusUnprocessableResponseError (422) represents an error indicating that Consulate could not parse the response from Consul.
-	StatusUnprocessableResponseError = http.StatusUnprocessableEntity
+	// StatusConsulUnavailableError (504) represents an error indicating the Consul did not respond promptly.
+	StatusConsulUnavailableError = http.StatusGatewayTimeout
 )
 
 type Server interface {

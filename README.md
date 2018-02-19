@@ -96,9 +96,9 @@ All routes accept the following query string parameters:
 >
 >##### Status Codes
 >* `200`: Successful call
->* `422`: Could not parse the response from Consul
 >* `500`: Unexpected failure
->* `503`: Consul unavailable
+>* `502`: Could not parse the response from Consul
+>* `504`: Consul unavailable
 
 ---
 
@@ -175,7 +175,7 @@ The following table shows all possible status query string parameter values and,
 
 >>##### Unhealthy
 >>```
->>HTTP/1.1 429 Too Many Requests
+>>HTTP/1.1 503 Service Unavailable
 >>Content-Type: application/json; charset=utf-8
 >>```
 >>```json
@@ -212,10 +212,10 @@ The following table shows all possible status query string parameter values and,
 >##### Status Codes
 >* `200`: Successful call
 >* `404`: No checks
->* `422`: Could not parse the response from Consul
->* `429`: One or more Consul checks have failed
 >* `500`: Unexpected failure
->* `503`: Consul unavailable
+>* `502`: Could not parse the response from Consul
+>* `503`: One or more Consul checks have failed
+>* `504`: Consul unavailable
 
 ---
 
@@ -245,7 +245,7 @@ The following table shows all possible status query string parameter values and,
 
 >> ###### Unhealthy
 >>```
->>HTTP/1.1 429 Too Many Requests
+>>HTTP/1.1 503 Service Unavailable
 >>Content-Type: application/json; charset=utf-8
 >>...
 >>```
@@ -285,10 +285,10 @@ The following table shows all possible status query string parameter values and,
 >* `404`: 
 >   * No checks
 >   * No checks matching specified _CheckID_
->* `422`: Could not parse the response from Consul
->* `429`: One or more Consul checks have failed
 >* `500`: Unexpected failure
->* `503`: Consul unavailable
+>* `502`: Could not parse the response from Consul
+>* `503`: One or more Consul checks have failed
+>* `504`: Consul unavailable
 
 ---
 
@@ -319,7 +319,7 @@ The following table shows all possible status query string parameter values and,
 
 >> ###### Unhealthy
 >>```
->>HTTP/1.1 429 Too Many Requests
+>>HTTP/1.1 503 Service Unavailable
 >>Content-Type: application/json; charset=utf-8
 >>...
 >>```
@@ -359,10 +359,10 @@ The following table shows all possible status query string parameter values and,
 >* `404`: 
 >   * No checks
 >   * No checks matching specified _CheckName_
->* `422`: Could not parse the response from Consul
->* `429`: One or more Consul checks have failed
 >* `500`: Unexpected failure
->* `503`: Consul unavailable
+>* `502`: Could not parse the response from Consul
+>* `503`: One or more Consul checks have failed
+>* `504`: Consul unavailable
 
 ---
 
@@ -391,7 +391,7 @@ The following table shows all possible status query string parameter values and,
 
 >> ###### Unhealthy
 >>```
->>HTTP/1.1 429 Too Many Requests
+>>HTTP/1.1 503 Service Unavailable
 >>Content-Type: application/json; charset=utf-8
 >>...
 >>```
@@ -431,10 +431,10 @@ The following table shows all possible status query string parameter values and,
 >* `404`: 
 >   * No checks
 >   * No checks for services matching specified _ServiceID_
->* `422`: Could not parse the response from Consul
->* `429`: One or more Consul checks have failed
 >* `500`: Unexpected failure
->* `503`: Consul unavailable
+>* `502`: Could not parse the response from Consul
+>* `503`: One or more Consul checks have failed
+>* `504`: Consul unavailable
 
 ---
 
@@ -464,7 +464,7 @@ The following table shows all possible status query string parameter values and,
 
 >> ###### Unhealthy
 >>```
->>HTTP/1.1 429 Too Many Requests
+>>HTTP/1.1 503 Service Unavailable
 >>Content-Type: application/json; charset=utf-8
 >>...
 >>```
@@ -504,10 +504,10 @@ The following table shows all possible status query string parameter values and,
 >* `404`: 
 >   * No checks
 >   * No checks for services matching specified _ServiceName_
->* `422`: Could not parse the response from Consul
->* `429`: One or more Consul checks have failed
 >* `500`: Unexpected failure
->* `503`: Consul unavailable
+>* `502`: Could not parse the response from Consul
+>* `503`: One or more Consul checks have failed
+>* `504`: Consul unavailable
 
 ## License
 

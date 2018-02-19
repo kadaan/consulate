@@ -31,8 +31,6 @@ import (
 )
 
 const (
-	DefaultConsulAddress = "localhost:8500"
-
 	consulChecksUrl        = "http://%s/v1/agent/checks"
 	verifyCheckParamKey    = "check"
 	verifyCheckParamTag    = ":" + verifyCheckParamKey

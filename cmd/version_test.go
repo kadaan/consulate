@@ -15,19 +15,25 @@
 package cmd
 
 import (
-	"github.com/kadaan/consulate/version"
-	"github.com/spf13/cobra"
+	"bytes"
+	"strconv"
+	"testing"
 )
 
-// versionCmd represents the version command
-var versionCmd = &cobra.Command{
-	Use:   "version",
-	Short: "Prints the Consulate version",
-	Run: func(cmd *cobra.Command, args []string) {
-		cmd.Printf(version.Print())
-	},
-}
-
-func init() {
-	rootCmd.AddCommand(versionCmd)
+func TestVersionCommand(t *testing.T) {
+	output := new(bytes.Buffer)
+	rootCmd.SetArgs([]string{"version"})
+	rootCmd.SetOutput(output)
+	e := rootCmd.Execute()
+	if e != nil {
+		t.Errorf("Version command failed with: %v", e)
+	}
+	expected := strconv.Quote(`Consulate, version  (branch: , revision: )
+  build user:       
+  build date:       
+  go version:       go1.9.3`)
+	result := strconv.Quote(output.String())
+	if result != expected {
+		t.Errorf("Version command: want '%v', got '%s'", expected, result)
+	}
 }

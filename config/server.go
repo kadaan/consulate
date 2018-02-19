@@ -18,6 +18,7 @@ import "time"
 
 const (
 	DefaultListenAddress   = ":8080"
+	DefaultConsulAddress   = "localhost:8500"
 	DefaultReadTimeout     = 10 * time.Second
 	DefaultWriteTimeout    = 10 * time.Second
 	DefaultShutdownTimeout = 15 * time.Second
@@ -35,7 +36,7 @@ type ServerConfig struct {
 func DefaultServerConfig() *ServerConfig {
 	return &ServerConfig{
 		ListenAddress:   DefaultListenAddress,
-		ConsulAddress:   DefaultListenAddress,
+		ConsulAddress:   DefaultConsulAddress,
 		ReadTimeout:     DefaultReadTimeout,
 		WriteTimeout:    DefaultWriteTimeout,
 		ShutdownTimeout: DefaultShutdownTimeout,
