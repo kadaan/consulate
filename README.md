@@ -116,11 +116,24 @@ All routes accept the following query string parameters:
 ---
 
 ### Verify
-By default, verification will fail checks whose status is worse than `passing`.  This can be changed by specifying the `status` query string parameter to one of: 
+Consulate verifies Consul checks by inspecting the status.  The possible status values, in increasing severity are:
 * `passing`
 * `maintenance`
 * `warning`
-* `critical`  
+* `critical`
+
+By default, verification will fail checks whose status is not `passing`.
+
+This can be changed by specifying the `status` query string parameter like `?status=warning`.  Only checks whose status is worse than the specified value will cause a failure.
+
+The following table shows all possible status query string parameter values and, as a result, which checks will be considered failing. 
+
+| Status Query String Parameter                | Fails When                       | Default? |
+| -------------------------------------------- | -------------------------------- | -------- |
+| _Not specified_ or `?status=passing`         | Check is not `passing`           | Yes      |
+| `?status=maintenance`                        | Check is `warning` or `critical` | No       |
+| `?status=warning`                            | Check is `critical`              | No       |
+| `?status=critical`                           | Never                            | No       |
 
 #### /verify/checks
 
