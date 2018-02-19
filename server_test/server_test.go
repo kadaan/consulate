@@ -31,15 +31,17 @@ var apiTests = []apiTestData{
 	{"/verify/checks?status=passing", spi.StatusCheckError, `{"Status":"Failed","Checks":{"check1b":{"Node":"{{.ConsulNodeName}}","CheckID":"check1b","Name":"check 1","Status":"warning","Notes":"","Output":"","ServiceID":"service1","ServiceName":"service1","ServiceTags":[],"Definition":{"HTTP":"","Header":null,"Method":"","TLSSkipVerify":false,"TCP":"","Interval":0,"Timeout":0,"DeregisterCriticalServiceAfter":0},"CreateIndex":0,"ModifyIndex":0},"check1c":{"Node":"{{.ConsulNodeName}}","CheckID":"check1c","Name":"check 1","Status":"critical","Notes":"","Output":"","ServiceID":"service1","ServiceName":"service1","ServiceTags":[],"Definition":{"HTTP":"","Header":null,"Method":"","TLSSkipVerify":false,"TCP":"","Interval":0,"Timeout":0,"DeregisterCriticalServiceAfter":0},"CreateIndex":0,"ModifyIndex":0}}}`},
 	{"/verify/checks?status=warning", spi.StatusCheckError, `{"Status":"Failed","Checks":{"check1c":{"Node":"{{.ConsulNodeName}}","CheckID":"check1c","Name":"check 1","Status":"critical","Notes":"","Output":"","ServiceID":"service1","ServiceName":"service1","ServiceTags":[],"Definition":{"HTTP":"","Header":null,"Method":"","TLSSkipVerify":false,"TCP":"","Interval":0,"Timeout":0,"DeregisterCriticalServiceAfter":0},"CreateIndex":0,"ModifyIndex":0}}}`},
 	{"/verify/checks?status=critical", spi.StatusOK, `{"Status":"Ok"}`},
+	{"/verify/checks/id", spi.StatusNoChecksError, `404 page not found`},
 	{"/verify/checks/id/unknown", spi.StatusNoChecksError, `{"Status":"No Checks","Detail":"No checks with CheckID: unknown"}`},
+	{"/verify/checks/name", spi.StatusNoChecksError, `404 page not found`},
 	{"/verify/checks/name/unknown", spi.StatusNoChecksError, `{"Status":"No Checks","Detail":"No checks with CheckName: unknown"}`},
 	{"/verify/checks/id/check1b?status=warning", spi.StatusOK, `{"Status":"Ok"}`},
 	{"/verify/checks/name/check%202?verbose", spi.StatusOK, `{"Status":"Ok","Checks":{"check2a":{"Node":"{{.ConsulNodeName}}","CheckID":"check2a","Name":"check 2","Status":"passing","Notes":"","Output":"","ServiceID":"service2","ServiceName":"service2","ServiceTags":[],"Definition":{"HTTP":"","Header":null,"Method":"","TLSSkipVerify":false,"TCP":"","Interval":0,"Timeout":0,"DeregisterCriticalServiceAfter":0},"CreateIndex":0,"ModifyIndex":0}}}`},
-	{"/verify/service/id/unknown", spi.StatusNoChecksError, `{"Status":"No Checks","Detail":"No check for services with ServiceId: unknown"}`},
-	{"/verify/service/name/unknown", spi.StatusNoChecksError, `{"Status":"No Checks","Detail":"No check for services with ServiceName: unknown"}`},
-	{"/verify/service/service1?status=critical", spi.StatusOK, `{"Status":"Ok"}`},
-	{"/verify/service/service2?verbose", spi.StatusOK, `{"Status":"Ok","Checks":{"check2a":{"Node":"{{.ConsulNodeName}}","CheckID":"check2a","Name":"check 2","Status":"passing","Notes":"","Output":"","ServiceID":"service2","ServiceName":"service2","ServiceTags":[],"Definition":{"HTTP":"","Header":null,"Method":"","TLSSkipVerify":false,"TCP":"","Interval":0,"Timeout":0,"DeregisterCriticalServiceAfter":0},"CreateIndex":0,"ModifyIndex":0}}}`},
-	{"/verify/service/service2?pretty", spi.StatusOK, `{
+	{"/verify/service/id/unknown", spi.StatusNoChecksError, `{"Status":"No Checks","Detail":"No checks for services with ServiceId: unknown"}`},
+	{"/verify/service/name/unknown", spi.StatusNoChecksError, `{"Status":"No Checks","Detail":"No checks for services with ServiceName: unknown"}`},
+	{"/verify/service/id/service1?status=critical", spi.StatusOK, `{"Status":"Ok"}`},
+	{"/verify/service/id/service2?verbose", spi.StatusOK, `{"Status":"Ok","Checks":{"check2a":{"Node":"{{.ConsulNodeName}}","CheckID":"check2a","Name":"check 2","Status":"passing","Notes":"","Output":"","ServiceID":"service2","ServiceName":"service2","ServiceTags":[],"Definition":{"HTTP":"","Header":null,"Method":"","TLSSkipVerify":false,"TCP":"","Interval":0,"Timeout":0,"DeregisterCriticalServiceAfter":0},"CreateIndex":0,"ModifyIndex":0}}}`},
+	{"/verify/service/id/service2?pretty", spi.StatusOK, `{
     "Status": "Ok"
 }`},
 }
