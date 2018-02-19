@@ -14,7 +14,9 @@
 
 package main
 
-import "github.com/kadaan/consulate/cmd"
+import (
+	"github.com/kadaan/consulate/cmd"
+)
 
 func main() {
 	cmd.Execute()
