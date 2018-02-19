@@ -1,7 +1,6 @@
 package main
 
 import (
-	"bytes"
 	"flag"
 	"io/ioutil"
 	"os"
@@ -9,6 +8,7 @@ import (
 	"path/filepath"
 	"strconv"
 	"testing"
+	"strings"
 )
 
 // Update golden file by passing `-test.update` to program arguments
@@ -32,8 +32,10 @@ func TestMainFunction(t *testing.T) {
 		}
 	}
 	expected := get(t, []byte(actual))
-	if !bytes.Equal(actual, expected) {
-		t.Fatalf("Output ==> want '%v', got '%v'", strconv.Quote(string(expected)), strconv.Quote(string(actual)))
+	actualString := strconv.Quote(string(actual))
+	expectedString := strconv.Quote(string(expected))
+	if !strings.HasPrefix(expectedString, actualString) {
+		t.Fatalf("Output ==> want '%v', got '%v'", expectedString, expectedString)
 	}
 }
 
