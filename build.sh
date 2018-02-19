@@ -162,7 +162,7 @@ function run() {
     fi
     goveralls -v -service=travis-ci || fatal "goveralls: $?"
   else
-    go test -v -ldflags "-X github.com/kadaan/consulate/version.Version=$VERSION -X github.com/kadaan/consulate/version.Revision=$revision -X github.com/kadaan/consulate/version.Branch=$branch -X github.com/kadaan/consulate/version.BuildUser=$USER@$host -X github.com/kadaan/consulate/version.BuildDate=$buildDate" ./... || fatal "$gopackage tests failed: $?"
+    go test -v ./... || fatal "$gopackage tests failed: $?"
   fi
 
   verbose "Building binaries..."
