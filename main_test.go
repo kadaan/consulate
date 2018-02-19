@@ -20,7 +20,6 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
-	"strconv"
 	"strings"
 	"testing"
 )
@@ -46,10 +45,10 @@ func TestMainFunction(t *testing.T) {
 		}
 	}
 	expected := get(t, []byte(actual))
-	actualString := strconv.Quote(string(actual))
-	expectedString := strconv.Quote(string(expected))
-	if !strings.HasPrefix(actualString, expectedString) {
-		t.Fatalf("Output ==> want '%v', got '%v'", expectedString, expectedString)
+	actualString := string(actual)
+	expectedString := string(expected)
+	if !strings.HasPrefix(string(actual), string(expected)) {
+		t.Fatalf("Output ==> \n    want:\n%v\n\n    got\n%v", expectedString, actualString)
 	}
 }
 
