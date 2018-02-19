@@ -48,7 +48,7 @@ func TestMainFunction(t *testing.T) {
 	expected := get(t, []byte(actual))
 	actualString := strconv.Quote(string(actual))
 	expectedString := strconv.Quote(string(expected))
-	if !strings.HasPrefix(expectedString, actualString) {
+	if !strings.HasPrefix(actualString, expectedString) {
 		t.Fatalf("Output ==> want '%v', got '%v'", expectedString, expectedString)
 	}
 }
