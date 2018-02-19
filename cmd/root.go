@@ -29,9 +29,9 @@ var rootCmd = &cobra.Command{
 	Use:   "consulate",
 	Short: "Consul check monitoring endpoint",
 	Long: `Consulate provides a normalized HTTP endpoint that responds with 
-200 / non-200 according to Consul checks specified in the requested URL. 
-This endpoint can then be composed with existing HTTP-URL-monitoring tools like 
-AWS ELB health checks to enable service QoS monitoring based on Consul checks.`,
+200 / non-200 according to Consul checks specified in the requested URL.
+This endpoint can then be composed with existing HTTP based monitoring tools, like
+AWS ELB health checks, to enable service monitoring based on Consul checks.`,
 }
 
 // Execute adds all child commands to the root command and sets flags appropriately.
