@@ -50,12 +50,17 @@ All routes accept the following query string parameters:
 >    "GoVersion": "go1.9"
 >}
 >```
+>
+>##### Status Codes
+>* `200`: Successful call
+>* `500`: Unexpected failure
 
 ---
 
 #### /health
 
->The `/health` route returns 200 if Consulate is running and able to communicate with >Consul.  Otherwise, a non-200 status code is returned.
+>The `/health` route returns 200 if Consulate is running and able to communicate with 
+>Consul.  Otherwise, a non-200 status code is returned.
 >
 >##### Request
 >
@@ -88,6 +93,12 @@ All routes accept the following query string parameters:
 >>    "Detail": "Get http://localhost:8500/v1/agent/checks: dial tcp [::1]:8500: getsockopt: connection refused"
 >>}
 >>```
+>
+>##### Status Codes
+>* `200`: Successful call
+>* `422`: Could not parse the response from Consul
+>* `500`: Unexpected failure
+>* `503`: Consul unavailable
 
 ---
 
@@ -112,6 +123,10 @@ All routes accept the following query string parameters:
 >consulate_request_duration_seconds_bucket{code="200",method="GET",url="/about",le="3"} 1
 >...
 >```
+>
+>##### Status Codes
+>* `200`: Successful call
+>* `500`: Unexpected failure
 
 ---
 
@@ -160,7 +175,7 @@ The following table shows all possible status query string parameter values and,
 
 >>##### Unhealthy
 >>```
->>HTTP/1.1 500 Internal Server Error
+>>HTTP/1.1 429 Too Many Requests
 >>Content-Type: application/json; charset=utf-8
 >>```
 >>```json
@@ -193,6 +208,14 @@ The following table shows all possible status query string parameter values and,
 >>    }
 >>}
 >>```
+>
+>##### Status Codes
+>* `200`: Successful call
+>* `404`: No checks
+>* `422`: Could not parse the response from Consul
+>* `429`: One or more Consul checks have failed
+>* `500`: Unexpected failure
+>* `503`: Consul unavailable
 
 ---
 
@@ -223,7 +246,7 @@ The following table shows all possible status query string parameter values and,
 
 >> ###### Unhealthy
 >>```
->>HTTP/1.1 500 Internal Server Error
+>>HTTP/1.1 429 Too Many Requests
 >>Content-Type: application/json; charset=utf-8
 >>...
 >>```
@@ -257,6 +280,16 @@ The following table shows all possible status query string parameter values and,
 >>    }
 >>}
 >>```
+>
+>##### Status Codes
+>* `200`: Successful call
+>* `404`: 
+>   * No checks
+>   * No checks matching specified _CheckID_/_CheckName_
+>* `422`: Could not parse the response from Consul
+>* `429`: One or more Consul checks have failed
+>* `500`: Unexpected failure
+>* `503`: Consul unavailable
 
 ---
 
@@ -286,7 +319,7 @@ The following table shows all possible status query string parameter values and,
 
 >> ###### Unhealthy
 >>```
->>HTTP/1.1 500 Internal Server Error
+>>HTTP/1.1 429 Too Many Requests
 >>Content-Type: application/json; charset=utf-8
 >>...
 >>```
@@ -320,6 +353,16 @@ The following table shows all possible status query string parameter values and,
 >>    }
 >>}
 >>```
+>
+>##### Status Codes
+>* `200`: Successful call
+>* `404`: 
+>   * No checks
+>   * No checks for services matching specified _ServiceID_/_ServiceName_
+>* `422`: Could not parse the response from Consul
+>* `429`: One or more Consul checks have failed
+>* `500`: Unexpected failure
+>* `503`: Consul unavailable
 
 ## License
 

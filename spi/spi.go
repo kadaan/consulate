@@ -17,22 +17,22 @@ package spi
 import "net/http"
 
 const (
-	// StatusOK represents a Consulate call which succeeded.
+	// StatusOK (200) represents a Consulate call which succeeded.
 	StatusOK = http.StatusOK
 
-	// StatusBadRequestError represents a request to Consulate which could not be understood.
+	// StatusBadRequestError (400) represents a request to Consulate which could not be understood.
 	StatusBadRequestError = http.StatusBadRequest
 
-	// StatusNoChecksError represents an error when no Consul checks exist.
+	// StatusNoChecksError (404) represents an error when no Consul checks exist.
 	StatusNoChecksError = http.StatusNotFound
 
-	// StatusCheckError represents an error indicating one or more Consul checks have failed.
-	StatusCheckError = http.StatusInternalServerError
+	// StatusCheckError (429) represents an error indicating one or more Consul checks have failed.
+	StatusCheckError = http.StatusTooManyRequests
 
-	// StatusConsulUnavailableError represents an error indicating the Consul did not respond promptly.
+	// StatusConsulUnavailableError (503) represents an error indicating the Consul did not respond promptly.
 	StatusConsulUnavailableError = http.StatusServiceUnavailable
 
-	// StatusUnprocessableResponseError represents an error indicating that Consulate could not parse the reponse from Consul.
+	// StatusUnprocessableResponseError (422) represents an error indicating that Consulate could not parse the response from Consul.
 	StatusUnprocessableResponseError = http.StatusUnprocessableEntity
 )
 

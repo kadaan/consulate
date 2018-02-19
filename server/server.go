@@ -168,40 +168,58 @@ func (r *server) health(context *gin.Context) {
 
 type checkHandler func(allChecks *map[string]*checks.Check)
 
-type checkMatcher func(check *checks.Check) bool
+type checkMatcher struct {
+	noChecksErrorMessage string
+	matcher              func(c *checks.Check) bool
+}
+
+func (m *checkMatcher) match(c *checks.Check) bool {
+	return m.matcher(c)
+}
 
 func (r *server) verifyAllChecks(context *gin.Context) {
-	matcher := func(check *checks.Check) bool { return true }
+	matcher := checkMatcher{
+		noChecksErrorMessage: "No checks",
+		matcher:              func(c *checks.Check) bool { return true },
+	}
 	r.verifyChecks(context, matcher)
 }
 
 func (r *server) verifyCheck(context *gin.Context) {
-	checkName := context.Param(verifyCheckParamKey)
-	matcher := func(check *checks.Check) bool { return check.IsCheck(checkName) }
+	check := context.Param(verifyCheckParamKey)
+	matcher := checkMatcher{
+		noChecksErrorMessage: fmt.Sprintf("No checks with CheckID or CheckName: %s", check),
+		matcher:              func(c *checks.Check) bool { return c.IsCheck(check) },
+	}
 	r.verifyChecks(context, matcher)
 }
 
 func (r *server) verifyService(context *gin.Context) {
 	service := context.Param(verifyServiceParamKey)
-	matcher := func(check *checks.Check) bool { return check.IsService(service) }
+	matcher := checkMatcher{
+		noChecksErrorMessage: fmt.Sprintf("No check for services with ServiceId or ServiceName: %s", service),
+		matcher:              func(c *checks.Check) bool { return c.IsService(service) },
+	}
 	r.verifyChecks(context, matcher)
 }
 
-func (r *server) verifyChecks(context *gin.Context, match checkMatcher) {
+func (r *server) verifyChecks(context *gin.Context, matcher checkMatcher) {
 	r.processChecks(context, func(allChecks *map[string]*checks.Check) {
 		_, isVerbose := context.GetQuery(verboseQueryStringKey)
 		s := r.getStatus(context)
 
 		var checkCount = 0
+		var verifiedCheckCount = 0
 		var failedCount = false
 		var matchedChecks map[string]*checks.Check
 		matchedChecks = make(map[string]*checks.Check)
 		for k, v := range *allChecks {
-			if match(v) {
-				checkCount++
+			checkCount++
+			if matcher.match(v) {
+				verifiedCheckCount++
 				b, e := v.MatchesStatus(s)
 				if e != nil {
-					r.abortWithStatusJSON(context, spi.StatusCheckError, checks.Result{Status: checks.Failed, Detail: e.Error()})
+					r.abortWithStatusJSON(context, spi.StatusUnprocessableResponseError, checks.Result{Status: checks.Failed, Detail: e.Error()})
 				}
 				if b {
 					matchedChecks[k] = v
@@ -213,8 +231,8 @@ func (r *server) verifyChecks(context *gin.Context, match checkMatcher) {
 		}
 		if failedCount {
 			r.abortWithStatusJSON(context, spi.StatusCheckError, checks.Result{Status: checks.Failed, Checks: matchedChecks})
-		} else if checkCount == 0 {
-			r.abortWithStatusJSON(context, spi.StatusNoChecksError, checks.Result{Status: checks.NoChecks})
+		} else if checkCount == 0 || verifiedCheckCount == 0 {
+			r.abortWithStatusJSON(context, spi.StatusNoChecksError, checks.Result{Status: checks.NoChecks, Detail: matcher.noChecksErrorMessage})
 		} else {
 			r.json(context, spi.StatusOK, checks.Result{Status: checks.Ok, Checks: matchedChecks})
 		}
