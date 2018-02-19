@@ -33,20 +33,20 @@ import (
 const (
 	DefaultConsulAddress = "localhost:8500"
 
-	consulChecksUrl            = "http://%s/v1/agent/checks"
-	verifyCheckParamKey        = "check"
-	verifyCheckParamTag        = ":" + verifyCheckParamKey
-	verifyServiceParamKey      = "service"
-	verifyServiceParamTag      = ":" + verifyServiceParamKey
-	prettyQueryStringKey       = "pretty"
-	verboseQueryStringKey      = "verbose"
-	statusQueryStringKey       = "status"
-	aboutRoute                 = "/about"
-	healthRoute                = "/health"
-	verifyAllChecksRoute       = "/verify/checks"
-	verifyCheckIdRoute   = verifyAllChecksRoute + "/id/" + verifyCheckParamTag
+	consulChecksUrl        = "http://%s/v1/agent/checks"
+	verifyCheckParamKey    = "check"
+	verifyCheckParamTag    = ":" + verifyCheckParamKey
+	verifyServiceParamKey  = "service"
+	verifyServiceParamTag  = ":" + verifyServiceParamKey
+	prettyQueryStringKey   = "pretty"
+	verboseQueryStringKey  = "verbose"
+	statusQueryStringKey   = "status"
+	aboutRoute             = "/about"
+	healthRoute            = "/health"
+	verifyAllChecksRoute   = "/verify/checks"
+	verifyCheckIdRoute     = verifyAllChecksRoute + "/id/" + verifyCheckParamTag
 	verifyCheckNameRoute   = verifyAllChecksRoute + "/name/" + verifyCheckParamTag
-	verifyServiceIdRoute = "/verify/service/id/" + verifyServiceParamTag
+	verifyServiceIdRoute   = "/verify/service/id/" + verifyServiceParamTag
 	verifyServiceNameRoute = "/verify/service/name/" + verifyServiceParamTag
 )
 
