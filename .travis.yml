@@ -1,6 +1,9 @@
 language: go
-
+sudo: false
 go:
   - 1.9.3
-
-script: ./build.sh
+before_install:
+  - go get github.com/mattn/goveralls
+script:
+  - ./build.sh
+  - $GOPATH/bin/goveralls -service=travis-ci
