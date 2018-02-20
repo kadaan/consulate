@@ -89,7 +89,7 @@ Flags:
       --write-timeout duration                   the maximum duration before timing out writes of the response (default 10s)
 
 Global Flags:
-      --config string   config file (default is $HOME/.consulate.yaml)
+      --config string   config file (default is .consulate)
 ```
 
 ##### Example
