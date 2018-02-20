@@ -60,7 +60,7 @@ Global Flags:
 ```console
 $ ./dist/consulate_darwin_amd64 version
 Consulate, version 0.0.1 (branch: master, revision: 6b85aa3f65798fdaa7ed65f7b9a981c70bbd471b)
-  build user:       jbaranick@ensadmins-MacBook-Pro.local
+  build user:       user@computer.local
   build date:       2018-02-19T17:49:32Z
   go version:       go1.9.3
 ```
