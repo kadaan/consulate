@@ -5,18 +5,20 @@ Consulate provides a normalized HTTP endpoint that responds with
 This endpoint can then be composed with existing HTTP based monitoring tools, like
 AWS ELB health checks, to enable service monitoring based on Consul checks.
 
-### Building from source
+## Building from source
 
 To build Consulate from the source code yourself you need to have a working
 Go environment with [version 1.9 or greater installed](http://golang.org/doc/install).
 
-    $ mkdir -p $GOPATH/src/github.com/kadaan
-    $ cd $GOPATH/src/github.com/kadaan
-    $ git clone https://github.com/kadaan/consulate.git
-    $ cd consulate
-    $ ./build.sh
+```console
+$ mkdir -p $GOPATH/src/github.com/kadaan
+$ cd $GOPATH/src/github.com/kadaan
+$ git clone https://github.com/kadaan/consulate.git
+$ cd consulate
+$ ./build.sh
+```
 
-### Usage
+## Usage
 
 ```console
 Consulate provides a normalized HTTP endpoint that responds with
@@ -39,7 +41,7 @@ Flags:
 Use "consulate [command] --help" for more information about a command.
 ```
 
-#### Version
+### Version
 
 ##### Help
 ```console
@@ -65,7 +67,7 @@ Consulate, version 0.0.1 (branch: master, revision: 6b85aa3f65798fdaa7ed65f7b9a9
   go version:       go1.9.3
 ```
 
-#### Server
+### Server
 
 ##### Help
 ```console
@@ -97,7 +99,7 @@ Press Ctrl-C to shutdown server
 Started Consulate server on :8080
 ```
 
-### Routes
+## Routes
 
 All routes accept the following query string parameters:
 
@@ -106,113 +108,113 @@ All routes accept the following query string parameters:
 
 ---
 
-#### /about
->The `/about` route returns detailed version information about Consulate.
->
->##### Request
->
->```bash
->curl -X GET http:/localhost:8080/about\?pretty
->```
->
->##### Response
->```
->HTTP/1.1 200 OK
->Content-Type: application/json; charset=utf-8
->...
->```
->```json
->{
->    "Version": "0.0.1",
->    "Revision": "c216c1294676cdaac0b018244be31ebb6e404b92",
->    "Branch": "master",
->    "BuildUser": "user@computer.local",
->    "BuildDate": "2018-02-15T07:10:39Z",
->    "GoVersion": "go1.9"
->}
->```
->
->##### Status Codes
->* `200`: Successful call
->* `500`: Unexpected failure
+### `/about`
+
+The `/about` route returns detailed version information about Consulate.
+
+##### Request
+```console
+curl -X GET http:/localhost:8080/about\?pretty
+```
+
+##### Response
+```
+HTTP/1.1 200 OK
+Content-Type: application/json; charset=utf-8
+...
+```
+```json
+{
+    "Version": "0.0.1",
+    "Revision": "c216c1294676cdaac0b018244be31ebb6e404b92",
+    "Branch": "master",
+    "BuildUser": "user@computer.local",
+    "BuildDate": "2018-02-15T07:10:39Z",
+    "GoVersion": "go1.9"
+}
+```
+
+##### Status Codes
+* `200`: Successful call
+* `500`: Unexpected failure
 
 ---
 
-#### /health
+### `/health`
 
->The `/health` route returns 200 if Consulate is running and able to communicate with 
->Consul.  Otherwise, a non-200 status code is returned.
->
->##### Request
->
->```bash
->curl -X GET http:/localhost:8080/health\?pretty
->```
->
->##### Responses
->>###### Healthy
->>```
->>HTTP/1.1 200 OK
->>Content-Type: application/json; charset=utf-8
->>...
->>```
->>```json
->>{
->>    "Status": "Ok"
->>}
->>```
+The `/health` route returns 200 if Consulate is running and able to communicate with 
+Consul.  Otherwise, a non-200 status code is returned.
 
->>###### Unhealthy
->>```
->>HTTP/1.1 503 Service Unavailable
->>Content-Type: application/json; charset=utf-8
->>...
->>```
->>```json
->>{
->>    "Status": "Failed",
->>    "Detail": "Get http://localhost:8500/v1/agent/checks: dial tcp [::1]:8500: getsockopt: connection refused"
->>}
->>```
->
->##### Status Codes
->* `200`: Successful call
->* `500`: Unexpected failure
->* `502`: Could not parse the response from Consul
->* `504`: Consul unavailable
+##### Request
+```console
+curl -X GET http:/localhost:8080/health\?pretty
+```
 
----
+##### Responses
 
-#### /metrics
+###### Healthy
+```
+HTTP/1.1 200 OK
+Content-Type: application/json; charset=utf-8
+...
+```
+```json
+{
+    "Status": "Ok"
+}
+```
 
->The `/metrics` route returns Prometheus metrics.
->
->##### Request
->
->```bash
->curl -X GET http:/localhost:8080/metrics
->```
->
->##### Response
->
->```
-># HELP consulate_request_duration_seconds The HTTP request latencies in seconds.
-># TYPE consulate_request_duration_seconds histogram
->consulate_request_duration_seconds_bucket{code="200",method="GET",url="/about",le="0.5"} 1
->consulate_request_duration_seconds_bucket{code="200",method="GET",url="/about",le="1"} 1
->consulate_request_duration_seconds_bucket{code="200",method="GET",url="/about",le="2"} 1
->consulate_request_duration_seconds_bucket{code="200",method="GET",url="/about",le="3"} 1
->...
->```
->
->##### Status Codes
->* `200`: Successful call
->* `500`: Unexpected failure
+###### Unhealthy
+```
+HTTP/1.1 503 Service Unavailable
+Content-Type: application/json; charset=utf-8
+...
+```
+```json
+{
+    "Status": "Failed",
+    "Detail": "Get http://localhost:8500/v1/agent/checks: dial tcp [::1]:8500: getsockopt: connection refused"
+}
+```
+
+##### Status Codes
+* `200`: Successful call
+* `500`: Unexpected failure
+* `502`: Could not parse the response from Consul
+* `504`: Consul unavailable
 
 ---
 
-### Verify
+### `/metrics`
+
+The `/metrics` route returns Prometheus metrics.
+
+##### Request
+```console
+curl -X GET http:/localhost:8080/metrics
+```
+
+##### Response
+```
+# HELP consulate_request_duration_seconds The HTTP request latencies in seconds.
+# TYPE consulate_request_duration_seconds histogram
+consulate_request_duration_seconds_bucket{code="200",method="GET",url="/about",le="0.5"} 1
+consulate_request_duration_seconds_bucket{code="200",method="GET",url="/about",le="1"} 1
+consulate_request_duration_seconds_bucket{code="200",method="GET",url="/about",le="2"} 1
+consulate_request_duration_seconds_bucket{code="200",method="GET",url="/about",le="3"} 1
+...
+```
+
+##### Status Codes
+* `200`: Successful call
+* `500`: Unexpected failure
+
+---
+
+## Verify
+
 Consulate verifies Consul checks by inspecting the status.  The possible status values, in increasing severity are:
+
 * `passing`
 * `maintenance`
 * `warning`
@@ -231,364 +233,363 @@ The following table shows all possible status query string parameter values and,
 | `?status=warning`                            | Check is `critical`              | No       |
 | `?status=critical`                           | Never                            | No       |
 
-#### /verify/checks
+### `/verify/checks`
 
->The `/verify/checks` route returns 200 if all Consul checks ok.  Otherwise, a non-200 status code is returned and the failing checks will be in the response.
->
->##### Request
->
->```bash
->curl -X GET http:/localhost:8080/verify/checks\?pretty
->```
->
->##### Responses
->> ###### Healthy
->>```
->>HTTP/1.1 200 OK
->>Content-Type: application/json; charset=utf-8
->>...
->>```
->>```json
->>{
->>  "Status": "Ok"
->>}
->>```
+The `/verify/checks` route returns 200 if all Consul checks ok.  Otherwise, a non-200 status code is returned and the failing checks will be in the response.
 
->>##### Unhealthy
->>```
->>HTTP/1.1 503 Service Unavailable
->>Content-Type: application/json; charset=utf-8
->>```
->>```json
->>{
->>    "Status": "Failed",
->>    "Checks": {
->>        "check1b": {
->>            "Node": "computer.local",
->>            "CheckID": "check1b",
->>            "Name": "check 1",
->>            "Status": "critical",
->>            "Notes": "Check 1",
->>            "Output": "Timed out (1s) running check",
->>            "ServiceID": "service2",
->>            "ServiceName": "service2",
->>            "ServiceTags": [],
->>            "Definition": {
->>                "HTTP": "",
->>                "Header": null,
->>                "Method": "",
->>                "TLSSkipVerify": false,
->>                "TCP": "",
->>                "Interval": 0,
->>                "Timeout": 0,
->>                "DeregisterCriticalServiceAfter": 0
->>            },
->>            "CreateIndex": 0,
->>            "ModifyIndex": 0
->>        }
->>    }
->>}
->>```
->
->##### Status Codes
->* `200`: Successful call
->* `404`: No checks
->* `500`: Unexpected failure
->* `502`: Could not parse the response from Consul
->* `503`: One or more Consul checks have failed
->* `504`: Consul unavailable
+##### Request
+```console
+curl -X GET http:/localhost:8080/verify/checks\?pretty
+```
 
----
+##### Responses
 
-#### /verify/checks/id/:checkId
+###### Healthy
+```
+HTTP/1.1 200 OK
+Content-Type: application/json; charset=utf-8
+...
+```
+```json
+{
+  "Status": "Ok"
+}
+```
 
->The `/verify/checks/id/:checkId` route returns 200 if the specified Consul check is ok.  Otherwise, a non-200 status code is returned and the failing check will be in the response.
->
->
->##### Request
->
->```bash
->curl -X GET http:/localhost:8080/verify/checks/id/check1b\?pretty
->```
->
->##### Responses
->> ###### Healthy
->>```
->>HTTP/1.1 200 OK
->>Content-Type: application/json; charset=utf-8
->>...
->>```
->>```json
->>{
->>    "Status": "Ok"
->>}
->>```
+##### Unhealthy
+```
+HTTP/1.1 503 Service Unavailable
+Content-Type: application/json; charset=utf-8
+```
+```json
+{
+    "Status": "Failed",
+    "Checks": {
+        "check1b": {
+            "Node": "computer.local",
+            "CheckID": "check1b",
+            "Name": "check 1",
+            "Status": "critical",
+            "Notes": "Check 1",
+            "Output": "Timed out (1s) running check",
+            "ServiceID": "service2",
+            "ServiceName": "service2",
+            "ServiceTags": [],
+            "Definition": {
+                "HTTP": "",
+                "Header": null,
+                "Method": "",
+                "TLSSkipVerify": false,
+                "TCP": "",
+                "Interval": 0,
+                "Timeout": 0,
+                "DeregisterCriticalServiceAfter": 0
+            },
+            "CreateIndex": 0,
+            "ModifyIndex": 0
+        }
+    }
+}
+```
 
->> ###### Unhealthy
->>```
->>HTTP/1.1 503 Service Unavailable
->>Content-Type: application/json; charset=utf-8
->>...
->>```
->>```json
->>{
->>    "Status": "Failed",
->>    "Checks": {
->>        "check1b": {
->>            "Node": "computer.local",
->>            "CheckID": "check1b",
->>            "Name": "check 1",
->>            "Status": "critical",
->>            "Notes": "Check 1",
->>            "Output": "Timed out (1s) running check",
->>            "ServiceID": "service2",
->>            "ServiceName": "service2",
->>            "ServiceTags": [],
->>            "Definition": {
->>                "HTTP": "",
->>                "Header": null,
->>                "Method": "",
->>                "TLSSkipVerify": false,
->>                "TCP": "",
->>                "Interval": 0,
->>                "Timeout": 0,
->>                "DeregisterCriticalServiceAfter": 0
->>            },
->>            "CreateIndex": 0,
->>            "ModifyIndex": 0
->>        }
->>    }
->>}
->>```
->
->##### Status Codes
->* `200`: Successful call
->* `404`: 
->   * No checks
->   * No checks matching specified _CheckID_
->* `500`: Unexpected failure
->* `502`: Could not parse the response from Consul
->* `503`: One or more Consul checks have failed
->* `504`: Consul unavailable
+##### Status Codes
+* `200`: Successful call
+* `404`: No checks
+* `500`: Unexpected failure
+* `502`: Could not parse the response from Consul
+* `503`: One or more Consul checks have failed
+* `504`: Consul unavailable
 
 ---
 
-#### /verify/checks/id/:checkName
+### `/verify/checks/id/:checkId`
 
->The `/verify/checks/id/:checkName` route returns 200 if the specified Consul check is ok.  Otherwise, a non-200 status code is returned and the failing check will be in the response.
->More then one check will be verified if multiple checks share the same name.
->
->
->##### Request
->
->```bash
->curl -X GET http:/localhost:8080/verify/checks/id/check%201\?pretty
->```
->
->##### Responses
->> ###### Healthy
->>```
->>HTTP/1.1 200 OK
->>Content-Type: application/json; charset=utf-8
->>...
->>```
->>```json
->>{
->>    "Status": "Ok"
->>}
->>```
+The `/verify/checks/id/:checkId` route returns 200 if the specified Consul check is ok.  Otherwise, a non-200 status code is returned and the failing check will be in the response.
 
->> ###### Unhealthy
->>```
->>HTTP/1.1 503 Service Unavailable
->>Content-Type: application/json; charset=utf-8
->>...
->>```
->>```json
->>{
->>    "Status": "Failed",
->>    "Checks": {
->>        "check1b": {
->>            "Node": "computer.local",
->>            "CheckID": "check1b",
->>            "Name": "check 1",
->>            "Status": "critical",
->>            "Notes": "Check 1",
->>            "Output": "Timed out (1s) running check",
->>            "ServiceID": "service2",
->>            "ServiceName": "service2",
->>            "ServiceTags": [],
->>            "Definition": {
->>                "HTTP": "",
->>                "Header": null,
->>                "Method": "",
->>                "TLSSkipVerify": false,
->>                "TCP": "",
->>                "Interval": 0,
->>                "Timeout": 0,
->>                "DeregisterCriticalServiceAfter": 0
->>            },
->>            "CreateIndex": 0,
->>            "ModifyIndex": 0
->>        }
->>    }
->>}
->>```
->
->##### Status Codes
->* `200`: Successful call
->* `404`: 
->   * No checks
->   * No checks matching specified _CheckName_
->* `500`: Unexpected failure
->* `502`: Could not parse the response from Consul
->* `503`: One or more Consul checks have failed
->* `504`: Consul unavailable
+##### Request
+```console
+curl -X GET http:/localhost:8080/verify/checks/id/check1b\?pretty
+```
+
+##### Responses
+
+###### Healthy
+```
+HTTP/1.1 200 OK
+Content-Type: application/json; charset=utf-8
+...
+```
+```json
+{
+    "Status": "Ok"
+}
+```
+
+###### Unhealthy
+```
+HTTP/1.1 503 Service Unavailable
+Content-Type: application/json; charset=utf-8
+...
+```
+```json
+{
+    "Status": "Failed",
+    "Checks": {
+        "check1b": {
+            "Node": "computer.local",
+            "CheckID": "check1b",
+            "Name": "check 1",
+            "Status": "critical",
+            "Notes": "Check 1",
+            "Output": "Timed out (1s) running check",
+            "ServiceID": "service2",
+            "ServiceName": "service2",
+            "ServiceTags": [],
+            "Definition": {
+                "HTTP": "",
+                "Header": null,
+                "Method": "",
+                "TLSSkipVerify": false,
+                "TCP": "",
+                "Interval": 0,
+                "Timeout": 0,
+                "DeregisterCriticalServiceAfter": 0
+            },
+            "CreateIndex": 0,
+            "ModifyIndex": 0
+        }
+    }
+}
+```
+
+##### Status Codes
+* `200`: Successful call
+* `404`: 
+   * No checks
+   * No checks matching specified _CheckID_
+* `500`: Unexpected failure
+* `502`: Could not parse the response from Consul
+* `503`: One or more Consul checks have failed
+* `504`: Consul unavailable
 
 ---
 
-#### /verify/service/id/:serviceId
+### `/verify/checks/id/:checkName`
 
->The `/verify/service/id/:serviceId` route returns 200 if all Consul checks for the specified service are ok.  Otherwise, a non-200 status code is returned and the failing checks will be in the response.
->
->##### Request
->
->```bash
->curl -X GET http:/localhost:8080/verify/service/id/service2\?pretty
->```
->
->##### Responses
->> ###### Healthy
->>```
->>HTTP/1.1 200 OK
->>Content-Type: application/json; charset=utf-8
->>...
->>```
->>```json
->>{
->>    "Status": "Ok"
->>}
->>```
+The `/verify/checks/id/:checkName` route returns 200 if the specified Consul check is ok.  Otherwise, a non-200 status code is returned and the failing check will be in the response.
+More then one check will be verified if multiple checks share the same name.
 
->> ###### Unhealthy
->>```
->>HTTP/1.1 503 Service Unavailable
->>Content-Type: application/json; charset=utf-8
->>...
->>```
->>```json
->>{
->>    "Status": "Failed",
->>    "Checks": {
->>        "check1b": {
->>            "Node": "computer.local",
->>            "CheckID": "check1b",
->>            "Name": "check 1",
->>            "Status": "critical",
->>            "Notes": "Check 1",
->>            "Output": "Timed out (1s) running check",
->>            "ServiceID": "service2",
->>            "ServiceName": "service 2",
->>            "ServiceTags": [],
->>            "Definition": {
->>                "HTTP": "",
->>                "Header": null,
->>                "Method": "",
->>                "TLSSkipVerify": false,
->>                "TCP": "",
->>                "Interval": 0,
->>                "Timeout": 0,
->>                "DeregisterCriticalServiceAfter": 0
->>            },
->>            "CreateIndex": 0,
->>            "ModifyIndex": 0
->>        }
->>    }
->>}
->>```
->
->##### Status Codes
->* `200`: Successful call
->* `404`: 
->   * No checks
->   * No checks for services matching specified _ServiceID_
->* `500`: Unexpected failure
->* `502`: Could not parse the response from Consul
->* `503`: One or more Consul checks have failed
->* `504`: Consul unavailable
+##### Request
+```console
+curl -X GET http:/localhost:8080/verify/checks/id/check%201\?pretty
+```
+
+##### Responses
+
+###### Healthy
+```
+HTTP/1.1 200 OK
+Content-Type: application/json; charset=utf-8
+...
+```
+```json
+{
+    "Status": "Ok"
+}
+```
+
+ ###### Unhealthy
+```
+HTTP/1.1 503 Service Unavailable
+Content-Type: application/json; charset=utf-8
+...
+```
+```json
+{
+    "Status": "Failed",
+    "Checks": {
+        "check1b": {
+            "Node": "computer.local",
+            "CheckID": "check1b",
+            "Name": "check 1",
+            "Status": "critical",
+            "Notes": "Check 1",
+            "Output": "Timed out (1s) running check",
+            "ServiceID": "service2",
+            "ServiceName": "service2",
+            "ServiceTags": [],
+            "Definition": {
+                "HTTP": "",
+                "Header": null,
+                "Method": "",
+                "TLSSkipVerify": false,
+                "TCP": "",
+                "Interval": 0,
+                "Timeout": 0,
+                "DeregisterCriticalServiceAfter": 0
+            },
+            "CreateIndex": 0,
+            "ModifyIndex": 0
+        }
+    }
+}
+```
+
+##### Status Codes
+* `200`: Successful call
+* `404`: 
+   * No checks
+   * No checks matching specified _CheckName_
+* `500`: Unexpected failure
+* `502`: Could not parse the response from Consul
+* `503`: One or more Consul checks have failed
+* `504`: Consul unavailable
 
 ---
 
-#### /verify/service/name/:serviceName
+### /verify/service/id/:serviceId
 
->The `/verify/service/name/:serviceName` route returns 200 if all Consul checks for the specified service are ok.  Otherwise, a non-200 status code is returned and the failing checks will be in the response.
->More than one service will be verified if multiple services share the same name.
->
->##### Request
->
->```bash
->curl -X GET http:/localhost:8080/verify/service/name/service%202\?pretty
->```
->
->##### Responses
->> ###### Healthy
->>```
->>HTTP/1.1 200 OK
->>Content-Type: application/json; charset=utf-8
->>...
->>```
->>```json
->>{
->>    "Status": "Ok"
->>}
->>```
+The `/verify/service/id/:serviceId` route returns 200 if all Consul checks for the specified service are ok.  Otherwise, a non-200 status code is returned and the failing checks will be in the response.
 
->> ###### Unhealthy
->>```
->>HTTP/1.1 503 Service Unavailable
->>Content-Type: application/json; charset=utf-8
->>...
->>```
->>```json
->>{
->>    "Status": "Failed",
->>    "Checks": {
->>        "check1b": {
->>            "Node": "computer.local",
->>            "CheckID": "check1b",
->>            "Name": "check 1",
->>            "Status": "critical",
->>            "Notes": "Check 1",
->>            "Output": "Timed out (1s) running check",
->>            "ServiceID": "service2",
->>            "ServiceName": "service 2",
->>            "ServiceTags": [],
->>            "Definition": {
->>                "HTTP": "",
->>                "Header": null,
->>                "Method": "",
->>                "TLSSkipVerify": false,
->>                "TCP": "",
->>                "Interval": 0,
->>                "Timeout": 0,
->>                "DeregisterCriticalServiceAfter": 0
->>            },
->>            "CreateIndex": 0,
->>            "ModifyIndex": 0
->>        }
->>    }
->>}
->>```
->
->##### Status Codes
->* `200`: Successful call
->* `404`: 
->   * No checks
->   * No checks for services matching specified _ServiceName_
->* `500`: Unexpected failure
->* `502`: Could not parse the response from Consul
->* `503`: One or more Consul checks have failed
->* `504`: Consul unavailable
+##### Request
+```console
+curl -X GET http:/localhost:8080/verify/service/id/service2\?pretty
+```
+
+##### Responses
+
+###### Healthy
+```
+HTTP/1.1 200 OK
+Content-Type: application/json; charset=utf-8
+...
+```
+```json
+{
+    "Status": "Ok"
+}
+```
+
+###### Unhealthy
+```
+HTTP/1.1 503 Service Unavailable
+Content-Type: application/json; charset=utf-8
+...
+```
+```json
+{
+    "Status": "Failed",
+    "Checks": {
+        "check1b": {
+            "Node": "computer.local",
+            "CheckID": "check1b",
+            "Name": "check 1",
+            "Status": "critical",
+            "Notes": "Check 1",
+            "Output": "Timed out (1s) running check",
+            "ServiceID": "service2",
+            "ServiceName": "service 2",
+            "ServiceTags": [],
+            "Definition": {
+                "HTTP": "",
+                "Header": null,
+                "Method": "",
+                "TLSSkipVerify": false,
+                "TCP": "",
+                "Interval": 0,
+                "Timeout": 0,
+                "DeregisterCriticalServiceAfter": 0
+            },
+            "CreateIndex": 0,
+            "ModifyIndex": 0
+        }
+    }
+}
+```
+
+##### Statuås Codes
+* `200`: Successful call
+* `404`: 
+   * No checks
+   * No checks for services matching specified _ServiceID_
+* `500`: Unexpected failure
+* `502`: Could not parse the response from Consul
+* `503`: One or more Consul checks have failed
+* `504`: Consul unavailable
+
+---
+
+### /verify/service/name/:serviceName
+
+The `/verify/service/name/:serviceName` route returns 200 if all Consul checks for the specified service are ok.  Otherwise, a non-200 status code is returned and the failing checks will be in the response.
+More than one service will be verified if multiple services share the same name.
+
+##### Request
+
+```ç
+curl -X GET http:/localhost:8080/verify/service/name/service%202\?pretty
+```
+
+##### Responses
+
+ ###### Healthy
+```
+HTTP/1.1 200 OK
+Content-Type: application/json; charset=utf-8
+...
+```
+```json
+{
+    "Status": "Ok"
+}
+```
+
+ ###### Unhealthy
+```
+HTTP/1.1 503 Service Unavailable
+Content-Type: application/json; charset=utf-8
+...
+```
+```json
+{
+    "Status": "Failed",
+    "Checks": {
+        "check1b": {
+            "Node": "computer.local",
+            "CheckID": "check1b",
+            "Name": "check 1",
+            "Status": "critical",
+            "Notes": "Check 1",
+            "Output": "Timed out (1s) running check",
+            "ServiceID": "service2",
+            "ServiceName": "service 2",
+            "ServiceTags": [],
+            "Definition": {
+                "HTTP": "",
+                "Header": null,
+                "Method": "",
+                "TLSSkipVerify": false,
+                "TCP": "",
+                "Interval": 0,
+                "Timeout": 0,
+                "DeregisterCriticalServiceAfter": 0
+            },
+            "CreateIndex": 0,
+            "ModifyIndex": 0
+        }
+    }
+}
+```
+
+##### Status Codes
+* `200`: Successful call
+* `404`: 
+   * No checks
+   * No checks for services matching specified _ServiceName_
+* `500`: Unexpected failure
+* `502`: Could not parse the response from Consul
+* `503`: One or more Consul checks have failed
+* `504`: Consul unavailable
 
 ## License
 
