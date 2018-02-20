@@ -16,6 +16,7 @@ package server
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/json-iterator/go"
@@ -49,9 +50,17 @@ const (
 )
 
 var (
+	state                  = stopped
 	requestDurationBuckets = []float64{0.5, 1, 2, 3, 5, 10}
 	requestSizeBuckets     = []float64{128, 256, 512, 1024}
 	responseSizeBuckets    = []float64{512, 2048, 8196, 32784}
+)
+
+type serverState int
+
+const (
+	stopped serverState = iota
+	started
 )
 
 type server struct {
@@ -67,27 +76,37 @@ func NewServer(c *config.ServerConfig) spi.Server {
 }
 
 func (r *server) Start() (spi.RunningServer, error) {
-	r.createJsonAPI()
-	r.createServer()
-	r.createClient()
-	var err error = nil
-	go func() {
-		log.Printf("Started Consulate server on %s\n", r.config.ListenAddress)
-		if err = r.httpServer.ListenAndServe(); err != nil && err != http.ErrServerClosed {
-			log.Printf("Failed to start Consulate server: %s\n", err)
-		}
-	}()
-	return r, err
+	if state == stopped {
+		state = started
+		r.createJsonAPI()
+		r.createServer()
+		r.createClient()
+		var err error = nil
+		go func() {
+			log.Printf("Started Consulate server on %s\n", r.config.ListenAddress)
+			if err = r.httpServer.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+				log.Printf("Failed to start Consulate server: %s\n", err)
+			}
+		}()
+		return r, err
+	} else {
+		return nil, errors.New("cannot start server because it is already running")
+	}
 }
 
 func (r *server) Stop() {
-	log.Println("Shutting down Consulate server...")
-	ctx, cancel := context.WithTimeout(context.Background(), r.config.ShutdownTimeout)
-	defer cancel()
-	if err := r.httpServer.Shutdown(ctx); err != nil {
-		log.Panicf("Consulate server shutdown failed:%s", err)
+	if state == started {
+		log.Println("Shutting down Consulate server...")
+		ctx, cancel := context.WithTimeout(context.Background(), r.config.ShutdownTimeout)
+		defer func() {
+			cancel()
+			state = stopped
+		}()
+		if err := r.httpServer.Shutdown(ctx); err != nil {
+			log.Panicf("Consulate server shutdown failed:%s", err)
+		}
+		log.Println("Consulate server shutdown")
 	}
-	log.Println("Consulate server shutdown")
 }
 
 func (r *server) createRouter() *gin.Engine {

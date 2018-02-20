@@ -16,6 +16,87 @@ Go environment with [version 1.9 or greater installed](http://golang.org/doc/ins
     $ cd consulate
     $ ./build.sh
 
+### Usage
+
+```console
+Consulate provides a normalized HTTP endpoint that responds with
+200 / non-200 according to Consul checks specified in the requested URL.
+This endpoint can then be composed with existing HTTP based monitoring tools, like
+AWS ELB health checks, to enable service monitoring based on Consul checks.
+
+Usage:
+  consulate [command]
+
+Available Commands:
+  help        Help about any command
+  server      Runs the Consulate server
+  version     Prints the Consulate version
+
+Flags:
+      --config string   config file (default is $HOME/.consulate.yaml)
+  -h, --help            help for consulate
+
+Use "consulate [command] --help" for more information about a command.
+```
+
+#### Version
+
+##### Help
+```console
+$ ./dist/consulate_darwin_amd64 help version
+Prints the Consulate version
+
+Usage:
+  consulate version [flags]
+
+Flags:
+  -h, --help   help for version
+
+Global Flags:
+      --config string   config file (default is $HOME/.consulate.yaml)
+```
+
+##### Example
+```shell
+$ ./dist/consulate_darwin_amd64 version
+Consulate, version 0.0.1 (branch: master, revision: 6b85aa3f65798fdaa7ed65f7b9a981c70bbd471b)
+  build user:       jbaranick@ensadmins-MacBook-Pro.local
+  build date:       2018-02-19T17:49:32Z
+  go version:       go1.9.3
+```
+
+#### Server
+
+##### Help
+```console
+$ ./dist/consulate_darwin_amd64 help server
+Starts the Consulate server and runs until an interrupt is received.
+
+Usage:
+  consulate server [flags]
+
+Flags:
+  -c, --consul-address string                    the Consul HTTP API address to query against (default "localhost:8500")
+  -h, --help                                     help for server
+  -l, --listen-address string                    the listen address (default ":8080")
+      --query-idle-connection-timeout duration   is the maximum amount of time an idle (keep-alive) Consul HTTP API query connection will remain idle before closing itself (default 1m30s)
+      --query-max-idle-connection-count int      the maximum number of idle (keep-alive) Consul HTTP API query connections (default 100)
+      --query-timeout duration                   the maximum duration before timing out the Consul HTTP API query (default 5s)
+      --read-timeout duration                    the maximum duration for reading the entire request (default 10s)
+      --shutdown-timeout duration                the maximum duration before timing out the shutdown of the server (default 15s)
+      --write-timeout duration                   the maximum duration before timing out writes of the response (default 10s)
+
+Global Flags:
+      --config string   config file (default is $HOME/.consulate.yaml)
+```
+
+##### Example
+```shell
+$ ./dist/consulate_darwin_amd64 server
+Press Ctrl-C to shutdown server
+Started Consulate server on :8080
+```
+
 ### Routes
 
 All routes accept the following query string parameters:
