@@ -57,7 +57,7 @@ Global Flags:
 ```
 
 ##### Example
-```shell
+```console
 $ ./dist/consulate_darwin_amd64 version
 Consulate, version 0.0.1 (branch: master, revision: 6b85aa3f65798fdaa7ed65f7b9a981c70bbd471b)
   build user:       jbaranick@ensadmins-MacBook-Pro.local
@@ -91,7 +91,7 @@ Global Flags:
 ```
 
 ##### Example
-```shell
+```console
 $ ./dist/consulate_darwin_amd64 server
 Press Ctrl-C to shutdown server
 Started Consulate server on :8080
