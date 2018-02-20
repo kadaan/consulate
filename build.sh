@@ -160,7 +160,7 @@ function run() {
       echo "Getting goveralls..."
       go get github.com/mattn/goveralls || fatal "go get 'github.com/mattn/goveralls' failed: $?"
     fi
-    goveralls -v -service=travis-ci -ignore=testutil/server.go || fatal "goveralls: $?"
+    goveralls -v -service=travis-ci -ignore=main.go,testutil/server.go,testutil/golden.go || fatal "goveralls: $?"
   else
     go test -v ./... || fatal "$gopackage tests failed: $?"
   fi

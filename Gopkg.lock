@@ -111,12 +111,6 @@
 
 [[projects]]
   branch = "master"
-  name = "github.com/mitchellh/go-homedir"
-  packages = ["."]
-  revision = "b8bc1bf767474819792c23f32d8286a45736f1c6"
-
-[[projects]]
-  branch = "master"
   name = "github.com/mitchellh/go-testing-interface"
   packages = ["."]
   revision = "a61a99592b77c9ba629d254a693acffaeb4b7e28"
@@ -260,6 +254,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "0167a596801323b4873534b66c3a465160364b1d7baeb15b2f97e1493ed841c6"
+  inputs-digest = "10a4dd048b11db321dc3e2c6b26b88ddcb30febc0c5765cab5e1247cc32992af"
   solver-name = "gps-cdcl"
   solver-version = 1
