@@ -36,10 +36,14 @@ const (
 	StatusConsulUnavailableError = http.StatusGatewayTimeout
 )
 
+// Server represents a server that can be started.
 type Server interface {
+	// Start begins the Server.
 	Start() (RunningServer, error)
 }
 
+// RunningServer represents a server is running and can be stopped.
 type RunningServer interface {
+	// Stop terminates the current RunningServer.
 	Stop()
 }

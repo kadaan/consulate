@@ -17,13 +17,23 @@ package config
 import "time"
 
 const (
-	DefaultListenAddress   = ":8080"
-	DefaultConsulAddress   = "localhost:8500"
-	DefaultReadTimeout     = 10 * time.Second
-	DefaultWriteTimeout    = 10 * time.Second
+	// DefaultListenAddress is the default listen address for Consulate.
+	DefaultListenAddress = ":8080"
+
+	// DefaultConsulAddress is the default address used to connect to Consul.
+	DefaultConsulAddress = "localhost:8500"
+
+	// DefaultReadTimeout is the default maximum duration for Consulate reading the entire request.
+	DefaultReadTimeout = 10 * time.Second
+
+	// DefaultWriteTimeout is the default maximum duration for Consulate writing the response.
+	DefaultWriteTimeout = 10 * time.Second
+
+	// DefaultShutdownTimeout the maximum duration before timing out the shutdown of the Consulate server.
 	DefaultShutdownTimeout = 15 * time.Second
 )
 
+// ServerConfig represents the configuration of the Consulate server.
 type ServerConfig struct {
 	ListenAddress   string
 	ConsulAddress   string
@@ -33,6 +43,7 @@ type ServerConfig struct {
 	ClientConfig    ClientConfig
 }
 
+// DefaultServerConfig gets a default ServerConfig.
 func DefaultServerConfig() *ServerConfig {
 	return &ServerConfig{
 		ListenAddress:   DefaultListenAddress,

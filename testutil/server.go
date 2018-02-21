@@ -31,6 +31,7 @@ import (
 	"testing"
 )
 
+// TestServer represents a test Consulate server.
 type TestServer struct {
 	spi.RunningServer
 	httpAddr   string
@@ -39,15 +40,20 @@ type TestServer struct {
 	consulSvr  *consulTestUtil.TestServer
 }
 
+// WrappableTestServer represents a test Consulate server that can
+// wrap testing.T, simplifying the usage in test code.
 type WrappableTestServer struct {
 	TestServer
 }
 
+// WrappedTestServer represents the combination of a test Consulate
+// server and testing.T.
 type WrappedTestServer struct {
 	s *TestServer
 	t *testing.T
 }
 
+// NewTestServer creates a new test Consulate server.
 func NewTestServer(t *testing.T) (*WrappableTestServer, error) {
 	consulServer := newConsulServer(t)
 	ports := freeport.GetT(t, 1)
@@ -80,6 +86,7 @@ func NewTestServer(t *testing.T) (*WrappableTestServer, error) {
 	return testsvr, nil
 }
 
+// Stop terminates the current RunningServer.
 func (s *TestServer) Stop() {
 	if s.svr != nil {
 		defer s.svr.Stop()
@@ -134,10 +141,12 @@ func (s *TestServer) waitForAPI(t *testing.T) error {
 	return nil
 }
 
+// Client returns the http.Client used to communicate with the test Consulate server.
 func (s *TestServer) Client() *http.Client {
 	return s.httpClient
 }
 
+// Url appends the specified path to the base url used to communicate with the test Consulate server.
 func (s *TestServer) Url(t *testing.T, path string) string {
 	if s == nil {
 		t.Fatal("s is nil")
@@ -158,6 +167,7 @@ func (s *TestServer) consulUrl(t *testing.T, path string) string {
 	return fmt.Sprintf("http://%s%s", s.consulSvr.HTTPAddr, path)
 }
 
+// RequireOK checks that the status code of the specified http.Response is 200.
 func (s *TestServer) RequireOK(t *testing.T, resp *http.Response) error {
 	if resp.StatusCode != 200 {
 		t.Fatalf("bad status code: %d", resp.StatusCode)
@@ -165,6 +175,7 @@ func (s *TestServer) RequireOK(t *testing.T, resp *http.Response) error {
 	return nil
 }
 
+// AddService adds a service to the test Consul server.
 func (s *TestServer) AddService(t *testing.T, name string, tags []string) {
 	svc := &consulTestUtil.TestService{
 		Name:    name,
@@ -176,6 +187,7 @@ func (s *TestServer) AddService(t *testing.T, name string, tags []string) {
 	s.put(t, "/v1/agent/service/register", payload)
 }
 
+// AddCheck adds a check to the test Consul server.
 func (s *TestServer) AddCheck(t *testing.T, id string, name string, serviceID string, status checks.HealthStatus) {
 	chk := &consulTestUtil.TestCheck{
 		ID:   id,
@@ -197,7 +209,7 @@ func (s *TestServer) AddCheck(t *testing.T, id string, name string, serviceID st
 	case checks.HealthCritical:
 		s.put(t, "/v1/agent/check/fail/"+id, nil)
 	default:
-		t.Fatalf("Unrecognized status: %s", status)
+		t.Fatalf("Unrecognized status: %v", status)
 	}
 }
 
@@ -226,38 +238,48 @@ func (s *TestServer) encodePayload(t *testing.T, payload interface{}) io.Reader 
 	return &encoded
 }
 
+// GetConsulNodeName returns the test Consul server's node name.
 func (s *TestServer) GetConsulNodeName() string {
 	return s.consulSvr.Config.NodeName
 }
 
+// Wrap combines the specified testing.T with the current TestServer into a
+// WrappedTestServer which simplifies test code.
 func (s *TestServer) Wrap(t *testing.T) *WrappedTestServer {
 	return &WrappedTestServer{s, t}
 }
 
+// Stop terminates the current RunningServer.
 func (w *WrappedTestServer) Stop() {
 	defer w.s.Stop()
 }
 
+// Client returns the http.Client used to communicate with the test Consulate server.
 func (w *WrappedTestServer) Client() *http.Client {
 	return w.s.Client()
 }
 
+// Url appends the specified path to the base url used to communicate with the test Consulate server.
 func (w *WrappedTestServer) Url(path string) string {
 	return w.s.Url(w.t, path)
 }
 
+// RequireOK checks that the status code of the specified http.Response is 200.
 func (w *WrappedTestServer) RequireOK(resp *http.Response) error {
 	return w.s.RequireOK(w.t, resp)
 }
 
+// AddService adds a service to the test Consul server.
 func (w *WrappedTestServer) AddService(name string, tags []string) {
 	w.s.AddService(w.t, name, tags)
 }
 
+// AddCheck adds a check to the test Consul server.
 func (w *WrappedTestServer) AddCheck(id string, name string, serviceID string, status checks.HealthStatus) {
 	w.s.AddCheck(w.t, id, name, serviceID, status)
 }
 
+// GetConsulNodeName returns the test Consul server's node name.
 func (w *WrappedTestServer) GetConsulNodeName() string {
 	return w.s.GetConsulNodeName()
 }

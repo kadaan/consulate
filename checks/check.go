@@ -42,6 +42,7 @@ func (s HealthStatus) String() string {
 	return healthNames[s]
 }
 
+// ParseHealthStatus parses a string into a HealthStatus
 func ParseHealthStatus(s string) (HealthStatus, bool) {
 	for i, n := range healthNames {
 		if n == s {
@@ -102,7 +103,7 @@ func (c *Check) IsServiceId(serviceId string) bool {
 	return serviceId == c.ServiceID
 }
 
-// IsService returns True if the Check ServiceName matches the specified serviceName.
+// IsServiceName returns True if the Check ServiceName matches the specified serviceName.
 func (c *Check) IsServiceName(serviceName string) bool {
 	return serviceName == c.ServiceName
 }

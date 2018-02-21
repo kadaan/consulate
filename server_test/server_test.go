@@ -97,7 +97,7 @@ func verifyApiCall(t *testing.T, s *testutil.WrappedTestServer, d apiTestData) {
 	data := bodyTemplateData{
 		ConsulNodeName: s.GetConsulNodeName(),
 	}
-	tmpl, err := template.New(d.path).Parse(d.body)
+	tmpl, _ := template.New(d.path).Parse(d.body)
 	var tpl bytes.Buffer
 	if err := tmpl.Execute(&tpl, data); err != nil {
 		t.Errorf("Failed to execute body template: %s", err)

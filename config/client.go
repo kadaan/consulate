@@ -17,17 +17,27 @@ package config
 import "time"
 
 const (
-	DefaultQueryIdleConnectionTimeout  = 90 * time.Second
+	// DefaultQueryIdleConnectionTimeout is the default maximum amount
+	// of time an idle (keep-alive) connection will remain idle before
+	// closing itself.
+	DefaultQueryIdleConnectionTimeout = 90 * time.Second
+
+	// DefaultQueryMaxIdleConnectionCount is the default maximum number
+	// of idle (keep-alive) connections across all hosts.
 	DefaultQueryMaxIdleConnectionCount = 100
-	DefaultQueryTimeout                = 5 * time.Second
+
+	// DefaultQueryTimeout is the default time limit for requests.
+	DefaultQueryTimeout = 5 * time.Second
 )
 
+// ClientConfig represents the configuration for the http.Client.
 type ClientConfig struct {
 	QueryTimeout                time.Duration
 	QueryMaxIdleConnectionCount int
 	QueryIdleConnectionTimeout  time.Duration
 }
 
+// DefaultClientConfig gets a default ClientConfig.
 func DefaultClientConfig() *ClientConfig {
 	return &ClientConfig{
 		QueryIdleConnectionTimeout:  DefaultQueryIdleConnectionTimeout,

@@ -70,18 +70,20 @@ type server struct {
 	jsonApi    jsoniter.API
 }
 
+// NewServer create a new Consulate server.
 func NewServer(c *config.ServerConfig) spi.Server {
 	svr := &server{config: *c}
 	return svr
 }
 
+// Start begins the Server.
 func (r *server) Start() (spi.RunningServer, error) {
 	if state == stopped {
 		state = started
 		r.createJsonAPI()
 		r.createServer()
 		r.createClient()
-		var err error = nil
+		var err error
 		go func() {
 			log.Printf("Started Consulate server on %s\n", r.config.ListenAddress)
 			if err = r.httpServer.ListenAndServe(); err != nil && err != http.ErrServerClosed {
@@ -89,9 +91,8 @@ func (r *server) Start() (spi.RunningServer, error) {
 			}
 		}()
 		return r, err
-	} else {
-		return nil, errors.New("cannot start server because it is already running")
 	}
+	return nil, errors.New("cannot start server because it is already running")
 }
 
 func (r *server) Stop() {

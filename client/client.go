@@ -20,6 +20,7 @@ import (
 	"net/http"
 )
 
+// CreateClient creates a new http.Client
 func CreateClient(c *config.ClientConfig) *http.Client {
 	transport := cleanhttp.DefaultPooledTransport()
 	transport.MaxIdleConns = c.QueryMaxIdleConnectionCount

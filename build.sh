@@ -131,6 +131,10 @@ function run() {
 
   local gofiles=$(find . -path ./vendor -prune -o -print | grep '\.go$')
 
+  verbose "Installing dependencies..."
+  go install ./... || fatal "go install failed: $?"
+  go test -i ./... || fatal "go test install failed: $?"
+
   verbose "Formatting source..."
   if [[ ${#gofiles[@]} -gt 0 ]]; then
     while read -r gofile; do
@@ -143,7 +147,7 @@ function run() {
   fi
 
   verbose "Linting source..."
-  $GOMETALINTER --min-confidence=.85 --disable=gotype --fast --exclude=vendor --vendor || fatal "gometalinter failed: $?"
+  $GOMETALINTER --disable-all --enable=vet --enable=gocyclo --cyclo-over=15 --enable=golint --min-confidence=.85 --enable=ineffassign --skip=Godeps --skip=vendor --skip=third_party --skip=testdata --vendor ./... || fatal "gometalinter failed: $?"
 
   verbose "Checking licenses..."
   licRes=$(
