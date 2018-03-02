@@ -79,6 +79,7 @@ Usage:
 
 Flags:
   -c, --consul-address string                    the Consul HTTP API address to query against (default "localhost:8500")
+      --consul-cache-duration duration           the duration that Consul results will be cached (default 1s)
   -h, --help                                     help for server
   -l, --listen-address string                    the listen address (default ":8080")
       --query-idle-connection-timeout duration   is the maximum amount of time an idle (keep-alive) Consul HTTP API query connection will remain idle before closing itself (default 1m30s)
