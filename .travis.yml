@@ -6,7 +6,8 @@ deploy:
   provider: releases
   api_key:
     secure: QjoIGS+UoJaLGK3MM7ohdl5djyKX0RVt7/bJphhtD6sGS6MyHWQbEgXpKToWC6dRL/pfvfkZYAAnTjsZLWGye7V8QXfQDharFJX0IeKTWfUjB67DnHXxdukfcB8mtX1bPGXpk5MGvIaVKKJulxC7h4BT1j0YDFE/G/p13dtfll4rYgmQ+QDOOhhYdEGqX0b5sAJqYOdEQR5FEyXm8uF0G7yA9tncz24Gv1Gk0jP6ASB52kpoZ4mO1fnUdJuMNOlk+xuasvyyvyw1SIz/KM0UaCJ2gHcBkterlbTftGWwMRt6xSw5DWGfGZt07ywStQqFhnGB3CJG05Sw6YakgRxi+wd2c6KwQCxCPUByzFoyf7T14ut2vSJFu/dJMA98KtxFQkNX4ln9sMtXOFSRpUQOG/kqx4jEftCgX7fczkJUZ6LgIvwIJQ7CWU4uIRNrbJko3RtZvpcNtR3hIvjA1tRlYUHHs3Nyqu7KnAJ9386TCELa6hH63T3ttOOftMruUJz0JC0Q3wXOFC61wEXIyW0u7akFiDf6HFlOmCRpgm8nPlNFpJiZJarZd7/l8YnoRuQfGU6tbHQPG0B5St6qf75UUfwtAKG2R5rxTfRyxp8woyQeq+MKom5KQpRp2YdRmRz/HkVQGVCIedlEj1KmLbz3UoBL1UZmoVnWti7BM7i7fPY=
-  file: dist/*
+  file_glob: true
+  file: dist/*.tar.gz
   skip_cleanup: true
   on:
     repo: kadaan/consulate

@@ -592,6 +592,24 @@ Content-Type: application/json; charset=utf-8
 * `503`: One or more Consul checks have failed
 * `504`: Consul unavailable
 
+## Overhead
+
+In it's standard configuration Consulate adds very little overhead to the system and to Consul.  Caching is used to reduce the calls to Consul to one per second.  The processing done in Consulate is CPU bound, but is not very intensive.
+
+Performance testing was done with [vegeta](https://github.com/tsenart/vegeta). 
+```console
+$ echo "GET http://localhost:8080/verify/checks" | vegeta attack -duration=5m | tee results.bin | vegeta report
+
+Requests      [total, rate]            15000, 50.00
+Duration      [total, attack, wait]    4m59.98055175s, 4m59.979999s, 552.75µs
+Latencies     [mean, 50, 95, 99, max]  1.101265ms, 910.812µs, 1.761948ms, 1.958328ms, 249.418571ms
+Bytes In      [total, mean]            225000, 15.00
+Bytes Out     [total, mean]            0, 0.00
+Success       [ratio]                  100.00%
+Status Codes  [code:count]             200:15000
+Error Set:
+```
+
 ## License
 
 Apache License 2.0, see [LICENSE](https://github.com/kadaan/consulate/blob/master/LICENSE).

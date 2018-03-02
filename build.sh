@@ -56,6 +56,7 @@ function get_platform() {
 PLATFORM=$(get_platform)
 GLIDE=$BINARY_DIR/glide
 GLIDE_URL="https://github.com/Masterminds/glide/releases/download/v0.13.1/glide-v0.13.1-$PLATFORM-amd64.tar.gz"
+GOX="gox"
 GOMETALINTER=$BINARY_DIR/gometalinter
 GOMETALINTER_URL="https://github.com/alecthomas/gometalinter/releases/download/v2.0.4/gometalinter-2.0.4-$PLATFORM-amd64.tar.gz"
 CONSUL=$BINARY_DIR/consul
@@ -112,8 +113,16 @@ function download_gometalinter() {
   fi
 }
 
+function download_gox() {
+  if [ ! -x "$(command -v $GOX)" ]; then
+    echo "   --> $GOX"
+    go get github.com/mitchellh/gox || fatal "go get 'github.com/mitchellh/gox' failed: $?"
+  fi
+}
+
 function download_binaries() {
   download_glide || fatal "failed to download 'glide': $?"
+  download_gox || fatal "failed to download 'gox': $?"
   download_gometalinter || fatal "failed to download 'gometalinter': $?"
   download_consul || fatal "failed to download 'consul': $?"
   export PATH=$PATH:$BINARY_DIR
@@ -125,6 +134,11 @@ function run() {
   local host=`hostname`
   local buildDate=`date -u +"%Y-%m-%dT%H:%M:%SZ"`
   go version | grep -q 'go version go1.9.3 ' || fatal "go version is not 1.9.3"
+
+  if [ -z "$TRAVIS" ]; then
+    verbose "Cleanup dist..."
+    rm -rf dist/*
+  fi
 
   verbose "Fetching binaries..."
   download_binaries
@@ -172,12 +186,37 @@ function run() {
     go test -v ./... || fatal "$gopackage tests failed: $?"
   fi
 
-  verbose "Building binaries..."
-  if [ ! -x "$(command -v gox)" ]; then
-    echo "Getting gox..."
-    go get github.com/mitchellh/gox || fatal "go get 'github.com/mitchellh/gox' failed: $?"
+  XC_ARCH=${XC_ARCH:-"386 amd64 arm arm64"}
+  XC_OS=${XC_OS:-"solaris darwin freebsd linux windows"}
+  if [ -z "$TRAVIS" ]; then
+    XC_OS=$(go env GOOS)
+    XC_ARCH=$(go env GOARCH)
   fi
-  gox -ldflags "-X github.com/kadaan/consulate/version.Version=$VERSION -X github.com/kadaan/consulate/version.Revision=$revision -X github.com/kadaan/consulate/version.Branch=$branch -X github.com/kadaan/consulate/version.BuildUser=$USER@$host -X github.com/kadaan/consulate/version.BuildDate=$buildDate" -output="dist/{{.Dir}}_{{.OS}}_{{.Arch}}"  || fatal "gox failed: $?"
+
+  verbose "Building binaries..."
+  $GOX -os="${XC_OS}" -arch="${XC_ARCH}" -osarch="!darwin/arm !darwin/arm64" -ldflags "-X github.com/kadaan/consulate/version.Version=$VERSION -X github.com/kadaan/consulate/version.Revision=$revision -X github.com/kadaan/consulate/version.Branch=$branch -X github.com/kadaan/consulate/version.BuildUser=$USER@$host -X github.com/kadaan/consulate/version.BuildDate=$buildDate" -output="dist/{{.Dir}}_{{.OS}}_{{.Arch}}"  || fatal "gox failed: $?"
+
+  if [ -n "$TRAVIS" ]; then
+    verbose "Creating archives..."
+    cd dist
+    set -x
+    for f in *; do
+      filename=$(basename "$f")
+      extension="${filename##*.}"
+      filename="${filename%.*}"
+      if [[ "$filename" != "$extension" ]] && [[ -n "$extension" ]]; then
+        extension=".$extension"
+      else
+        extension=""
+      fi
+      archivename="$filename.tar.gz"
+      verbose "   --> $archivename"
+      genericname="consulate$extension"
+      mv -f "$f" "$genericname"
+      tar -czf $archivename "$genericname"
+      rm -rf "$genericname"
+    done
+  fi
 }
 
 run "$@"
