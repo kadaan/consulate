@@ -16,9 +16,9 @@ package caching
 
 import (
 	"github.com/kadaan/consulate/config"
+	"reflect"
 	"testing"
 	"time"
-	"reflect"
 )
 
 var cacheData = []struct {
@@ -27,7 +27,7 @@ var cacheData = []struct {
 	result       bool
 }{
 	{duration: 0, expectedType: reflect.TypeOf(&noOpCache{}), result: false},
-	{duration: 1*time.Second, expectedType: reflect.TypeOf(&inMemoryCache{}), result: true},
+	{duration: 1 * time.Second, expectedType: reflect.TypeOf(&inMemoryCache{}), result: true},
 }
 
 func TestNewCache(t *testing.T) {
@@ -41,7 +41,7 @@ func TestNewCache(t *testing.T) {
 		if _, ok := cache.Get("foo"); ok != d.result {
 			t.Errorf("Result: want %v, got %v", d.result, ok)
 		}
-		time.Sleep(d.duration+100*time.Millisecond)
+		time.Sleep(d.duration + 100*time.Millisecond)
 		if _, ok := cache.Get("foo"); ok {
 			t.Error("Result: want record expired, got record")
 		}
