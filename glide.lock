@@ -1,5 +1,5 @@
 hash: b2c7af5aee108c25e5cee77f5d8096fabf8af43c45b235abe7fbae015495777c
-updated: 2018-03-01T23:21:53.991443-08:00
+updated: 2018-03-02T00:18:31.566709-08:00
 imports:
 - name: github.com/beorn7/perks
   version: 4c0e84591b9aa9e6dcfdf3e020114cd81f89d5f9
@@ -107,7 +107,7 @@ imports:
   subpackages:
   - codec
 - name: golang.org/x/sys
-  version: f6cff0780e542efa0c8e864dc8fa522808f6a598
+  version: dd2ff4accc098aceecb86b36eaa7829b2a17b1c9
   subpackages:
   - unix
 - name: golang.org/x/text
