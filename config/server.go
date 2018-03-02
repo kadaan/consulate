@@ -29,7 +29,7 @@ const (
 	// DefaultWriteTimeout is the default maximum duration for Consulate writing the response.
 	DefaultWriteTimeout = 10 * time.Second
 
-	// DefaultShutdownTimeout the maximum duration before timing out the shutdown of the Consulate server.
+	// DefaultShutdownTimeout the default maximum duration before timing out the shutdown of the Consulate server.
 	DefaultShutdownTimeout = 15 * time.Second
 )
 
@@ -41,6 +41,7 @@ type ServerConfig struct {
 	WriteTimeout    time.Duration
 	ShutdownTimeout time.Duration
 	ClientConfig    ClientConfig
+	CacheConfig     CacheConfig
 }
 
 // DefaultServerConfig gets a default ServerConfig.
@@ -52,5 +53,6 @@ func DefaultServerConfig() *ServerConfig {
 		WriteTimeout:    DefaultWriteTimeout,
 		ShutdownTimeout: DefaultShutdownTimeout,
 		ClientConfig:    *DefaultClientConfig(),
+		CacheConfig:     *DefaultCacheConfig(),
 	}
 }

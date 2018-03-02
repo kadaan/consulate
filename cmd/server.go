@@ -27,6 +27,7 @@ import (
 const (
 	listenAddressKey               = "listen-address"
 	consulAddressKey               = "consul-address"
+	consulCacheDurationKey         = "consul-cache-duration"
 	readTimeoutKey                 = "read-timeout"
 	writeTimeoutKey                = "write-timeout"
 	queryTimeoutKey                = "query-timeout"
@@ -67,6 +68,8 @@ func init() {
 	viper.BindPFlag(listenAddressKey, serverCmd.Flags().Lookup(listenAddressKey))
 	serverCmd.Flags().StringVarP(&serverConfig.ConsulAddress, consulAddressKey, "c", config.DefaultConsulAddress, "the Consul HTTP API address to query against")
 	viper.BindPFlag(consulAddressKey, serverCmd.Flags().Lookup(consulAddressKey))
+	serverCmd.Flags().DurationVar(&serverConfig.CacheConfig.ConsulCacheDuration, consulCacheDurationKey, config.DefaultConsulCacheDuration, "the duration that Consul results will be cached")
+	viper.BindPFlag(consulAddressKey, serverCmd.Flags().Lookup(consulCacheDurationKey))
 	serverCmd.Flags().DurationVar(&serverConfig.ReadTimeout, readTimeoutKey, config.DefaultReadTimeout, "the maximum duration for reading the entire request")
 	viper.BindPFlag(readTimeoutKey, serverCmd.Flags().Lookup(readTimeoutKey))
 	serverCmd.Flags().DurationVar(&serverConfig.WriteTimeout, writeTimeoutKey, config.DefaultWriteTimeout, "the maximum duration before timing out writes of the response")

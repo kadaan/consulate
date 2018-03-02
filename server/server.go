@@ -20,6 +20,7 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/json-iterator/go"
+	"github.com/kadaan/consulate/caching"
 	"github.com/kadaan/consulate/checks"
 	"github.com/kadaan/consulate/client"
 	"github.com/kadaan/consulate/config"
@@ -68,6 +69,7 @@ type server struct {
 	httpServer http.Server
 	httpClient http.Client
 	jsonApi    jsoniter.API
+	cache      caching.Cache
 }
 
 // NewServer create a new Consulate server.
@@ -81,6 +83,7 @@ func (r *server) Start() (spi.RunningServer, error) {
 	if state == stopped {
 		state = started
 		r.createJsonAPI()
+		r.createCache()
 		r.createServer()
 		r.createClient()
 		var err error
@@ -162,6 +165,10 @@ func (r *server) createServer() {
 		ReadTimeout:  r.config.ReadTimeout,
 		WriteTimeout: r.config.WriteTimeout,
 	}
+}
+
+func (r *server) createCache() {
+	r.cache = *caching.NewCache(r.config.CacheConfig)
 }
 
 func (r *server) json(context *gin.Context, code int, obj interface{}) {
@@ -281,21 +288,26 @@ func (r *server) verifyChecks(context *gin.Context, matcher checkMatcher) {
 
 func (r *server) processChecks(context *gin.Context, handler checkHandler) {
 	target := fmt.Sprintf(consulChecksUrl, r.config.ConsulAddress)
-	resp, err := r.httpClient.Get(target)
-	if resp != nil && resp.Body != nil {
-		defer resp.Body.Close()
-	}
-	if err != nil {
-		r.abortWithStatusJSON(context, spi.StatusConsulUnavailableError, checks.Result{Status: checks.Failed, Detail: err.Error()})
+	var allChecks *map[string]*checks.Check
+	if cachedChecks, ok := r.cache.Get(target); ok {
+		allChecks = cachedChecks.(*map[string]*checks.Check)
 	} else {
-		var allChecks map[string]*checks.Check
+		resp, err := r.httpClient.Get(target)
+		if resp != nil && resp.Body != nil {
+			defer resp.Body.Close()
+		}
+		if err != nil {
+			r.abortWithStatusJSON(context, spi.StatusConsulUnavailableError, checks.Result{Status: checks.Failed, Detail: err.Error()})
+			return
+		}
 		err = r.jsonApi.NewDecoder(resp.Body).Decode(&allChecks)
 		if err != nil {
 			r.abortWithStatusJSON(context, spi.StatusUnprocessableResponseError, checks.Result{Status: checks.Failed, Detail: err.Error()})
-		} else {
-			handler(&allChecks)
+			return
 		}
+		r.cache.Set(target, allChecks)
 	}
+	handler(allChecks)
 }
 
 func (r *server) getStatus(context *gin.Context) checks.HealthStatus {

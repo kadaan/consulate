@@ -54,22 +54,25 @@ function get_platform() {
 }
 
 PLATFORM=$(get_platform)
-DEP=$BINARY_DIR/dep-$PLATFORM-amd64
-DEP_URL="https://github.com/golang/dep/releases/download/v0.4.1/dep-$PLATFORM-amd64"
+GLIDE=$BINARY_DIR/glide
+GLIDE_URL="https://github.com/Masterminds/glide/releases/download/v0.13.1/glide-v0.13.1-$PLATFORM-amd64.tar.gz"
 GOMETALINTER=$BINARY_DIR/gometalinter
 GOMETALINTER_URL="https://github.com/alecthomas/gometalinter/releases/download/v2.0.4/gometalinter-2.0.4-$PLATFORM-amd64.tar.gz"
 CONSUL=$BINARY_DIR/consul
 CONSUL_URL="https://releases.hashicorp.com/consul/1.0.6/consul_1.0.6_${PLATFORM}_amd64.zip"
 
-function download_dep() {
-  if [ ! -f "$DEP" ]; then
-    verbose "   --> $DEP"
+function download_glide() {
+  if [ ! -f "$GLIDE" ]; then
+    verbose "   --> $GLIDE"
     local tmpdir=`mktemp -d`
     trap_add "rm -rf $tmpdir" EXIT
     pushd $tmpdir
-    curl -L -s -O $DEP_URL || fatal "failed to download '$DEP_URL': $?"
+    curl -L -s -O $GLIDE_URL || fatal "failed to download 'GLIDE_URL': $?"
+    for i in *.tar.gz; do
+      [ "$i" = "*.tar.gz" ] && continue
+      tar xzf "$i" -C $tmpdir --strip-components 1 && rm -r "$i"
+    done
     popd
-    chmod +x $tmpdir/*
     mkdir -p $BINARY_DIR
     cp $tmpdir/* $BINARY_DIR/
   fi
@@ -84,7 +87,7 @@ function download_consul() {
     curl -L -s -O $CONSUL_URL || fatal "failed to download '$CONSUL_URL': $?"
     for i in *.zip; do
       [ "$i" = "*.zip" ] && continue
-      unzip "$i" && rm -r "$i"
+      unzip -q "$i" && rm -r "$i"
     done
     popd
     mkdir -p $BINARY_DIR
@@ -101,7 +104,7 @@ function download_gometalinter() {
     curl -L -s -O $GOMETALINTER_URL || fatal "failed to download '$GOMETALINTER_URL': $?"
     for i in *.tar.gz; do
       [ "$i" = "*.tar.gz" ] && continue
-      tar xzvf "$i" -C $tmpdir --strip-components 1 && rm -r "$i"
+      tar xzf "$i" -C $tmpdir --strip-components 1 && rm -r "$i"
     done
     popd
     mkdir -p $BINARY_DIR
@@ -110,7 +113,7 @@ function download_gometalinter() {
 }
 
 function download_binaries() {
-  download_dep || fatal "failed to download 'dep': $?"
+  download_glide || fatal "failed to download 'glide': $?"
   download_gometalinter || fatal "failed to download 'gometalinter': $?"
   download_consul || fatal "failed to download 'consul': $?"
   export PATH=$PATH:$BINARY_DIR
@@ -127,7 +130,11 @@ function run() {
   download_binaries
 
   verbose "Updating dependencies..."
-  $DEP ensure || fatal "dep ensure failed: $?"
+  if [ -n "$TRAVIS" ]; then
+    $GLIDE install || fatal "glide install failed: $?"
+  else
+    $GLIDE up -v || fatal "glide up failed: $?"
+  fi
 
   local gofiles=$(find . -path ./vendor -prune -o -print | grep '\.go$')
 
@@ -174,7 +181,7 @@ function run() {
     echo "Getting gox..."
     go get github.com/mitchellh/gox || fatal "go get 'github.com/mitchellh/gox' failed: $?"
   fi
-  gox -ldflags "-X github.com/kadaan/consulate/version.Version=$VERSION -X github.com/kadaan/consulate/version.Revision=$revision -X github.com/kadaan/consulate/version.Branch=$branch -X github.com/kadaan/consulate/version.BuildUser=$USER@$host -X github.com/kadaan/consulate/version.BuildDate=$buildDate" -output="dist/{{.Dir}}_{{.OS}}_{{.Arch}}"  || fatal "gox failed: $?"
+  gox -osarch="linux/amd64 darwin/amd64" -ldflags "-X github.com/kadaan/consulate/version.Version=$VERSION -X github.com/kadaan/consulate/version.Revision=$revision -X github.com/kadaan/consulate/version.Branch=$branch -X github.com/kadaan/consulate/version.BuildUser=$USER@$host -X github.com/kadaan/consulate/version.BuildDate=$buildDate" -output="dist/{{.Dir}}_{{.OS}}_{{.Arch}}"  || fatal "gox failed: $?"
 }
 
 run "$@"
