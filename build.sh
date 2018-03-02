@@ -129,12 +129,8 @@ function run() {
   verbose "Fetching binaries..."
   download_binaries
 
-  verbose "Updating dependencies..."
-  if [ -n "$TRAVIS" ]; then
-    $GLIDE install -v || fatal "glide install failed: $?"
-  else
-    $GLIDE up -v || fatal "glide up failed: $?"
-  fi
+  verbose "Getting dependencies..."
+  $GLIDE install -v || fatal "glide install failed: $?"
 
   local gofiles=$(find . -path ./vendor -prune -o -print | grep '\.go$')
 
