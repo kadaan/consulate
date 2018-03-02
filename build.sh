@@ -131,7 +131,7 @@ function run() {
 
   verbose "Updating dependencies..."
   if [ -n "$TRAVIS" ]; then
-    $GLIDE install || fatal "glide install failed: $?"
+    $GLIDE install -v || fatal "glide install failed: $?"
   else
     $GLIDE up -v || fatal "glide up failed: $?"
   fi
