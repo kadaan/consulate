@@ -265,6 +265,11 @@ Content-Type: application/json; charset=utf-8
 ```json
 {
     "Status": "Failed",
+    "Counts": {
+      "failed": 1,
+      "passing": 0,
+      "warning": 0
+    },
     "Checks": {
         "check1b": {
             "Node": "computer.local",
@@ -295,10 +300,14 @@ Content-Type: application/json; charset=utf-8
 
 ##### Status Codes
 * `200`: Successful call
+* `400`: Request could not be understood
 * `404`: No checks
+* `429`: One or more Consul checks are passing and one or more Consul checks are warning
 * `500`: Unexpected failure
 * `502`: Could not parse the response from Consul
-* `503`: One or more Consul checks have failed
+* `503`: 
+   * One or more Consul checks have failed
+   * Zero Consul checks are passing and one or more Consul checks are warning
 * `504`: Consul unavailable
 
 ---
@@ -335,6 +344,11 @@ Content-Type: application/json; charset=utf-8
 ```json
 {
     "Status": "Failed",
+    "Counts": {
+      "failed": 1,
+      "passing": 0,
+      "warning": 0
+    },
     "Checks": {
         "check1b": {
             "Node": "computer.local",
@@ -365,12 +379,16 @@ Content-Type: application/json; charset=utf-8
 
 ##### Status Codes
 * `200`: Successful call
+* `400`: Request could not be understood
 * `404`: 
    * No checks
    * No checks matching specified _CheckID_
+* `429`: One or more Consul checks are passing and one or more Consul checks are warning
 * `500`: Unexpected failure
 * `502`: Could not parse the response from Consul
-* `503`: One or more Consul checks have failed
+* `503`: 
+   * One or more Consul checks have failed
+   * Zero Consul checks are passing and one or more Consul checks are warning
 * `504`: Consul unavailable
 
 ---
@@ -408,6 +426,11 @@ Content-Type: application/json; charset=utf-8
 ```json
 {
     "Status": "Failed",
+    "Counts": {
+      "failed": 1,
+      "passing": 0,
+      "warning": 0
+    },
     "Checks": {
         "check1b": {
             "Node": "computer.local",
@@ -438,12 +461,16 @@ Content-Type: application/json; charset=utf-8
 
 ##### Status Codes
 * `200`: Successful call
+* `400`: Request could not be understood
 * `404`: 
    * No checks
    * No checks matching specified _CheckName_
+* `429`: One or more Consul checks are passing and one or more Consul checks are warning
 * `500`: Unexpected failure
 * `502`: Could not parse the response from Consul
-* `503`: One or more Consul checks have failed
+* `503`: 
+   * One or more Consul checks have failed
+   * Zero Consul checks are passing and one or more Consul checks are warning
 * `504`: Consul unavailable
 
 ---
@@ -480,6 +507,11 @@ Content-Type: application/json; charset=utf-8
 ```json
 {
     "Status": "Failed",
+    "Counts": {
+      "failed": 1,
+      "passing": 0,
+      "warning": 0
+    },
     "Checks": {
         "check1b": {
             "Node": "computer.local",
@@ -508,14 +540,18 @@ Content-Type: application/json; charset=utf-8
 }
 ```
 
-##### Statuås Codes
+##### Status Codes
 * `200`: Successful call
+* `400`: Request could not be understood
 * `404`: 
    * No checks
    * No checks for services matching specified _ServiceID_
+* `429`: One or more Consul checks are passing and one or more Consul checks are warning
 * `500`: Unexpected failure
 * `502`: Could not parse the response from Consul
-* `503`: One or more Consul checks have failed
+* `503`: 
+   * One or more Consul checks have failed
+   * Zero Consul checks are passing and one or more Consul checks are warning
 * `504`: Consul unavailable
 
 ---
@@ -554,6 +590,11 @@ Content-Type: application/json; charset=utf-8
 ```json
 {
     "Status": "Failed",
+    "Counts": {
+      "failed": 1,
+      "passing": 0,
+      "warning": 0
+    },
     "Checks": {
         "check1b": {
             "Node": "computer.local",
@@ -584,13 +625,18 @@ Content-Type: application/json; charset=utf-8
 
 ##### Status Codes
 * `200`: Successful call
+* `400`: Request could not be understood
 * `404`: 
    * No checks
    * No checks for services matching specified _ServiceName_
+* `429`: One or more Consul checks are passing and one or more Consul checks are warning
 * `500`: Unexpected failure
 * `502`: Could not parse the response from Consul
-* `503`: One or more Consul checks have failed
+* `503`: 
+   * One or more Consul checks have failed
+   * Zero Consul checks are passing and one or more Consul checks are warning
 * `504`: Consul unavailable
+
 
 ## Overhead
 
@@ -609,6 +655,15 @@ Success       [ratio]                  100.00%
 Status Codes  [code:count]             200:15000
 Error Set:
 ```
+
+## Changelog
+
+### 0.0.2
+* Adjust status code semantics to follow Consul health check semantics.  This results in some changes to the status codes returned.
+* Made all status code configurable.
+
+### 0.0.1
+* Initial version
 
 ## License
 

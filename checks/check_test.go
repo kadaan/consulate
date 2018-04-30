@@ -19,31 +19,48 @@ import "testing"
 var matchesStatusData = []struct {
 	threshold HealthStatus
 	status    HealthStatus
-	result    bool
+	result    Status
 }{
-	{threshold: HealthPassing, status: HealthPassing, result: false},
-	{threshold: HealthPassing, status: HealthMaintenance, result: true},
-	{threshold: HealthPassing, status: HealthWarning, result: true},
-	{threshold: HealthPassing, status: HealthCritical, result: true},
-	{threshold: HealthMaintenance, status: HealthPassing, result: false},
-	{threshold: HealthMaintenance, status: HealthMaintenance, result: false},
-	{threshold: HealthMaintenance, status: HealthWarning, result: true},
-	{threshold: HealthMaintenance, status: HealthCritical, result: true},
-	{threshold: HealthWarning, status: HealthPassing, result: false},
-	{threshold: HealthWarning, status: HealthMaintenance, result: false},
-	{threshold: HealthWarning, status: HealthWarning, result: false},
-	{threshold: HealthWarning, status: HealthCritical, result: true},
-	{threshold: HealthCritical, status: HealthPassing, result: false},
-	{threshold: HealthCritical, status: HealthMaintenance, result: false},
-	{threshold: HealthCritical, status: HealthWarning, result: false},
-	{threshold: HealthCritical, status: HealthCritical, result: false},
+	{threshold: HealthPassing, status: HealthPassing, result: StatusPassing},
+	{threshold: HealthPassing, status: HealthWarning, result: StatusWarning},
+	{threshold: HealthPassing, status: HealthMaintenance, result: StatusFailing},
+	{threshold: HealthPassing, status: HealthCritical, result: StatusFailing},
+	{threshold: HealthWarning, status: HealthPassing, result: StatusPassing},
+	{threshold: HealthWarning, status: HealthWarning, result: StatusPassing},
+	{threshold: HealthWarning, status: HealthMaintenance, result: StatusFailing},
+	{threshold: HealthWarning, status: HealthCritical, result: StatusFailing},
+	{threshold: HealthMaintenance, status: HealthPassing, result: StatusPassing},
+	{threshold: HealthMaintenance, status: HealthWarning, result: StatusPassing},
+	{threshold: HealthMaintenance, status: HealthMaintenance, result: StatusPassing},
+	{threshold: HealthMaintenance, status: HealthCritical, result: StatusFailing},
+	{threshold: HealthCritical, status: HealthPassing, result: StatusPassing},
+	{threshold: HealthCritical, status: HealthWarning, result: StatusPassing},
+	{threshold: HealthCritical, status: HealthMaintenance, result: StatusPassing},
+	{threshold: HealthCritical, status: HealthCritical, result: StatusPassing},
+
+	//{threshold: HealthPassing, status: HealthPassing, result: false},
+	//{threshold: HealthPassing, status: HealthMaintenance, result: true},
+	//{threshold: HealthPassing, status: HealthWarning, result: true},
+	//{threshold: HealthPassing, status: HealthCritical, result: true},
+	//{threshold: HealthMaintenance, status: HealthPassing, result: false},
+	//{threshold: HealthMaintenance, status: HealthMaintenance, result: false},
+	//{threshold: HealthMaintenance, status: HealthWarning, result: true},
+	//{threshold: HealthMaintenance, status: HealthCritical, result: true},
+	//{threshold: HealthWarning, status: HealthPassing, result: false},
+	//{threshold: HealthWarning, status: HealthMaintenance, result: false},
+	//{threshold: HealthWarning, status: HealthWarning, result: false},
+	//{threshold: HealthWarning, status: HealthCritical, result: true},
+	//{threshold: HealthCritical, status: HealthPassing, result: false},
+	//{threshold: HealthCritical, status: HealthMaintenance, result: false},
+	//{threshold: HealthCritical, status: HealthWarning, result: false},
+	//{threshold: HealthCritical, status: HealthCritical, result: false},
 }
 
 func TestMatchesStatusUnknown(t *testing.T) {
 	check := Check{
 		Status: "unknown",
 	}
-	_, e := check.MatchesStatus(HealthPassing)
+	_, e := check.MatchStatus(HealthPassing)
 	if e == nil || e.Error() != "Unsupported status: unknown" {
 		t.Errorf("Status: unknown, want 'Unsupported status: unknown', got '%v'", e)
 	}
@@ -54,7 +71,7 @@ func TestMatchesStatus(t *testing.T) {
 		check := Check{
 			Status: d.status.String(),
 		}
-		if r, _ := check.MatchesStatus(d.threshold); r != d.result {
+		if r, _ := check.MatchStatus(d.threshold); r != d.result {
 			t.Errorf("Threshold %v => Status: %v, want %v, got %v", d.threshold, d.status, d.result, r)
 		}
 	}

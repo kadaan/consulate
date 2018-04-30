@@ -19,6 +19,20 @@ import (
 	"time"
 )
 
+// Status represents the status of a Consul health check match.
+type Status string
+
+const (
+	// StatusPassing represents a Consul health check status match that is passing.
+	StatusPassing Status = "passing"
+
+	// StatusWarning represents a Consul check status match that is a warning.
+	StatusWarning = "warning"
+
+	// StatusFailing represents a Consul check status match that is a failure.
+	StatusFailing = "failing"
+)
+
 // HealthStatus represents the status of a Consul health check.
 type HealthStatus int
 
@@ -26,17 +40,17 @@ const (
 	// HealthPassing represents Consul health check in the Passing state.
 	HealthPassing HealthStatus = iota
 
-	// HealthMaintenance represents Consul health check in the Maintenance state.
-	HealthMaintenance
-
 	// HealthWarning represents Consul health check in the Warning state
 	HealthWarning
+
+	// HealthMaintenance represents Consul health check in the Maintenance state.
+	HealthMaintenance
 
 	// HealthCritical represents Consul health check in the Critical state
 	HealthCritical
 )
 
-var healthNames = []string{"passing", "maintenance", "warning", "critical"}
+var healthNames = []string{"passing", "warning", "maintenance", "critical"}
 
 func (s HealthStatus) String() string {
 	return healthNames[s]
@@ -59,6 +73,9 @@ const (
 	// Ok represents a successful call to Consulate.
 	Ok ResultStatus = "Ok"
 
+	// Warning represents a warning call to Consulate.
+	Warning ResultStatus = "Warning"
+
 	// Failed represents a failed call to Consulate.
 	Failed ResultStatus = "Failed"
 
@@ -70,6 +87,7 @@ const (
 type Result struct {
 	Status ResultStatus
 	Detail string            `json:",omitempty"`
+	Counts map[Status]int    `json:",omitempty"`
 	Checks map[string]*Check `json:",omitempty"`
 }
 
@@ -89,13 +107,19 @@ type Check struct {
 	ModifyIndex uint64
 }
 
-// MatchesStatus returns True if the Check has a Status the same or worse than the specified status.
-func (c *Check) MatchesStatus(s HealthStatus) (bool, error) {
+// MatchStatus returns a Status that indicates how the Status of a Check matches the specified status.
+func (c *Check) MatchStatus(s HealthStatus) (Status, error) {
 	parsedStatus, parsed := ParseHealthStatus(c.Status)
 	if !parsed {
-		return false, errors.Errorf("Unsupported status: %s", c.Status)
+		return StatusFailing, errors.Errorf("Unsupported status: %s", c.Status)
 	}
-	return parsedStatus > s, nil
+	if parsedStatus > s {
+		if parsedStatus == HealthWarning {
+			return StatusWarning, nil
+		}
+		return StatusFailing, nil
+	}
+	return StatusPassing, nil
 }
 
 // IsServiceId returns True if the Check ServiceId matches the specified serviceId.

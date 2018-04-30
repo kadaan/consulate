@@ -14,7 +14,10 @@
 
 package config
 
-import "time"
+import (
+	"net/http"
+	"time"
+)
 
 const (
 	// DefaultListenAddress is the default listen address for Consulate.
@@ -29,30 +32,70 @@ const (
 	// DefaultWriteTimeout is the default maximum duration for Consulate writing the response.
 	DefaultWriteTimeout = 10 * time.Second
 
-	// DefaultShutdownTimeout the default maximum duration before timing out the shutdown of the Consulate server.
+	// DefaultShutdownTimeout is the default maximum duration before timing out the shutdown of the Consulate server.
 	DefaultShutdownTimeout = 15 * time.Second
+
+	// DefaultSuccessStatusCode (200) is the default status code returned when there are 1+ passing health checks, 0 warning health checks, and 0 failing health checks.
+	DefaultSuccessStatusCode = http.StatusOK
+
+	// DefaultPartialSuccessStatusCode (429) is the default status code returned when there are 1+ passing health checks and 1+ warning health checks.
+	DefaultPartialSuccessStatusCode = http.StatusTooManyRequests
+
+	// DefaultWarningStatusCode (503) is the default status code returned when there are 0 passing health checks and 1+ warning health checks.
+	DefaultWarningStatusCode = http.StatusServiceUnavailable
+
+	// DefaultErrorStatusCode (503) is the default status code returned when there are  1+ failing health checks.
+	DefaultErrorStatusCode = http.StatusServiceUnavailable
+
+	// DefaultBadRequestStatusCode (400) is the default status code returned when a request to Consulate which could not be understood.
+	DefaultBadRequestStatusCode = http.StatusBadRequest
+
+	// DefaultNoCheckStatusCode (404) is the default status code returned when no Consul checks exist.
+	DefaultNoCheckStatusCode = http.StatusNotFound
+
+	// DefaultUnprocessableStatusCode (502) is the default status code returned when Consulate could not parse the response from Consul.
+	DefaultUnprocessableStatusCode = http.StatusBadGateway
+
+	// DefaultConsulUnavailableStatusCode (504) is the default status code returned when Consul did not respond promptly.
+	DefaultConsulUnavailableStatusCode = http.StatusGatewayTimeout
 )
 
 // ServerConfig represents the configuration of the Consulate server.
 type ServerConfig struct {
-	ListenAddress   string
-	ConsulAddress   string
-	ReadTimeout     time.Duration
-	WriteTimeout    time.Duration
-	ShutdownTimeout time.Duration
-	ClientConfig    ClientConfig
-	CacheConfig     CacheConfig
+	ListenAddress               string
+	ConsulAddress               string
+	ReadTimeout                 time.Duration
+	WriteTimeout                time.Duration
+	ShutdownTimeout             time.Duration
+	SuccessStatusCode           int
+	PartialSuccessStatusCode    int
+	WarningStatusCode           int
+	ErrorStatusCode             int
+	BadRequestStatusCode        int
+	NoCheckStatusCode           int
+	UnprocessableStatusCode     int
+	ConsulUnavailableStatusCode int
+	ClientConfig                ClientConfig
+	CacheConfig                 CacheConfig
 }
 
 // DefaultServerConfig gets a default ServerConfig.
 func DefaultServerConfig() *ServerConfig {
 	return &ServerConfig{
-		ListenAddress:   DefaultListenAddress,
-		ConsulAddress:   DefaultConsulAddress,
-		ReadTimeout:     DefaultReadTimeout,
-		WriteTimeout:    DefaultWriteTimeout,
-		ShutdownTimeout: DefaultShutdownTimeout,
-		ClientConfig:    *DefaultClientConfig(),
-		CacheConfig:     *DefaultCacheConfig(),
+		ListenAddress:               DefaultListenAddress,
+		ConsulAddress:               DefaultConsulAddress,
+		ReadTimeout:                 DefaultReadTimeout,
+		WriteTimeout:                DefaultWriteTimeout,
+		ShutdownTimeout:             DefaultShutdownTimeout,
+		SuccessStatusCode:           DefaultSuccessStatusCode,
+		PartialSuccessStatusCode:    DefaultPartialSuccessStatusCode,
+		WarningStatusCode:           DefaultWarningStatusCode,
+		ErrorStatusCode:             DefaultErrorStatusCode,
+		BadRequestStatusCode:        DefaultBadRequestStatusCode,
+		NoCheckStatusCode:           DefaultNoCheckStatusCode,
+		UnprocessableStatusCode:     DefaultUnprocessableStatusCode,
+		ConsulUnavailableStatusCode: DefaultConsulUnavailableStatusCode,
+		ClientConfig:                *DefaultClientConfig(),
+		CacheConfig:                 *DefaultCacheConfig(),
 	}
 }

@@ -34,6 +34,14 @@ const (
 	queryMaxIdleConnectionCountKey = "query-max-idle-connection-count"
 	queryIdleConnectionTimeoutKey  = "query-idle-connection-timeout"
 	shutdownTimeoutKey             = "shutdown-timeout"
+	okStatusCodeKey                = "success-status-code"
+	partialSuccessStatusCodeKey    = "partial-success-status-code"
+	warningStatusCodeKey           = "warning-status-code"
+	errorStatusCodeKey             = "error-status-code"
+	badRequestStatusCodeKey        = "bad-request-status-code"
+	noChecksStatusCodeKey          = "no-checks-status-code"
+	unprocessableStatusCodeKey     = "unprocessable-status-code"
+	consulUnavailableStatusCodeKey = "consul-navailable-status-code"
 )
 
 var (
@@ -82,4 +90,20 @@ func init() {
 	viper.BindPFlag(queryIdleConnectionTimeoutKey, serverCmd.Flags().Lookup(queryIdleConnectionTimeoutKey))
 	serverCmd.Flags().DurationVar(&serverConfig.ShutdownTimeout, shutdownTimeoutKey, config.DefaultShutdownTimeout, "the maximum duration before timing out the shutdown of the server")
 	viper.BindPFlag(shutdownTimeoutKey, serverCmd.Flags().Lookup(shutdownTimeoutKey))
+	serverCmd.Flags().IntVar(&serverConfig.SuccessStatusCode, okStatusCodeKey, config.DefaultSuccessStatusCode, "the status code returned when there are 1+ passing health checks, 0 warning health checks, and 0 failing health checks")
+	viper.BindPFlag(okStatusCodeKey, serverCmd.Flags().Lookup(okStatusCodeKey))
+	serverCmd.Flags().IntVar(&serverConfig.PartialSuccessStatusCode, partialSuccessStatusCodeKey, config.DefaultPartialSuccessStatusCode, "the status code returned when there are 1+ passing health checks and 1+ warning health checks")
+	viper.BindPFlag(partialSuccessStatusCodeKey, serverCmd.Flags().Lookup(partialSuccessStatusCodeKey))
+	serverCmd.Flags().IntVar(&serverConfig.WarningStatusCode, warningStatusCodeKey, config.DefaultWarningStatusCode, "the status code returned when there are 0 passing health checks and 1+ warning health checks")
+	viper.BindPFlag(warningStatusCodeKey, serverCmd.Flags().Lookup(warningStatusCodeKey))
+	serverCmd.Flags().IntVar(&serverConfig.ErrorStatusCode, errorStatusCodeKey, config.DefaultErrorStatusCode, "the status code returned when there are 1+ failing health checks")
+	viper.BindPFlag(errorStatusCodeKey, serverCmd.Flags().Lookup(errorStatusCodeKey))
+	serverCmd.Flags().IntVar(&serverConfig.BadRequestStatusCode, badRequestStatusCodeKey, config.DefaultBadRequestStatusCode, "the status code returned when a request to Consulate could not be understood")
+	viper.BindPFlag(badRequestStatusCodeKey, serverCmd.Flags().Lookup(badRequestStatusCodeKey))
+	serverCmd.Flags().IntVar(&serverConfig.NoCheckStatusCode, noChecksStatusCodeKey, config.DefaultNoCheckStatusCode, "the status code returned when no Consul checks exist")
+	viper.BindPFlag(noChecksStatusCodeKey, serverCmd.Flags().Lookup(noChecksStatusCodeKey))
+	serverCmd.Flags().IntVar(&serverConfig.UnprocessableStatusCode, unprocessableStatusCodeKey, config.DefaultUnprocessableStatusCode, "the status code returned when Consulate could not parse the response from Consul")
+	viper.BindPFlag(unprocessableStatusCodeKey, serverCmd.Flags().Lookup(unprocessableStatusCodeKey))
+	serverCmd.Flags().IntVar(&serverConfig.ConsulUnavailableStatusCode, consulUnavailableStatusCodeKey, config.DefaultConsulUnavailableStatusCode, "the status code returned when Consul did not respond promptly")
+	viper.BindPFlag(consulUnavailableStatusCodeKey, serverCmd.Flags().Lookup(consulUnavailableStatusCodeKey))
 }

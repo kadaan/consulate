@@ -131,7 +131,8 @@ func (r *server) createRouter() *gin.Engine {
 }
 
 func (r *server) attachPrometheusMiddleware(engine *gin.Engine) {
-	prometheusMiddleware := ginprometheus.NewPrometheus("consulate", requestDurationBuckets, requestSizeBuckets, responseSizeBuckets)
+	prometheusMiddleware := ginprometheus.NewPrometheus("consulate", requestDurationBuckets,
+		requestSizeBuckets, responseSizeBuckets)
 	prometheusMiddleware.ReqCntURLLabelMappingFn = func(c *gin.Context) string {
 		url := c.Request.URL.Path
 		for _, param := range c.Params {
@@ -186,12 +187,12 @@ func (r *server) abortWithStatusJSON(context *gin.Context, code int, obj interfa
 }
 
 func (r *server) about(context *gin.Context) {
-	r.json(context, spi.StatusOK, version.NewInfo())
+	r.json(context, r.config.SuccessStatusCode, version.NewInfo())
 }
 
 func (r *server) health(context *gin.Context) {
 	r.processChecks(context, func(allChecks *map[string]*checks.Check) {
-		r.json(context, spi.StatusOK, checks.Result{Status: checks.Ok})
+		r.json(context, r.config.SuccessStatusCode, checks.Result{Status: checks.Ok})
 	})
 }
 
@@ -257,31 +258,42 @@ func (r *server) verifyChecks(context *gin.Context, matcher checkMatcher) {
 
 		var checkCount = 0
 		var verifiedCheckCount = 0
-		var failedCount = false
+		var statusCounts = map[checks.Status]int{
+			checks.StatusPassing: 0,
+			checks.StatusWarning: 0,
+			checks.StatusFailing: 0,
+		}
 		var matchedChecks map[string]*checks.Check
 		matchedChecks = make(map[string]*checks.Check)
 		for k, v := range *allChecks {
 			checkCount++
 			if matcher.match(v) {
 				verifiedCheckCount++
-				b, e := v.MatchesStatus(s)
+				m, e := v.MatchStatus(s)
 				if e != nil {
-					r.abortWithStatusJSON(context, spi.StatusUnprocessableResponseError, checks.Result{Status: checks.Failed, Detail: e.Error()})
+					r.abortWithStatusJSON(context, r.config.UnprocessableStatusCode,
+						checks.Result{Status: checks.Failed, Detail: e.Error()})
 				}
-				if b {
-					matchedChecks[k] = v
-					failedCount = true
-				} else if isVerbose {
+				statusCounts[m] = statusCounts[m] + 1
+				if m != checks.StatusPassing || isVerbose {
 					matchedChecks[k] = v
 				}
 			}
 		}
-		if failedCount {
-			r.abortWithStatusJSON(context, spi.StatusCheckError, checks.Result{Status: checks.Failed, Checks: matchedChecks})
+		if statusCounts[checks.StatusFailing] > 0 {
+			r.abortWithStatusJSON(context, r.config.ErrorStatusCode,
+				checks.Result{Status: checks.Failed, Counts: statusCounts, Checks: matchedChecks})
+		} else if statusCounts[checks.StatusPassing] == 0 && statusCounts[checks.StatusWarning] > 0 {
+			r.abortWithStatusJSON(context, r.config.WarningStatusCode,
+				checks.Result{Status: checks.Failed, Counts: statusCounts, Checks: matchedChecks})
+		} else if statusCounts[checks.StatusWarning] > 0 {
+			r.abortWithStatusJSON(context, r.config.PartialSuccessStatusCode,
+				checks.Result{Status: checks.Warning, Counts: statusCounts, Checks: matchedChecks})
 		} else if checkCount == 0 || verifiedCheckCount == 0 {
-			r.abortWithStatusJSON(context, spi.StatusNoChecksError, checks.Result{Status: checks.NoChecks, Detail: matcher.noChecksErrorMessage})
+			r.abortWithStatusJSON(context, r.config.NoCheckStatusCode,
+				checks.Result{Status: checks.NoChecks, Detail: matcher.noChecksErrorMessage})
 		} else {
-			r.json(context, spi.StatusOK, checks.Result{Status: checks.Ok, Checks: matchedChecks})
+			r.json(context, r.config.SuccessStatusCode, checks.Result{Status: checks.Ok, Checks: matchedChecks})
 		}
 	})
 }
@@ -297,12 +309,14 @@ func (r *server) processChecks(context *gin.Context, handler checkHandler) {
 			defer resp.Body.Close()
 		}
 		if err != nil {
-			r.abortWithStatusJSON(context, spi.StatusConsulUnavailableError, checks.Result{Status: checks.Failed, Detail: err.Error()})
+			r.abortWithStatusJSON(context, r.config.ConsulUnavailableStatusCode,
+				checks.Result{Status: checks.Failed, Detail: err.Error()})
 			return
 		}
 		err = r.jsonApi.NewDecoder(resp.Body).Decode(&allChecks)
 		if err != nil {
-			r.abortWithStatusJSON(context, spi.StatusUnprocessableResponseError, checks.Result{Status: checks.Failed, Detail: err.Error()})
+			r.abortWithStatusJSON(context, r.config.UnprocessableStatusCode,
+				checks.Result{Status: checks.Failed, Detail: err.Error()})
 			return
 		}
 		r.cache.Set(target, allChecks)
@@ -317,7 +331,10 @@ func (r *server) getStatus(context *gin.Context) checks.HealthStatus {
 	}
 	parsedStatus, parsed := checks.ParseHealthStatus(status)
 	if !parsed {
-		r.abortWithStatusJSON(context, spi.StatusBadRequestError, checks.Result{Status: checks.Failed, Detail: fmt.Sprintf("Unsupported status: %v", context.Query(statusQueryStringKey))})
+		r.abortWithStatusJSON(context, r.config.BadRequestStatusCode,
+			checks.Result{
+				Status: checks.Failed,
+				Detail: fmt.Sprintf("Unsupported status: %v", context.Query(statusQueryStringKey))})
 	}
 	return parsedStatus
 }

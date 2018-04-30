@@ -14,28 +14,6 @@
 
 package spi
 
-import "net/http"
-
-const (
-	// StatusOK (200) represents a Consulate call which succeeded.
-	StatusOK = http.StatusOK
-
-	// StatusBadRequestError (400) represents a request to Consulate which could not be understood.
-	StatusBadRequestError = http.StatusBadRequest
-
-	// StatusNoChecksError (404) represents an error when no Consul checks exist.
-	StatusNoChecksError = http.StatusNotFound
-
-	// StatusUnprocessableResponseError (502) represents an error indicating that Consulate could not parse the response from Consul.
-	StatusUnprocessableResponseError = http.StatusBadGateway
-
-	// StatusCheckError (503) represents an error indicating one or more Consul checks have failed.
-	StatusCheckError = http.StatusServiceUnavailable
-
-	// StatusConsulUnavailableError (504) represents an error indicating the Consul did not respond promptly.
-	StatusConsulUnavailableError = http.StatusGatewayTimeout
-)
-
 // Server represents a server that can be started.
 type Server interface {
 	// Start begins the Server.

@@ -14,7 +14,9 @@
 
 package config
 
-import "testing"
+import (
+	"testing"
+)
 
 func TestDefaultServerConfig(t *testing.T) {
 	c := DefaultServerConfig()
@@ -32,5 +34,29 @@ func TestDefaultServerConfig(t *testing.T) {
 	}
 	if c.ShutdownTimeout != DefaultShutdownTimeout {
 		t.Errorf("ShutdownTimeout: want %v, got %v", DefaultShutdownTimeout, c.ShutdownTimeout)
+	}
+	if c.SuccessStatusCode != DefaultSuccessStatusCode {
+		t.Errorf("SuccessStatusCode: want %v, got %v", DefaultSuccessStatusCode, c.SuccessStatusCode)
+	}
+	if c.PartialSuccessStatusCode != DefaultPartialSuccessStatusCode {
+		t.Errorf("PartialSuccessStatusCode: want %v, got %v", DefaultPartialSuccessStatusCode, c.PartialSuccessStatusCode)
+	}
+	if c.WarningStatusCode != DefaultWarningStatusCode {
+		t.Errorf("WarningStatusCode: want %v, got %v", DefaultWarningStatusCode, c.WarningStatusCode)
+	}
+	if c.ErrorStatusCode != DefaultErrorStatusCode {
+		t.Errorf("ErrorStatusCode: want %v, got %v", DefaultErrorStatusCode, c.ErrorStatusCode)
+	}
+	if c.BadRequestStatusCode != DefaultBadRequestStatusCode {
+		t.Errorf("BadRequestStatusCode: want %v, got %v", DefaultBadRequestStatusCode, c.BadRequestStatusCode)
+	}
+	if c.NoCheckStatusCode != DefaultNoCheckStatusCode {
+		t.Errorf("NoCheckStatusCode: want %v, got %v", DefaultNoCheckStatusCode, c.NoCheckStatusCode)
+	}
+	if c.UnprocessableStatusCode != DefaultUnprocessableStatusCode {
+		t.Errorf("UnprocessableStatusCode: want %v, got %v", DefaultUnprocessableStatusCode, c.UnprocessableStatusCode)
+	}
+	if c.ConsulUnavailableStatusCode != DefaultConsulUnavailableStatusCode {
+		t.Errorf("ConsulUnavailableStatusCode: want %v, got %v", DefaultConsulUnavailableStatusCode, c.ConsulUnavailableStatusCode)
 	}
 }
