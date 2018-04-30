@@ -78,15 +78,23 @@ Usage:
   consulate server [flags]
 
 Flags:
+      --bad-request-status-code int              the status code returned when a request to Consulate could not be understood (default 400)
   -c, --consul-address string                    the Consul HTTP API address to query against (default "localhost:8500")
       --consul-cache-duration duration           the duration that Consul results will be cached (default 1s)
+      --consul-navailable-status-code int        the status code returned when Consul did not respond promptly (default 504)
+      --error-status-code int                    the status code returned when there are 1+ failing health checks (default 503)
   -h, --help                                     help for server
   -l, --listen-address string                    the listen address (default ":8080")
+      --no-checks-status-code int                the status code returned when no Consul checks exist (default 404)
+      --partial-success-status-code int          the status code returned when there are 1+ passing health checks and 1+ warning health checks (default 429)
       --query-idle-connection-timeout duration   is the maximum amount of time an idle (keep-alive) Consul HTTP API query connection will remain idle before closing itself (default 1m30s)
       --query-max-idle-connection-count int      the maximum number of idle (keep-alive) Consul HTTP API query connections (default 100)
       --query-timeout duration                   the maximum duration before timing out the Consul HTTP API query (default 5s)
       --read-timeout duration                    the maximum duration for reading the entire request (default 10s)
       --shutdown-timeout duration                the maximum duration before timing out the shutdown of the server (default 15s)
+      --success-status-code int                  the status code returned when there are 1+ passing health checks, 0 warning health checks, and 0 failing health checks (default 200)
+      --unprocessable-status-code int            the status code returned when Consulate could not parse the response from Consul (default 502)
+      --warning-status-code int                  the status code returned when there are 0 passing health checks and 1+ warning health checks (default 503)
       --write-timeout duration                   the maximum duration before timing out writes of the response (default 10s)
 
 Global Flags:
