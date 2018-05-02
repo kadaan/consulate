@@ -120,13 +120,13 @@ func (r *server) createRouter() *gin.Engine {
 	router.Use(gin.Logger())
 	router.Use(gin.Recovery())
 	r.attachPrometheusMiddleware(router)
-	router.GET(aboutRoute, r.about)
-	router.GET(healthRoute, r.health)
-	router.GET(verifyAllChecksRoute, r.verifyAllChecks)
-	router.GET(verifyCheckIdRoute, r.verifyCheckId)
-	router.GET(verifyCheckNameRoute, r.verifyCheckName)
-	router.GET(verifyServiceIdRoute, r.verifyServiceId)
-	router.GET(verifyServiceNameRoute, r.verifyServiceName)
+	r.handle(router, aboutRoute, r.about)
+	r.handle(router, healthRoute, r.health)
+	r.handle(router, verifyAllChecksRoute, r.verifyAllChecks)
+	r.handle(router, verifyCheckIdRoute, r.verifyCheckId)
+	r.handle(router, verifyCheckNameRoute, r.verifyCheckName)
+	r.handle(router, verifyServiceIdRoute, r.verifyServiceId)
+	r.handle(router, verifyServiceNameRoute, r.verifyServiceName)
 	return router
 }
 
@@ -147,6 +147,11 @@ func (r *server) attachPrometheusMiddleware(engine *gin.Engine) {
 		return url
 	}
 	prometheusMiddleware.Use(engine)
+}
+
+func (r *server) handle(router *gin.Engine, relativePath string, handler gin.HandlerFunc) {
+	router.GET(relativePath, handler)
+	router.HEAD(relativePath, handler)
 }
 
 func (r *server) createClient() {

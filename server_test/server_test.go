@@ -91,6 +91,21 @@ func TestApi(t *testing.T) {
 }
 
 func verifyApiCall(t *testing.T, s *testutil.WrappedTestServer, d apiTestData) {
+	verifyHeadApiCall(t, s, d)
+	verifyGetApiCall(t, s, d)
+}
+
+func verifyHeadApiCall(t *testing.T, s *testutil.WrappedTestServer, d apiTestData) {
+	r, err := s.Client().Head(s.Url(d.path))
+	if err != nil {
+		t.Error(err)
+	}
+	if r.StatusCode != d.statusCode {
+		t.Errorf("%q => StatusCode: %v, want %v", d.path, r.StatusCode, d.statusCode)
+	}
+}
+
+func verifyGetApiCall(t *testing.T, s *testutil.WrappedTestServer, d apiTestData) {
 	r, err := s.Client().Get(s.Url(d.path))
 	if r != nil && r.Body != nil {
 		defer r.Body.Close()

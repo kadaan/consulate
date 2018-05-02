@@ -110,7 +110,7 @@ Started Consulate server on :8080
 
 ## Routes
 
-All routes accept the following query string parameters:
+All routes respond to both GET and HEAD requests.  They accept the following query string parameters:
 
 1. `pretty`: when present, pretty prints json responses
 1. `verbose`: when present, additional details are include in responses
@@ -665,6 +665,9 @@ Error Set:
 ```
 
 ## Changelog
+
+### 0.0.3
+* Add HEAD support for all methods.
 
 ### 0.0.2
 * Adjust status code semantics to follow Consul health check semantics.  This results in some changes to the status codes returned.
