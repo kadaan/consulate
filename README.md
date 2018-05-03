@@ -666,6 +666,9 @@ Error Set:
 
 ## Changelog
 
+### 0.0.4
+* Adjust routing to support handling requests with trailing forward slash.
+
 ### 0.0.3
 * Add HEAD support for all methods.
 

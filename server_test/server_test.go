@@ -20,6 +20,7 @@ import (
 	"github.com/kadaan/consulate/config"
 	"github.com/kadaan/consulate/testutil"
 	"io/ioutil"
+	"strings"
 	"testing"
 	"text/template"
 )
@@ -91,49 +92,55 @@ func TestApi(t *testing.T) {
 }
 
 func verifyApiCall(t *testing.T, s *testutil.WrappedTestServer, d apiTestData) {
-	verifyHeadApiCall(t, s, d)
-	verifyGetApiCall(t, s, d)
+	verifyHeadApiCall(t, s, d.path, d.statusCode)
+	verifyHeadApiCall(t, s, appendTrailingSlash(d.path), d.statusCode)
+	verifyGetApiCall(t, s, d.path, d.statusCode, d.body)
+	verifyGetApiCall(t, s, appendTrailingSlash(d.path), d.statusCode, d.body)
 }
 
-func verifyHeadApiCall(t *testing.T, s *testutil.WrappedTestServer, d apiTestData) {
-	r, err := s.Client().Head(s.Url(d.path))
+func appendTrailingSlash(path string) string {
+	return strings.Replace(path, "?", "/?", 1)
+}
+
+func verifyHeadApiCall(t *testing.T, s *testutil.WrappedTestServer, path string, statusCode int) {
+	r, err := s.Client().Head(s.Url(path))
 	if err != nil {
 		t.Error(err)
 	}
-	if r.StatusCode != d.statusCode {
-		t.Errorf("%q => StatusCode: %v, want %v", d.path, r.StatusCode, d.statusCode)
+	if r.StatusCode != statusCode {
+		t.Errorf("%q => StatusCode: %v, want %v", path, r.StatusCode, statusCode)
 	}
 }
 
-func verifyGetApiCall(t *testing.T, s *testutil.WrappedTestServer, d apiTestData) {
-	r, err := s.Client().Get(s.Url(d.path))
+func verifyGetApiCall(t *testing.T, s *testutil.WrappedTestServer, path string, statusCode int, body string) {
+	r, err := s.Client().Get(s.Url(path))
 	if r != nil && r.Body != nil {
 		defer r.Body.Close()
 	}
 	if err != nil {
 		t.Error(err)
 	}
-	if r.StatusCode != d.statusCode {
-		t.Errorf("%q => StatusCode: %v, want %v", d.path, r.StatusCode, d.statusCode)
+	if r.StatusCode != statusCode {
+		t.Errorf("%q => StatusCode: %v, want %v", path, r.StatusCode, statusCode)
 	}
 	bb, err := ioutil.ReadAll(r.Body)
 	if err != nil {
 		t.Error(err)
 	}
-	body := string(bb)
+	actualBody := string(bb)
 
 	data := bodyTemplateData{
 		ConsulNodeName: s.GetConsulNodeName(),
 	}
-	tmpl, _ := template.New(d.path).Parse(d.body)
+	tmpl, _ := template.New(path).Parse(body)
 	var tpl bytes.Buffer
 	if err := tmpl.Execute(&tpl, data); err != nil {
 		t.Errorf("Failed to execute body template: %s", err)
 	}
 	expectedBody := tpl.String()
 
-	if body != expectedBody {
-		t.Errorf("%q => Body: %q, want %q", d.path, body, expectedBody)
+	if actualBody != expectedBody {
+		t.Errorf("%q => Body: %q, want %q", path, actualBody, expectedBody)
 	}
 }
 

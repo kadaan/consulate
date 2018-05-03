@@ -151,7 +151,9 @@ func (r *server) attachPrometheusMiddleware(engine *gin.Engine) {
 
 func (r *server) handle(router *gin.Engine, relativePath string, handler gin.HandlerFunc) {
 	router.GET(relativePath, handler)
+	router.GET(relativePath+"/", handler)
 	router.HEAD(relativePath, handler)
+	router.HEAD(relativePath+"/", handler)
 }
 
 func (r *server) createClient() {
