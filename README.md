@@ -666,6 +666,9 @@ Error Set:
 
 ## Changelog
 
+### 0.0.5
+* Standardize metric naming, type, etc.
+
 ### 0.0.4
 * Adjust routing to support handling requests with trailing forward slash.
 
