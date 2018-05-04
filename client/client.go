@@ -44,7 +44,7 @@ func init() {
 
 	histVec = prometheus.NewHistogramVec(
 		prometheus.HistogramOpts{
-			Name:    "http_request_duration_milliseconds",
+			Name:    "http_request_duration_seconds",
 			Help:    "A histogram of request latencies.",
 			Buckets: prometheus.DefBuckets,
 		},

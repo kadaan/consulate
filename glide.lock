@@ -1,5 +1,5 @@
-hash: b2c7af5aee108c25e5cee77f5d8096fabf8af43c45b235abe7fbae015495777c
-updated: 2018-03-02T00:18:31.566709-08:00
+hash: 922c27fdd22ec6eeaec735a311b48ad76290f79b957c5d56472f525a23592eac
+updated: 2018-05-03T18:15:50.782163-07:00
 imports:
 - name: github.com/beorn7/perks
   version: 4c0e84591b9aa9e6dcfdf3e020114cd81f89d5f9
@@ -19,7 +19,7 @@ imports:
   subpackages:
   - proto
 - name: github.com/hashicorp/consul
-  version: 9a494b5fb9c86180a5702e29c485df1507a47198
+  version: fb848fc48818f58690db09d14640513aa6bf3c02
   subpackages:
   - lib/freeport
   - testutil
@@ -33,6 +33,7 @@ imports:
   subpackages:
   - hcl/ast
   - hcl/parser
+  - hcl/printer
   - hcl/scanner
   - hcl/strconv
   - hcl/token
@@ -42,9 +43,9 @@ imports:
 - name: github.com/inconshreveable/mousetrap
   version: 76626ae9c91c4f2a10f34cad8ce83ea42c93bb75
 - name: github.com/json-iterator/go
-  version: 3353055b2a1a5ae1b6a8dfde887a524e7088f3a2
+  version: ca39e5af3ece67bbcda3d0f4f56a8e24d9f2dad4
 - name: github.com/kadaan/go-gin-prometheus
-  version: 5d2cfda7af87a97514942fbbf3542097fae1db14
+  version: 4ab0b0ef0bbd054f218efe593722496273e0a538
 - name: github.com/magiconair/properties
   version: 2c9e9502788518c97fe44e8955cd069417ee89df
 - name: github.com/mattn/go-isatty
@@ -68,7 +69,7 @@ imports:
 - name: github.com/pkg/errors
   version: 645ef00459ed84a119197bfb8d8205042c6df63d
 - name: github.com/prometheus/client_golang
-  version: 967789050ba94deca04a5e84cce8ad472ce313c1
+  version: 82f5ff156b29e276022b1a958f7d385870fb9814
   subpackages:
   - prometheus
   - prometheus/promhttp
@@ -95,13 +96,13 @@ imports:
 - name: github.com/spf13/cast
   version: 8965335b8c7107321228e3e3702cab9832751bac
 - name: github.com/spf13/cobra
-  version: 7b2c5ac9fc04fc5efafb60700713d4fa609b777b
+  version: a1f051bc3eba734da4772d60e2d677f47cf93ef4
 - name: github.com/spf13/jwalterweatherman
   version: 7c0cea34c8ece3fbeb2b27ab9b59511d360fb394
 - name: github.com/spf13/pflag
   version: ee5fd03fd6acfd43e44aea0b4135958546ed8e73
 - name: github.com/spf13/viper
-  version: 25b30aa063fc18e48662b86996252eabdcf2f0c7
+  version: b5e8006cbee93ec955a89ab31e0e3ce3204f3736
 - name: github.com/ugorji/go
   version: 16f09ef744fd4227190f626f14cfdefb14362b3b
   subpackages:

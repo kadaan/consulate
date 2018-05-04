@@ -27,6 +27,7 @@ import (
 	"github.com/kadaan/consulate/spi"
 	"github.com/kadaan/consulate/version"
 	"github.com/kadaan/go-gin-prometheus"
+	"github.com/prometheus/client_golang/prometheus"
 	"log"
 	"net/http"
 	"strings"
@@ -51,10 +52,7 @@ const (
 )
 
 var (
-	state                  = stopped
-	requestDurationBuckets = []float64{0.5, 1, 2, 3, 5, 10}
-	requestSizeBuckets     = []float64{128, 256, 512, 1024}
-	responseSizeBuckets    = []float64{512, 2048, 8196, 32784}
+	state = stopped
 )
 
 type serverState int
@@ -131,10 +129,54 @@ func (r *server) createRouter() *gin.Engine {
 }
 
 func (r *server) attachPrometheusMiddleware(engine *gin.Engine) {
-	prometheusMiddleware := ginprometheus.NewPrometheus("consulate", requestDurationBuckets,
-		requestSizeBuckets, responseSizeBuckets)
-	prometheusMiddleware.ReqCntURLLabelMappingFn = func(c *gin.Context) string {
-		url := c.Request.URL.Path
+	counter := prometheus.NewCounterVec(
+		prometheus.CounterOpts{
+			Subsystem: "consulate",
+			Name:      "requests_total",
+			Help:      "Total number of HTTP requests made.",
+		},
+		[]string{"code", "method", "url"},
+	)
+
+	duration := prometheus.NewHistogramVec(
+		prometheus.HistogramOpts{
+			Subsystem: "consulate",
+			Name:      "request_duration_seconds",
+			Help:      "The HTTP request latencies in seconds.",
+			Buckets:   prometheus.ExponentialBuckets(0.5, 2, 6),
+		},
+		[]string{"code", "method", "url"},
+	)
+
+	requestSize := prometheus.NewHistogramVec(
+		prometheus.HistogramOpts{
+			Subsystem: "consulate",
+			Name:      "request_size_bytes",
+			Help:      "The HTTP request sizes in bytes.",
+			Buckets:   prometheus.ExponentialBuckets(128, 2, 4),
+		},
+		[]string{"code", "method", "url"},
+	)
+
+	responseSize := prometheus.NewHistogramVec(
+		prometheus.HistogramOpts{
+			Subsystem: "consulate",
+			Name:      "response_size_bytes",
+			Help:      "The HTTP response sizes in bytes.",
+			Buckets:   prometheus.ExponentialBuckets(512, 4, 4),
+		},
+		[]string{"code", "method", "url"},
+	)
+
+	prometheus.MustRegister(counter, duration, requestSize, responseSize)
+
+	b := ginprometheus.NewBuilder()
+	b.Counter(counter)
+	b.Duration(duration)
+	b.RequestSize(requestSize)
+	b.ResponseSize(responseSize)
+	b.UrlMapping(func(c *gin.Context) string {
+		url := strings.TrimSuffix(c.Request.URL.Path, "/")
 		for _, param := range c.Params {
 			if param.Key == verifyCheckParamKey {
 				url = strings.Replace(url, param.Value, verifyCheckParamTag, 1)
@@ -145,8 +187,8 @@ func (r *server) attachPrometheusMiddleware(engine *gin.Engine) {
 			}
 		}
 		return url
-	}
-	prometheusMiddleware.Use(engine)
+	})
+	b.Use(engine)
 }
 
 func (r *server) handle(router *gin.Engine, relativePath string, handler gin.HandlerFunc) {
