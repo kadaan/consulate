@@ -97,14 +97,14 @@ type Check struct {
 	CheckID     string
 	Name        string
 	Status      string
-	Notes       string
-	Output      string
+	Notes       string          `json:",omitempty"`
+	Output      string          `json:",omitempty"`
 	ServiceID   string
 	ServiceName string
-	ServiceTags []string
-	Definition  CheckDefinition
-	CreateIndex uint64
-	ModifyIndex uint64
+	ServiceTags []string        `json:",omitempty"`
+	Definition  CheckDefinition `json:"-"`
+	CreateIndex uint64          `json:",omitempty"`
+	ModifyIndex uint64          `json:",omitempty"`
 }
 
 // MatchStatus returns a Status that indicates how the Status of a Check matches the specified status.

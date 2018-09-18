@@ -16,6 +16,7 @@ package server
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"github.com/gin-gonic/gin"
@@ -231,6 +232,15 @@ func (r *server) json(context *gin.Context, code int, obj interface{}) {
 }
 
 func (r *server) abortWithStatusJSON(context *gin.Context, code int, obj interface{}) {
+	var message = ""
+	switch obj.(type) {
+	case checks.Result:
+		b, _ := json.Marshal(obj)
+		message = string(b)
+	default:
+		message = fmt.Sprint(obj)
+	}
+	context.Error(errors.New(message)).SetType(gin.ErrorTypePrivate)
 	context.Abort()
 	r.json(context, code, obj)
 }
