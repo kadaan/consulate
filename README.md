@@ -287,20 +287,7 @@ Content-Type: application/json; charset=utf-8
             "Notes": "Check 1",
             "Output": "Timed out (1s) running check",
             "ServiceID": "service2",
-            "ServiceName": "service2",
-            "ServiceTags": [],
-            "Definition": {
-                "HTTP": "",
-                "Header": null,
-                "Method": "",
-                "TLSSkipVerify": false,
-                "TCP": "",
-                "Interval": 0,
-                "Timeout": 0,
-                "DeregisterCriticalServiceAfter": 0
-            },
-            "CreateIndex": 0,
-            "ModifyIndex": 0
+            "ServiceName": "service2"
         }
     }
 }
@@ -366,20 +353,7 @@ Content-Type: application/json; charset=utf-8
             "Notes": "Check 1",
             "Output": "Timed out (1s) running check",
             "ServiceID": "service2",
-            "ServiceName": "service2",
-            "ServiceTags": [],
-            "Definition": {
-                "HTTP": "",
-                "Header": null,
-                "Method": "",
-                "TLSSkipVerify": false,
-                "TCP": "",
-                "Interval": 0,
-                "Timeout": 0,
-                "DeregisterCriticalServiceAfter": 0
-            },
-            "CreateIndex": 0,
-            "ModifyIndex": 0
+            "ServiceName": "service2"
         }
     }
 }
@@ -448,20 +422,7 @@ Content-Type: application/json; charset=utf-8
             "Notes": "Check 1",
             "Output": "Timed out (1s) running check",
             "ServiceID": "service2",
-            "ServiceName": "service2",
-            "ServiceTags": [],
-            "Definition": {
-                "HTTP": "",
-                "Header": null,
-                "Method": "",
-                "TLSSkipVerify": false,
-                "TCP": "",
-                "Interval": 0,
-                "Timeout": 0,
-                "DeregisterCriticalServiceAfter": 0
-            },
-            "CreateIndex": 0,
-            "ModifyIndex": 0
+            "ServiceName": "service2"
         }
     }
 }
@@ -529,20 +490,7 @@ Content-Type: application/json; charset=utf-8
             "Notes": "Check 1",
             "Output": "Timed out (1s) running check",
             "ServiceID": "service2",
-            "ServiceName": "service 2",
-            "ServiceTags": [],
-            "Definition": {
-                "HTTP": "",
-                "Header": null,
-                "Method": "",
-                "TLSSkipVerify": false,
-                "TCP": "",
-                "Interval": 0,
-                "Timeout": 0,
-                "DeregisterCriticalServiceAfter": 0
-            },
-            "CreateIndex": 0,
-            "ModifyIndex": 0
+            "ServiceName": "service 2"
         }
     }
 }
