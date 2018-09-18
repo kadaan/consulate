@@ -666,6 +666,9 @@ Error Set:
 
 ## Changelog
 
+### 0.0.6
+* Log the response object when the HTTP call to consulate fails.
+
 ### 0.0.5
 * Standardize metric naming, type, etc.
 
