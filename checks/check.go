@@ -97,8 +97,8 @@ type Check struct {
 	CheckID     string
 	Name        string
 	Status      string
-	Notes       string          `json:",omitempty"`
-	Output      string          `json:",omitempty"`
+	Notes       string `json:",omitempty"`
+	Output      string `json:",omitempty"`
 	ServiceID   string
 	ServiceName string
 	ServiceTags []string        `json:",omitempty"`

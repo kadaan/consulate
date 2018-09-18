@@ -232,7 +232,7 @@ func (r *server) json(context *gin.Context, code int, obj interface{}) {
 }
 
 func (r *server) abortWithStatusJSON(context *gin.Context, code int, obj interface{}) {
-	var message = ""
+	var message string
 	switch obj.(type) {
 	case checks.Result:
 		b, _ := json.Marshal(obj)
