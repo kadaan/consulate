@@ -35,25 +35,25 @@ var (
 var apiTests = []apiTestData{
 	{"/about", OK, `{"Version":"","Revision":"","Branch":"","BuildUser":"","BuildDate":"","GoVersion":"go1.9.3"}`},
 	{"/health", OK, `{"Status":"Ok"}`},
-	{"/verify/checks", CheckError, `{"Status":"Failed","Counts":{"failing":1,"passing":3,"warning":2},"Checks":{"check1b":{"Node":"{{.ConsulNodeName}}","CheckID":"check1b","Name":"check 1","Status":"warning","Notes":"","Output":"","ServiceID":"service1","ServiceName":"service1","ServiceTags":[],"Definition":{"HTTP":"","Header":null,"Method":"","TLSSkipVerify":false,"TCP":"","Interval":0,"Timeout":0,"DeregisterCriticalServiceAfter":0},"CreateIndex":0,"ModifyIndex":0},"check1c":{"Node":"{{.ConsulNodeName}}","CheckID":"check1c","Name":"check 1","Status":"critical","Notes":"","Output":"","ServiceID":"service1","ServiceName":"service1","ServiceTags":[],"Definition":{"HTTP":"","Header":null,"Method":"","TLSSkipVerify":false,"TCP":"","Interval":0,"Timeout":0,"DeregisterCriticalServiceAfter":0},"CreateIndex":0,"ModifyIndex":0},"check3b":{"Node":"{{.ConsulNodeName}}","CheckID":"check3b","Name":"check 3","Status":"warning","Notes":"","Output":"","ServiceID":"service3","ServiceName":"service3","ServiceTags":[],"Definition":{"HTTP":"","Header":null,"Method":"","TLSSkipVerify":false,"TCP":"","Interval":0,"Timeout":0,"DeregisterCriticalServiceAfter":0},"CreateIndex":0,"ModifyIndex":0}}}`},
-	{"/verify/checks?status=passing", CheckError, `{"Status":"Failed","Counts":{"failing":1,"passing":3,"warning":2},"Checks":{"check1b":{"Node":"{{.ConsulNodeName}}","CheckID":"check1b","Name":"check 1","Status":"warning","Notes":"","Output":"","ServiceID":"service1","ServiceName":"service1","ServiceTags":[],"Definition":{"HTTP":"","Header":null,"Method":"","TLSSkipVerify":false,"TCP":"","Interval":0,"Timeout":0,"DeregisterCriticalServiceAfter":0},"CreateIndex":0,"ModifyIndex":0},"check1c":{"Node":"{{.ConsulNodeName}}","CheckID":"check1c","Name":"check 1","Status":"critical","Notes":"","Output":"","ServiceID":"service1","ServiceName":"service1","ServiceTags":[],"Definition":{"HTTP":"","Header":null,"Method":"","TLSSkipVerify":false,"TCP":"","Interval":0,"Timeout":0,"DeregisterCriticalServiceAfter":0},"CreateIndex":0,"ModifyIndex":0},"check3b":{"Node":"{{.ConsulNodeName}}","CheckID":"check3b","Name":"check 3","Status":"warning","Notes":"","Output":"","ServiceID":"service3","ServiceName":"service3","ServiceTags":[],"Definition":{"HTTP":"","Header":null,"Method":"","TLSSkipVerify":false,"TCP":"","Interval":0,"Timeout":0,"DeregisterCriticalServiceAfter":0},"CreateIndex":0,"ModifyIndex":0}}}`},
-	{"/verify/checks?status=warning", CheckError, `{"Status":"Failed","Counts":{"failing":1,"passing":5,"warning":0},"Checks":{"check1c":{"Node":"{{.ConsulNodeName}}","CheckID":"check1c","Name":"check 1","Status":"critical","Notes":"","Output":"","ServiceID":"service1","ServiceName":"service1","ServiceTags":[],"Definition":{"HTTP":"","Header":null,"Method":"","TLSSkipVerify":false,"TCP":"","Interval":0,"Timeout":0,"DeregisterCriticalServiceAfter":0},"CreateIndex":0,"ModifyIndex":0}}}`},
+	{"/verify/checks", CheckError, `{"Status":"Failed","Counts":{"failing":1,"passing":3,"warning":2},"Checks":{"check1b":{"Node":"{{.ConsulNodeName}}","CheckID":"check1b","Name":"check 1","Status":"warning","Output":"Warning check","ServiceID":"service1","ServiceName":"service1"},"check1c":{"Node":"{{.ConsulNodeName}}","CheckID":"check1c","Name":"check 1","Status":"critical","Output":"Critical check","ServiceID":"service1","ServiceName":"service1"},"check3b":{"Node":"{{.ConsulNodeName}}","CheckID":"check3b","Name":"check 3","Status":"warning","Output":"Warning check","ServiceID":"service3","ServiceName":"service3"}}}`},
+	{"/verify/checks?status=passing", CheckError, `{"Status":"Failed","Counts":{"failing":1,"passing":3,"warning":2},"Checks":{"check1b":{"Node":"{{.ConsulNodeName}}","CheckID":"check1b","Name":"check 1","Status":"warning","Output":"Warning check","ServiceID":"service1","ServiceName":"service1"},"check1c":{"Node":"{{.ConsulNodeName}}","CheckID":"check1c","Name":"check 1","Status":"critical","Output":"Critical check","ServiceID":"service1","ServiceName":"service1"},"check3b":{"Node":"{{.ConsulNodeName}}","CheckID":"check3b","Name":"check 3","Status":"warning","Output":"Warning check","ServiceID":"service3","ServiceName":"service3"}}}`},
+	{"/verify/checks?status=warning", CheckError, `{"Status":"Failed","Counts":{"failing":1,"passing":5,"warning":0},"Checks":{"check1c":{"Node":"{{.ConsulNodeName}}","CheckID":"check1c","Name":"check 1","Status":"critical","Output":"Critical check","ServiceID":"service1","ServiceName":"service1"}}}`},
 	{"/verify/checks?status=critical", OK, `{"Status":"Ok"}`},
 	{"/verify/checks/id", NoChecks, `404 page not found`},
 	{"/verify/checks/id/unknown", NoChecks, `{"Status":"No Checks","Detail":"No checks with CheckID: unknown"}`},
 	{"/verify/checks/name", NoChecks, `404 page not found`},
 	{"/verify/checks/name/unknown", NoChecks, `{"Status":"No Checks","Detail":"No checks with CheckName: unknown"}`},
-	{"/verify/checks/id/check1b", CheckError, `{"Status":"Failed","Counts":{"failing":0,"passing":0,"warning":1},"Checks":{"check1b":{"Node":"{{.ConsulNodeName}}","CheckID":"check1b","Name":"check 1","Status":"warning","Notes":"","Output":"","ServiceID":"service1","ServiceName":"service1","ServiceTags":[],"Definition":{"HTTP":"","Header":null,"Method":"","TLSSkipVerify":false,"TCP":"","Interval":0,"Timeout":0,"DeregisterCriticalServiceAfter":0},"CreateIndex":0,"ModifyIndex":0}}}`},
+	{"/verify/checks/id/check1b", CheckError, `{"Status":"Failed","Counts":{"failing":0,"passing":0,"warning":1},"Checks":{"check1b":{"Node":"{{.ConsulNodeName}}","CheckID":"check1b","Name":"check 1","Status":"warning","Output":"Warning check","ServiceID":"service1","ServiceName":"service1"}}}`},
 	{"/verify/checks/id/check1b?status=warning", OK, `{"Status":"Ok"}`},
-	{"/verify/checks/name/check%202?verbose", OK, `{"Status":"Ok","Checks":{"check2a":{"Node":"{{.ConsulNodeName}}","CheckID":"check2a","Name":"check 2","Status":"passing","Notes":"","Output":"","ServiceID":"service2","ServiceName":"service2","ServiceTags":[],"Definition":{"HTTP":"","Header":null,"Method":"","TLSSkipVerify":false,"TCP":"","Interval":0,"Timeout":0,"DeregisterCriticalServiceAfter":0},"CreateIndex":0,"ModifyIndex":0}}}`},
+	{"/verify/checks/name/check%202?verbose", OK, `{"Status":"Ok","Checks":{"check2a":{"Node":"{{.ConsulNodeName}}","CheckID":"check2a","Name":"check 2","Status":"passing","Output":"Passing check","ServiceID":"service2","ServiceName":"service2"}}}`},
 	{"/verify/service/id/unknown", NoChecks, `{"Status":"No Checks","Detail":"No checks for services with ServiceId: unknown"}`},
 	{"/verify/service/name/unknown", NoChecks, `{"Status":"No Checks","Detail":"No checks for services with ServiceName: unknown"}`},
 	{"/verify/service/id/service1?status=critical", OK, `{"Status":"Ok"}`},
-	{"/verify/service/id/service2?verbose", OK, `{"Status":"Ok","Checks":{"check2a":{"Node":"{{.ConsulNodeName}}","CheckID":"check2a","Name":"check 2","Status":"passing","Notes":"","Output":"","ServiceID":"service2","ServiceName":"service2","ServiceTags":[],"Definition":{"HTTP":"","Header":null,"Method":"","TLSSkipVerify":false,"TCP":"","Interval":0,"Timeout":0,"DeregisterCriticalServiceAfter":0},"CreateIndex":0,"ModifyIndex":0}}}`},
+	{"/verify/service/id/service2?verbose", OK, `{"Status":"Ok","Checks":{"check2a":{"Node":"{{.ConsulNodeName}}","CheckID":"check2a","Name":"check 2","Status":"passing","Output":"Passing check","ServiceID":"service2","ServiceName":"service2"}}}`},
 	{"/verify/service/id/service2?pretty", OK, `{
     "Status": "Ok"
 }`},
-	{"/verify/service/id/service3", PartialOK, `{"Status":"Warning","Counts":{"failing":0,"passing":1,"warning":1},"Checks":{"check3b":{"Node":"{{.ConsulNodeName}}","CheckID":"check3b","Name":"check 3","Status":"warning","Notes":"","Output":"","ServiceID":"service3","ServiceName":"service3","ServiceTags":[],"Definition":{"HTTP":"","Header":null,"Method":"","TLSSkipVerify":false,"TCP":"","Interval":0,"Timeout":0,"DeregisterCriticalServiceAfter":0},"CreateIndex":0,"ModifyIndex":0}}}`},
+	{"/verify/service/id/service3", PartialOK, `{"Status":"Warning","Counts":{"failing":0,"passing":1,"warning":1},"Checks":{"check3b":{"Node":"{{.ConsulNodeName}}","CheckID":"check3b","Name":"check 3","Status":"warning","Output":"Warning check","ServiceID":"service3","ServiceName":"service3"}}}`},
 }
 
 type apiTestData struct {
@@ -73,16 +73,16 @@ func TestApi(t *testing.T) {
 	defer server.Stop()
 
 	server.AddService("service1", []string{})
-	server.AddCheck("check1a", "check 1", "service1", checks.HealthPassing)
-	server.AddCheck("check1b", "check 1", "service1", checks.HealthWarning)
-	server.AddCheck("check1c", "check 1", "service1", checks.HealthCritical)
+	server.AddCheck("check1a", "check 1", "service1", checks.HealthPassing, "Passing check")
+	server.AddCheck("check1b", "check 1", "service1", checks.HealthWarning, "Warning check")
+	server.AddCheck("check1c", "check 1", "service1", checks.HealthCritical, "Critical check")
 
 	server.AddService("service2", []string{})
-	server.AddCheck("check2a", "check 2", "service2", checks.HealthPassing)
+	server.AddCheck("check2a", "check 2", "service2", checks.HealthPassing, "Passing check")
 
 	server.AddService("service3", []string{})
-	server.AddCheck("check3a", "check 3", "service3", checks.HealthPassing)
-	server.AddCheck("check3b", "check 3", "service3", checks.HealthWarning)
+	server.AddCheck("check3a", "check 3", "service3", checks.HealthPassing, "Passing check")
+	server.AddCheck("check3b", "check 3", "service3", checks.HealthWarning, "Warning check")
 
 	for _, d := range apiTests {
 		t.Logf("  --> %s", d.path)

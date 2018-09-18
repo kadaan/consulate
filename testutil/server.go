@@ -188,7 +188,7 @@ func (s *TestServer) AddService(t *testing.T, name string, tags []string) {
 }
 
 // AddCheck adds a check to the test Consul server.
-func (s *TestServer) AddCheck(t *testing.T, id string, name string, serviceID string, status checks.HealthStatus) {
+func (s *TestServer) AddCheck(t *testing.T, id string, name string, serviceID string, status checks.HealthStatus, output string) {
 	chk := &consulTestUtil.TestCheck{
 		ID:   id,
 		Name: name,
@@ -201,16 +201,22 @@ func (s *TestServer) AddCheck(t *testing.T, id string, name string, serviceID st
 	payload := s.encodePayload(t, chk)
 	s.put(t, "/v1/agent/check/register", payload)
 
+	checkStatus := ""
 	switch status {
 	case checks.HealthPassing:
-		s.put(t, "/v1/agent/check/pass/"+id, nil)
+		checkStatus = "passing"
 	case checks.HealthWarning:
-		s.put(t, "/v1/agent/check/warn/"+id, nil)
+		checkStatus = "warning"
 	case checks.HealthCritical:
-		s.put(t, "/v1/agent/check/fail/"+id, nil)
+		checkStatus = "critical"
 	default:
 		t.Fatalf("Unrecognized status: %v", status)
 	}
+	result := map[string]interface{}{
+		"status": checkStatus,
+		"output": output,
+	}
+	s.put(t, "/v1/agent/check/update/"+id, s.encodePayload(t, result))
 }
 
 func (s *TestServer) put(t *testing.T, path string, body io.Reader) *http.Response {
@@ -275,8 +281,8 @@ func (w *WrappedTestServer) AddService(name string, tags []string) {
 }
 
 // AddCheck adds a check to the test Consul server.
-func (w *WrappedTestServer) AddCheck(id string, name string, serviceID string, status checks.HealthStatus) {
-	w.s.AddCheck(w.t, id, name, serviceID, status)
+func (w *WrappedTestServer) AddCheck(id string, name string, serviceID string, status checks.HealthStatus, output string) {
+	w.s.AddCheck(w.t, id, name, serviceID, status, output)
 }
 
 // GetConsulNodeName returns the test Consul server's node name.
