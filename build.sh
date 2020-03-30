@@ -125,21 +125,16 @@ function run() {
 
   verbose "Getting dependencies..."
 
-  local gofiles=$(find . -path ./vendor -prune -o -print | grep '\.go$')
-
   verbose "Installing dependencies..."
   go install ./... || fatal "go install failed: $?"
   go test -i ./... || fatal "go test install failed: $?"
 
   verbose "Formatting source..."
-  if [[ ${#gofiles[@]} -gt 0 ]]; then
-    while read -r gofile; do
-      gofmt -s -w $PWD/$gofile
-    done <<< "$gofiles"
-  fi
-
-  if [ -n "$TRAVIS" ] && [ -n "$(git status --porcelain)" ]; then
-    fatal "Source not formatted"
+  local unformattedFileCount="$(gofmt -l -s . | wc -l | awk '{ print $1 }')"
+  if [[ "$unformattedFileCount" -gt 0 ]]; then
+    error "Source not formatted"
+    gofmt -d -s .
+    exit 1
   fi
 
   verbose "Linting source..."
@@ -147,7 +142,7 @@ function run() {
 
   verbose "Checking licenses..."
   licRes=$(
-  for file in $(find . -type f -iname '*.go' ! -path './vendor/*'); do
+  for file in $(find . -type f -iname '*.go'); do
     head -n3 "${file}" | grep -Eq "(Copyright|generated|GENERATED)" || error "  Missing license in: ${file}"
   done;)
   if [ -n "${licRes}" ]; then
