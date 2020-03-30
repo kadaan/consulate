@@ -601,6 +601,9 @@ Error Set:
 
 ## Changelog
 
+### 0.0.7
+* Switch metrics from histograms to summaries.
+
 ### 0.0.6
 * Log the response object when the HTTP call to consulate fails.
 * Remove 'Definition' from the response.

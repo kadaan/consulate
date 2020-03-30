@@ -18,9 +18,9 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"github.com/hashicorp/consul/lib/freeport"
-	consulTestUtil "github.com/hashicorp/consul/testutil"
-	"github.com/hashicorp/consul/testutil/retry"
+	"github.com/hashicorp/consul/sdk/freeport"
+	consulTestUtil "github.com/hashicorp/consul/sdk/testutil"
+	"github.com/hashicorp/consul/sdk/testutil/retry"
 	"github.com/kadaan/consulate/checks"
 	"github.com/kadaan/consulate/client"
 	"github.com/kadaan/consulate/config"
@@ -100,7 +100,7 @@ type failer struct {
 	failed bool
 }
 
-func (f *failer) Log(args ...interface{}) { fmt.Println(args) }
+func (f *failer) Log(args ...interface{}) { fmt.Println(args...) }
 func (f *failer) FailNow()                { f.failed = true }
 
 func newConsulServer(t *testing.T) *consulTestUtil.TestServer {

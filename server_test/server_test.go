@@ -33,7 +33,7 @@ var (
 )
 
 var apiTests = []apiTestData{
-	{"/about", OK, `{"Version":"","Revision":"","Branch":"","BuildUser":"","BuildDate":"","GoVersion":"go1.9.3"}`},
+	{"/about", OK, `{"Version":"","Revision":"","Branch":"","BuildUser":"","BuildDate":"","GoVersion":"go1.14.1"}`},
 	{"/health", OK, `{"Status":"Ok"}`},
 	{"/verify/checks", CheckError, `{"Status":"Failed","Counts":{"failing":1,"passing":3,"warning":2},"Checks":{"check1b":{"Node":"{{.ConsulNodeName}}","CheckID":"check1b","Name":"check 1","Status":"warning","Output":"Warning check","ServiceID":"service1","ServiceName":"service1"},"check1c":{"Node":"{{.ConsulNodeName}}","CheckID":"check1c","Name":"check 1","Status":"critical","Output":"Critical check","ServiceID":"service1","ServiceName":"service1"},"check3b":{"Node":"{{.ConsulNodeName}}","CheckID":"check3b","Name":"check 3","Status":"warning","Output":"Warning check","ServiceID":"service3","ServiceName":"service3"}}}`},
 	{"/verify/checks?status=passing", CheckError, `{"Status":"Failed","Counts":{"failing":1,"passing":3,"warning":2},"Checks":{"check1b":{"Node":"{{.ConsulNodeName}}","CheckID":"check1b","Name":"check 1","Status":"warning","Output":"Warning check","ServiceID":"service1","ServiceName":"service1"},"check1c":{"Node":"{{.ConsulNodeName}}","CheckID":"check1c","Name":"check 1","Status":"critical","Output":"Critical check","ServiceID":"service1","ServiceName":"service1"},"check3b":{"Node":"{{.ConsulNodeName}}","CheckID":"check3b","Name":"check 3","Status":"warning","Output":"Warning check","ServiceID":"service3","ServiceName":"service3"}}}`},

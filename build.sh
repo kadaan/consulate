@@ -54,30 +54,11 @@ function get_platform() {
 }
 
 PLATFORM=$(get_platform)
-GLIDE=$BINARY_DIR/glide
-GLIDE_URL="https://github.com/Masterminds/glide/releases/download/v0.13.1/glide-v0.13.1-$PLATFORM-amd64.tar.gz"
 GOX="gox"
 GOMETALINTER=$BINARY_DIR/gometalinter
 GOMETALINTER_URL="https://github.com/alecthomas/gometalinter/releases/download/v2.0.4/gometalinter-2.0.4-$PLATFORM-amd64.tar.gz"
 CONSUL=$BINARY_DIR/consul
 CONSUL_URL="https://releases.hashicorp.com/consul/1.0.6/consul_1.0.6_${PLATFORM}_amd64.zip"
-
-function download_glide() {
-  if [ ! -f "$GLIDE" ]; then
-    verbose "   --> $GLIDE"
-    local tmpdir=`mktemp -d`
-    trap_add "rm -rf $tmpdir" EXIT
-    pushd $tmpdir
-    curl -L -s -O $GLIDE_URL || fatal "failed to download 'GLIDE_URL': $?"
-    for i in *.tar.gz; do
-      [ "$i" = "*.tar.gz" ] && continue
-      tar xzf "$i" -C $tmpdir --strip-components 1 && rm -r "$i"
-    done
-    popd
-    mkdir -p $BINARY_DIR
-    cp $tmpdir/* $BINARY_DIR/
-  fi
-}
 
 function download_consul() {
   if [ ! -f "$CONSUL" ]; then
@@ -121,7 +102,6 @@ function download_gox() {
 }
 
 function download_binaries() {
-  download_glide || fatal "failed to download 'glide': $?"
   download_gox || fatal "failed to download 'gox': $?"
   download_gometalinter || fatal "failed to download 'gometalinter': $?"
   download_consul || fatal "failed to download 'consul': $?"
@@ -133,7 +113,7 @@ function run() {
   local branch=`git rev-parse --abbrev-ref HEAD`
   local host=`hostname`
   local buildDate=`date -u +"%Y-%m-%dT%H:%M:%SZ"`
-  go version | grep -q 'go version go1.9.3 ' || fatal "go version is not 1.9.3"
+  go version | grep -q 'go version go1.14.1 ' || fatal "go version is not 1.14.1"
 
   if [ -z "$TRAVIS" ]; then
     verbose "Cleanup dist..."
@@ -144,7 +124,6 @@ function run() {
   download_binaries
 
   verbose "Getting dependencies..."
-  $GLIDE install -v || fatal "glide install failed: $?"
 
   local gofiles=$(find . -path ./vendor -prune -o -print | grep '\.go$')
 

@@ -139,32 +139,29 @@ func (r *server) attachPrometheusMiddleware(engine *gin.Engine) {
 		[]string{"code", "method", "url"},
 	)
 
-	duration := prometheus.NewHistogramVec(
-		prometheus.HistogramOpts{
+	duration := prometheus.NewSummaryVec(
+		prometheus.SummaryOpts{
 			Subsystem: "consulate",
 			Name:      "request_duration_seconds",
 			Help:      "The HTTP request latencies in seconds.",
-			Buckets:   prometheus.ExponentialBuckets(0.5, 2, 6),
 		},
 		[]string{"code", "method", "url"},
 	)
 
-	requestSize := prometheus.NewHistogramVec(
-		prometheus.HistogramOpts{
+	requestSize := prometheus.NewSummaryVec(
+		prometheus.SummaryOpts{
 			Subsystem: "consulate",
 			Name:      "request_size_bytes",
 			Help:      "The HTTP request sizes in bytes.",
-			Buckets:   prometheus.ExponentialBuckets(128, 2, 4),
 		},
 		[]string{"code", "method", "url"},
 	)
 
-	responseSize := prometheus.NewHistogramVec(
-		prometheus.HistogramOpts{
+	responseSize := prometheus.NewSummaryVec(
+		prometheus.SummaryOpts{
 			Subsystem: "consulate",
 			Name:      "response_size_bytes",
 			Help:      "The HTTP response sizes in bytes.",
-			Buckets:   prometheus.ExponentialBuckets(512, 4, 4),
 		},
 		[]string{"code", "method", "url"},
 	)
