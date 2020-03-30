@@ -153,9 +153,11 @@ function run() {
   if [ -n "$TRAVIS" ]; then
     if [ ! -x "$(command -v goveralls)" ]; then
       echo "Getting goveralls..."
+      go get golang.org/x/tools/cmd/cover || fatal "go get 'golang.org/x/tools/cmd/cover' failed: $?"
       go get github.com/mattn/goveralls || fatal "go get 'github.com/mattn/goveralls' failed: $?"
     fi
-    goveralls -v -service=travis-ci -ignore=main.go,testutil/server.go,testutil/golden.go || fatal "goveralls: $?"
+    go test -v -covermode=count -coverprofile=coverage.out ./... || fatal "$gopackage tests failed: $?"
+    goveralls -v -service=travis-ci -coverprofile=coverage.out -ignore=main.go,testutil/server.go,testutil/golden.go -service=travis-ci || fatal "goveralls: $?"
   else
     go test -v ./... || fatal "$gopackage tests failed: $?"
   fi
