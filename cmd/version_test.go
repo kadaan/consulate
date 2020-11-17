@@ -31,7 +31,7 @@ func TestVersionCommand(t *testing.T) {
 	expected := strconv.Quote(`Consulate, version  (branch: , revision: )
   build user:       
   build date:       
-  go version:       go1.14.1`)
+  go version:       go1.15.2`)
 	result := strconv.Quote(output.String())
 	if result != expected {
 		t.Errorf("Version command: want '%v', got '%s'", expected, result)

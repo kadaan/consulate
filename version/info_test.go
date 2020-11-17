@@ -23,7 +23,7 @@ func TestPrint(t *testing.T) {
 	BuildUser = "testUser"
 	BuildDate = "testDate"
 
-	expected := "Consulate, version testVersion (branch: testBranch, revision: testRevision)\n  build user:       testUser\n  build date:       testDate\n  go version:       go1.14.1"
+	expected := "Consulate, version testVersion (branch: testBranch, revision: testRevision)\n  build user:       testUser\n  build date:       testDate\n  go version:       go1.15.2"
 	result := Print()
 	if result != expected {
 		t.Errorf("Print: %q, want %q", result, expected)

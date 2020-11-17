@@ -33,7 +33,7 @@ var (
 )
 
 var apiTests = []apiTestData{
-	{"/about", OK, `{"Version":"","Revision":"","Branch":"","BuildUser":"","BuildDate":"","GoVersion":"go1.14.1"}`},
+	{"/about", OK, `{"Version":"","Revision":"","Branch":"","BuildUser":"","BuildDate":"","GoVersion":"go1.15.2"}`},
 	{"/health", OK, `{"Status":"Ok"}`},
 	{"/verify/checks", CheckError, `{"Status":"Failed","Counts":{"failing":1,"passing":3,"warning":2},"Checks":{"check1b":{"Node":"{{.ConsulNodeName}}","CheckID":"check1b","Name":"check 1","Status":"warning","Output":"Warning check","ServiceID":"service1","ServiceName":"service1"},"check1c":{"Node":"{{.ConsulNodeName}}","CheckID":"check1c","Name":"check 1","Status":"critical","Output":"Critical check","ServiceID":"service1","ServiceName":"service1"},"check3b":{"Node":"{{.ConsulNodeName}}","CheckID":"check3b","Name":"check 3","Status":"warning","Output":"Warning check","ServiceID":"service3","ServiceName":"service3"}}}`},
 	{"/verify/checks?status=passing", CheckError, `{"Status":"Failed","Counts":{"failing":1,"passing":3,"warning":2},"Checks":{"check1b":{"Node":"{{.ConsulNodeName}}","CheckID":"check1b","Name":"check 1","Status":"warning","Output":"Warning check","ServiceID":"service1","ServiceName":"service1"},"check1c":{"Node":"{{.ConsulNodeName}}","CheckID":"check1c","Name":"check 1","Status":"critical","Output":"Critical check","ServiceID":"service1","ServiceName":"service1"},"check3b":{"Node":"{{.ConsulNodeName}}","CheckID":"check3b","Name":"check 3","Status":"warning","Output":"Warning check","ServiceID":"service3","ServiceName":"service3"}}}`},
@@ -105,10 +105,10 @@ func appendTrailingSlash(path string) string {
 func verifyHeadApiCall(t *testing.T, s *testutil.WrappedTestServer, path string, statusCode int) {
 	r, err := s.Client().Head(s.Url(path))
 	if err != nil {
-		t.Error(err)
+		t.Errorf("FAILURE (head): %q => Error: %s", path, err)
 	}
 	if r.StatusCode != statusCode {
-		t.Errorf("%q => StatusCode: %v, want %v", path, r.StatusCode, statusCode)
+		t.Errorf("FAILURE (head): %q => StatusCode: %v, want %v", path, r.StatusCode, statusCode)
 	}
 }
 
@@ -121,11 +121,11 @@ func verifyGetApiCall(t *testing.T, s *testutil.WrappedTestServer, path string, 
 		t.Error(err)
 	}
 	if r.StatusCode != statusCode {
-		t.Errorf("%q => StatusCode: %v, want %v", path, r.StatusCode, statusCode)
+		t.Errorf("FAILURE (get): %q => StatusCode: %v, want %v", path, r.StatusCode, statusCode)
 	}
 	bb, err := ioutil.ReadAll(r.Body)
 	if err != nil {
-		t.Error(err)
+		t.Errorf("FAILURE (get): %q => Error: %s", path, err)
 	}
 	actualBody := string(bb)
 
@@ -135,12 +135,12 @@ func verifyGetApiCall(t *testing.T, s *testutil.WrappedTestServer, path string, 
 	tmpl, _ := template.New(path).Parse(body)
 	var tpl bytes.Buffer
 	if err := tmpl.Execute(&tpl, data); err != nil {
-		t.Errorf("Failed to execute body template: %s", err)
+		t.Errorf("FAILURE (get): %q => Failed to execute body template: %s", path, err)
 	}
 	expectedBody := tpl.String()
 
 	if actualBody != expectedBody {
-		t.Errorf("%q => Body: %q, want %q", path, actualBody, expectedBody)
+		t.Errorf("FAILURE (get): %q => Body: %q, want %q", path, actualBody, expectedBody)
 	}
 }
 

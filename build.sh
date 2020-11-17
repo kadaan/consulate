@@ -58,7 +58,7 @@ GOX="gox"
 GOMETALINTER=$BINARY_DIR/gometalinter
 GOMETALINTER_URL="https://github.com/alecthomas/gometalinter/releases/download/v2.0.4/gometalinter-2.0.4-$PLATFORM-amd64.tar.gz"
 CONSUL=$BINARY_DIR/consul
-CONSUL_URL="https://releases.hashicorp.com/consul/1.7.2/consul_1.7.2_${PLATFORM}_amd64.zip"
+CONSUL_URL="https://releases.hashicorp.com/consul/1.7.9/consul_1.7.9_${PLATFORM}_amd64.zip"
 
 function download_consul() {
   if [ ! -f "$CONSUL" ]; then
@@ -113,7 +113,7 @@ function run() {
   local branch=`git rev-parse --abbrev-ref HEAD`
   local host=`hostname`
   local buildDate=`date -u +"%Y-%m-%dT%H:%M:%SZ"`
-  go version | grep -q 'go version go1.14.1 ' || fatal "go version is not 1.14.1"
+  go version | grep -q 'go version go1.15.2 ' || fatal "go version is not 1.15.2"
 
   if [ -z "$TRAVIS" ]; then
     verbose "Cleanup dist..."
